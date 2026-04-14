@@ -2,7 +2,7 @@ import OpenAI from 'openai';
 
 // DeepSeek API Configuration
 const deepseek = new OpenAI({
-  apiKey: process.env.DEEPSEEK_API_KEY || '',
+  apiKey: process.env.DEEPSEEK_API_KEY || '<DEEPSEEK_API_KEY>',
   baseURL: process.env.DEEPSEEK_API_KEY?.startsWith('nvapi-') 
     ? 'https://integrate.api.nvidia.com/v1' 
     : 'https://api.deepseek.com',
@@ -40,7 +40,9 @@ export const getAIResponse = async (message: string, systemPrompt?: string) => {
         { role: 'system', content: systemPrompt || 'You are Synapse Health AI assistant. Always respond in valid JSON if requested.' },
         { role: 'user', content: message },
       ],
-      // NVIDIA NIM might not support response_format: { type: 'json_object' } for all models
+      headers: {
+        Authorization: `Bearer ${process.env.DEEPSEEK_API_KEY}`, // Ensure this is correct
+      },
       ...(isNvidia ? {} : { response_format: { type: 'json_object' } }),
     });
 
@@ -55,7 +57,7 @@ export const getAIResponse = async (message: string, systemPrompt?: string) => {
 
     return content;
   } catch (error: any) {
-    console.error('AI Service Error:', error);
+    console.error('AI Service Error:', error?.response?.data || error?.message || error);
     throw error;
   }
 };
@@ -65,18 +67,15 @@ export const analyzePrescriptionAI = async (imageData: string) => {
     const ai = getAIClient();
     if (!ai) throw new Error('No AI API Key configured');
 
-    // Note: DeepSeek-V3/R1 might not support vision via OpenAI SDK in the same way yet, 
-    // but some models do. If vision is not supported, we might need to use a different approach.
-    // However, for this task, we will assume a text-based extraction if vision fails or use a vision-capable model if available.
-    
+    // Assuming vision is supported by some models; otherwise, handle text-based extraction
     const response = await ai.client.chat.completions.create({
-      model: ai.model, // Use vision model if available, e.g., 'deepseek-vision'
+      model: ai.model, 
       messages: [
         {
           role: 'user',
           content: [
             { type: 'text', text: 'Extract the medicine names, dosages, and instructions from this prescription image. Also, provide a simplified explanation of what each medicine is for and check for any potential common drug-drug interactions if multiple medicines are listed. Return the result in a structured JSON format with keys: medicines (array of {name, dosage, instructions, purpose}), interactions (array of {severity, description}), and summary (string).' },
-            { type: 'image_url', image_url: { url: imageData } }
+            { type: 'image_url', image_url: imageData } // Ensure the image data format is correct (URL or base64)
           ] as any,
         },
       ],
@@ -85,7 +84,7 @@ export const analyzePrescriptionAI = async (imageData: string) => {
 
     return JSON.parse(response.choices[0].message.content || '{}');
   } catch (error: any) {
-    console.error('Prescription Analysis Error:', error);
+    console.error('Prescription Analysis Error:', error?.response?.data || error?.message || error);
     throw error;
   }
 };

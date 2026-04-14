@@ -79,7 +79,7 @@ export default function Dashboard() {
         setPendingVerifications(Array.isArray(verificationData) ? verificationData : []);
       }
     } catch (error) {
-      console.error('Error fetching admin data:', error);
+      console.error('获取管理数据失败:', error);
       setTrends([]);
       setPendingUsers([]);
     } finally {
@@ -101,7 +101,7 @@ export default function Dashboard() {
         setPendingUsers(pendingUsers.filter((u: any) => u._id !== id));
       }
     } catch (error) {
-      console.error('Error approving user:', error);
+      console.error('审批用户失败:', error);
     }
   };
 
@@ -119,7 +119,7 @@ export default function Dashboard() {
         setPendingVerifications(pendingVerifications.filter((v: any) => v._id !== id));
       }
     } catch (error) {
-      console.error('Error verifying user:', error);
+      console.error('验证用户失败:', error);
     }
   };
 
@@ -168,9 +168,9 @@ export default function Dashboard() {
     default:
       return (
         <div className="bg-white/2 p-12 rounded-[3rem] text-center border border-white/5">
-          <h2 className="text-3xl font-display font-bold text-white mb-4">{t('welcome_synapse')}</h2>
+          <h2 className="text-3xl font-display font-bold text-white mb-4">欢迎来到智医云</h2>
           <p className="text-gray-500 max-w-md mx-auto font-medium">
-            {t('account_review_desc')}
+            您的账户正在审核中，请耐心等待管理员批准。
           </p>
         </div>
       );
