@@ -35,7 +35,7 @@ export default function Login() {
 
     return () => {
       if (scanner) {
-        scanner.clear().catch(error => console.error("Failed to clear scanner", error));
+        scanner.clear().catch(error => console.error("无法清除扫描器", error));
       }
     };
   }, [showScanner]);
@@ -55,17 +55,17 @@ export default function Login() {
         login(data.token, data.user);
         navigate('/dashboard');
       } else {
-        setError(data.error || 'Invalid QR code');
+        setError(data.error || '无效的二维码');
       }
     } catch (err) {
-      setError('Failed to connect to server');
+      setError('无法连接到服务器');
     } finally {
       setIsLoading(false);
     }
   };
 
   const onScanFailure = (error: any) => {
-    // console.warn(`Code scan error = ${error}`);
+    // console.warn(`扫码错误 = ${error}`);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -83,10 +83,10 @@ export default function Login() {
         login(data.token, data.user);
         navigate('/dashboard');
       } else {
-        setError(data.error || 'Invalid credentials');
+        setError(data.error || '无效的凭证');
       }
     } catch (err) {
-      setError('Failed to connect to server');
+      setError('无法连接到服务器');
     } finally {
       setIsLoading(false);
     }
@@ -94,10 +94,10 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-[#050505] text-white flex flex-col lg:flex-row overflow-hidden relative">
-      {/* Noise Overlay */}
+      {/* 噪点覆盖层 */}
       <div className="fixed inset-0 noise z-50 pointer-events-none opacity-20" />
 
-      {/* Left Side - Form */}
+      {/* 左侧 — 表单区域 */}
       <div className="w-full lg:w-1/2 p-6 sm:p-12 lg:p-24 flex flex-col justify-between relative z-10">
         <Link to="/" className="flex items-center gap-3 group mb-20">
           <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-black group-hover:rotate-12 transition-transform duration-500 shadow-2xl shadow-white/10">
@@ -144,7 +144,7 @@ export default function Login() {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     className="w-full bg-white/5 border border-white/10 rounded-[2rem] py-6 pl-16 pr-8 text-sm font-bold tracking-widest focus:ring-2 focus:ring-blue-500/20 focus:bg-white/10 transition-all outline-none placeholder:text-gray-800"
-                    placeholder="OPERATOR_ID"
+                    placeholder="操作员 ID"
                   />
                 </div>
               </div>
@@ -175,7 +175,7 @@ export default function Login() {
 
               <div className="relative flex items-center py-4">
                 <div className="flex-grow border-t border-white/10"></div>
-                <span className="flex-shrink-0 mx-4 text-[10px] font-bold text-gray-600 uppercase tracking-widest">OR</span>
+                <span className="flex-shrink-0 mx-4 text-[10px] font-bold text-gray-600 uppercase tracking-widest">或</span>
                 <div className="flex-grow border-t border-white/10"></div>
               </div>
 
@@ -196,11 +196,11 @@ export default function Login() {
         </div>
 
         <div className="mt-20 text-[8px] font-bold text-gray-800 uppercase tracking-[0.5em]">
-          © 2026 Synapse Health Systems • All rights reserved
+          © 2026 Synapse Health Systems • 版权所有
         </div>
       </div>
 
-      {/* QR Scanner Modal */}
+      {/* QR 扫码模态框 */}
       <AnimatePresence>
         {showScanner && (
           <motion.div
@@ -235,7 +235,7 @@ export default function Login() {
         )}
       </AnimatePresence>
 
-      {/* Right Side - Immersive Visual */}
+      {/* 右侧 — 沉浸式视觉区 */}
       <div className="hidden lg:flex w-1/2 bg-white/2 border-l border-white/5 relative items-center justify-center p-24 overflow-hidden">
         <div className="relative z-10 text-center">
           <motion.div
@@ -251,7 +251,7 @@ export default function Login() {
             <span className="text-transparent stroke-text">{t('precision_diagnostics').split(' ')[1]}</span>
           </h2>
           <p className="text-gray-500 text-sm max-w-sm mx-auto leading-relaxed uppercase tracking-widest">
-            "The definitive operating system for modern healthcare. Built for precision and security."
+            “现代医疗的权威操作系统。为精准与安全而生。”
           </p>
           <div className="mt-12 flex items-center justify-center gap-4">
             <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center">
@@ -264,7 +264,7 @@ export default function Login() {
           </div>
         </div>
 
-        {/* Background Atmospheric Elements */}
+        {/* 背景氛围元素 */}
         <div className="absolute inset-0 -z-10">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[50vw] h-[50vw] bg-blue-600/10 rounded-full blur-[150px]" />
           <div className="absolute inset-0 bg-mesh opacity-30" />
