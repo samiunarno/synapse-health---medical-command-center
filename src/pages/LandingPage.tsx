@@ -25,7 +25,7 @@ import {
 import { motion, useScroll, useTransform } from 'motion/react';
 import CookieConsent from '../components/CookieConsent';
 import GlobalNavbar from '../components/GlobalNavbar';
-import EcommerceSlider from '../components/EcommerceSlider';
+// Removed: import EcommerceSlider from '../components/EcommerceSlider';
 import Hero3D from '../components/Hero3D';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -428,61 +428,9 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 全球网络区域 */}
-      <EcommerceSlider />
-      <section id="global" className="py-24 lg:py-48 px-6 relative overflow-hidden reveal-up">
-        <div className="container mx-auto">
-          <div className="flex flex-col lg:flex-row items-center gap-24">
-            <div className="lg:w-1/2 relative">
-              <div className="absolute inset-0 bg-blue-600/20 rounded-full blur-[120px] animate-pulse" />
-              <motion.div
-                initial={{ rotate: 0 }}
-                animate={{ rotate: 360 }}
-                transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-                className="relative z-10 w-full aspect-square border border-gray-200 dark:border-white/10 rounded-full flex items-center justify-center"
-              >
-                <div className="absolute inset-0 border-2 border-dashed border-blue-500/20 rounded-full animate-spin-slow" />
-                <Globe className="w-32 h-32 lg:w-64 lg:h-64 text-blue-500 opacity-50" />
-              </motion.div>
-            </div>
-            
-            <div className="lg:w-1/2 space-y-12">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 border border-blue-500/20 rounded-full text-[10px] font-bold uppercase tracking-widest text-blue-500 dark:text-blue-400">
-                <Globe className="w-3 h-3" />
-                智医云全球网络
-              </div>
-              <h2 className="text-5xl lg:text-8xl font-display font-black uppercase tracking-tighter leading-none text-gray-900 dark:text-white">
-                医疗 <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-600">无国界</span>
-              </h2>
-              <p className="text-gray-500 text-lg uppercase tracking-widest leading-relaxed">
-                连接全球医疗供应商、药房和医疗机构，构建跨境医疗生态系统。
-              </p>
-              
-              <div className="grid grid-cols-2 gap-8 pt-8">
-                <div className="space-y-2">
-                  <p className="text-4xl font-display font-bold text-gray-900 dark:text-white tracking-tighter">120+</p>
-                  <p className="text-[10px] font-bold text-gray-500 dark:text-gray-600 uppercase tracking-widest">活跃国家/地区</p>
-                </div>
-                <div className="space-y-2">
-                  <p className="text-4xl font-display font-bold text-gray-900 dark:text-white tracking-tighter">5万+</p>
-                  <p className="text-[10px] font-bold text-gray-500 dark:text-gray-600 uppercase tracking-widest">全球供应商</p>
-                </div>
-              </div>
-              
-              <div className="pt-8">
-                <Link 
-                  to="/sourcing-solutions"
-                  className="inline-flex items-center gap-4 bg-gray-900 dark:bg-white text-white dark:text-black px-10 py-5 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all duration-500 group"
-                >
-                  探索全球采购
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* 全球网络区域 - Removed as requested */}
+      {/* <EcommerceSlider /> */}
+      {/* <section id="global" ... > ... </section> */}
 
       {/* 行动号召区域 */}
       <section className="py-24 lg:py-48 relative overflow-hidden flex flex-col items-center justify-center text-center reveal-up">
