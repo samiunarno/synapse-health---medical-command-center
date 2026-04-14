@@ -56,24 +56,24 @@ export default function GlobalNavbar() {
           <div className="w-8 h-8 lg:w-10 lg:h-10 bg-gray-900 dark:bg-white rounded-full flex items-center justify-center text-white dark:text-black group-hover:rotate-12 transition-transform duration-500">
             <Brain className="w-4 h-4 lg:w-6 lg:h-6" />
           </div>
-          <span className="text-lg lg:text-2xl font-display font-bold tracking-tighter uppercase text-gray-900 dark:text-white">{t('app_name')}</span>
+          <span className="text-lg lg:text-2xl font-display font-bold tracking-tighter uppercase text-gray-900 dark:text-white">智医云</span>
         </Link>
 
-        {/* Desktop Nav */}
+        {/* 桌面端导航 */}
         <div className="hidden lg:flex items-center gap-8 xl:gap-12 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-600 dark:text-gray-400">
-          <Link to="/" className={`hover:text-blue-500 transition-colors ${location.pathname === '/' ? 'text-blue-500' : ''}`}>{t('home')}</Link>
-          <Link to="/ecommerce" className={`hover:text-blue-500 transition-colors ${location.pathname === '/ecommerce' ? 'text-blue-500' : ''}`}>{t('marketplace')}</Link>
-          <Link to="/sourcing-solutions" className="hover:text-blue-500 transition-colors">{t('sourcing')}</Link>
-          <Link to="/services-membership" className="hover:text-blue-500 transition-colors">{t('membership')}</Link>
-          <Link to="/help-center" className="hover:text-blue-500 transition-colors">{t('help_center')}</Link>
+          <Link to="/" className={`hover:text-blue-500 transition-colors ${location.pathname === '/' ? 'text-blue-500' : ''}`}>首页</Link>
+          <Link to="/ecommerce" className={`hover:text-blue-500 transition-colors ${location.pathname === '/ecommerce' ? 'text-blue-500' : ''}`}>商城</Link>
           
-          <div 
+          <Link to="/services-membership" className="hover:text-blue-500 transition-colors">会员服务</Link>
+          <Link to="/help-center" className="hover:text-blue-500 transition-colors">帮助中心</Link>
+          
+          {/* <div 
             className="relative group"
             onMouseEnter={() => setIsMarketplaceOpen(true)}
             onMouseLeave={() => setIsMarketplaceOpen(false)}
           >
             <button className="flex items-center gap-2 hover:text-blue-500 transition-colors">
-              {t('global_network')} <ChevronDown className={`w-3 h-3 transition-transform ${isMarketplaceOpen ? 'rotate-180' : ''}`} />
+              全球网络 <ChevronDown className={`w-3 h-3 transition-transform ${isMarketplaceOpen ? 'rotate-180' : ''}`} />
             </button>
             <AnimatePresence>
               {isMarketplaceOpen && (
@@ -84,7 +84,7 @@ export default function GlobalNavbar() {
                   className="absolute top-full left-0 mt-4 w-64 bg-white dark:bg-black/90 backdrop-blur-xl border border-gray-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-2xl"
                 >
                   <div className="px-6 py-4 border-b border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-white/5">
-                    <span className="text-[8px] font-bold uppercase tracking-[0.3em] text-blue-500">{t('marketplace_hub')}</span>
+                    <span className="text-[8px] font-bold uppercase tracking-[0.3em] text-blue-500">商城中心</span>
                   </div>
                   {marketplaceOptions.map((option) => (
                     <Link
@@ -103,20 +103,20 @@ export default function GlobalNavbar() {
                 </motion.div>
               )}
             </AnimatePresence>
-          </div>
+          </div> */}
 
           {user ? (
             <Link to="/dashboard" className="flex items-center gap-2 hover:text-blue-500 transition-colors">
               <LayoutDashboard className="w-4 h-4" />
-              {t('dashboard')}
+              仪表盘
             </Link>
           ) : (
-            <Link to="/login" className="hover:text-blue-500 transition-colors">{t('portal_login')}</Link>
+            <Link to="/login" className="hover:text-blue-500 transition-colors">登录门户</Link>
           )}
         </div>
 
         <div className="flex items-center gap-4 relative z-[110]">
-          {/* Theme Toggle */}
+          {/* 主题切换 */}
           <button 
             onClick={toggleTheme}
             className="w-10 h-10 flex items-center justify-center bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 rounded-full border border-gray-200 dark:border-white/10 transition-all text-gray-600 dark:text-gray-400"
@@ -124,7 +124,7 @@ export default function GlobalNavbar() {
             {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
 
-          {/* Language Switcher */}
+          {/* 语言切换器 */}
           <div className="relative group/lang hidden sm:block">
             <button className="w-10 h-10 flex items-center justify-center bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 rounded-full border border-gray-200 dark:border-white/10 transition-all text-gray-600 dark:text-gray-400">
               <Globe className="w-4 h-4" />
@@ -149,7 +149,7 @@ export default function GlobalNavbar() {
             <button 
               onClick={logout}
               className="hidden sm:flex w-10 h-10 items-center justify-center bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-full border border-red-500/20 transition-all"
-              title="Logout"
+              title="退出登录"
             >
               <LogOut className="w-4 h-4" />
             </button>
@@ -164,7 +164,7 @@ export default function GlobalNavbar() {
         </div>
       </div>
 
-      {/* Mobile Menu Overlay */}
+      {/* 移动端菜单覆盖层 */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
@@ -174,12 +174,12 @@ export default function GlobalNavbar() {
             className="fixed inset-0 bg-white dark:bg-black/95 backdrop-blur-2xl z-[105] flex flex-col items-center justify-center p-8 lg:hidden"
           >
             <div className="flex flex-col items-center gap-8 text-center">
-              <Link to="/sourcing-solutions" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-display font-bold uppercase tracking-tighter text-gray-900 dark:text-white hover:text-blue-500 transition-colors">{t('sourcing')}</Link>
-              <Link to="/services-membership" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-display font-bold uppercase tracking-tighter text-gray-900 dark:text-white hover:text-blue-500 transition-colors">{t('membership')}</Link>
-              <Link to="/help-center" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-display font-bold uppercase tracking-tighter text-gray-900 dark:text-white hover:text-blue-500 transition-colors">{t('help_center')}</Link>
+              <Link to="/sourcing-solutions" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-display font-bold uppercase tracking-tighter text-gray-900 dark:text-white hover:text-blue-500 transition-colors">采购方案</Link>
+              <Link to="/services-membership" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-display font-bold uppercase tracking-tighter text-gray-900 dark:text-white hover:text-blue-500 transition-colors">会员服务</Link>
+              <Link to="/help-center" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-display font-bold uppercase tracking-tighter text-gray-900 dark:text-white hover:text-blue-500 transition-colors">帮助中心</Link>
               
               <div className="space-y-4">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">{t('marketplace_hub')}</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">商城中心</p>
                 {marketplaceOptions.map(opt => (
                   <Link 
                     key={opt.label}
@@ -193,9 +193,9 @@ export default function GlobalNavbar() {
               </div>
 
               {user ? (
-                <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-display font-bold uppercase tracking-tighter text-gray-900 dark:text-white hover:text-blue-500 transition-colors">{t('dashboard')}</Link>
+                <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-display font-bold uppercase tracking-tighter text-gray-900 dark:text-white hover:text-blue-500 transition-colors">仪表盘</Link>
               ) : (
-                <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-display font-bold uppercase tracking-tighter text-gray-900 dark:text-white hover:text-blue-500 transition-colors">{t('portal_login')}</Link>
+                <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-display font-bold uppercase tracking-tighter text-gray-900 dark:text-white hover:text-blue-500 transition-colors">登录门户</Link>
               )}
             </div>
           </motion.div>

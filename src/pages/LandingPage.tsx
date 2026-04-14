@@ -25,7 +25,7 @@ import {
 import { motion, useScroll, useTransform } from 'motion/react';
 import CookieConsent from '../components/CookieConsent';
 import GlobalNavbar from '../components/GlobalNavbar';
-import EcommerceSlider from '../components/EcommerceSlider';
+// Removed: import EcommerceSlider from '../components/EcommerceSlider';
 import Hero3D from '../components/Hero3D';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -47,7 +47,7 @@ export default function LandingPage() {
     fetchStats();
 
     const ctx = gsap.context(() => {
-      // Hero animations
+      // 英雄区域动画
       gsap.from(".hero-title", {
         y: 100,
         opacity: 0,
@@ -71,7 +71,7 @@ export default function LandingPage() {
         ease: "back.out(1.7)"
       });
 
-      // Reveal animations for sections
+      // 区块滚动显示动画
       gsap.utils.toArray<HTMLElement>(".reveal-up").forEach((elem) => {
         gsap.from(elem, {
           y: 60,
@@ -86,7 +86,7 @@ export default function LandingPage() {
         });
       });
 
-      // Feature cards stagger
+      // 功能卡片交错动画
       gsap.from(".feature-card", {
         scrollTrigger: {
           trigger: ".features-grid",
@@ -110,7 +110,7 @@ export default function LandingPage() {
         setStats(await res.json());
       }
     } catch (err) {
-      console.error('Failed to fetch public stats:', err);
+      console.error('获取公开统计数据失败:', err);
     }
   };
 
@@ -145,17 +145,17 @@ export default function LandingPage() {
       <CookieConsent />
       <GlobalNavbar />
       
-      {/* Noise Overlay */}
+      {/* 噪点覆盖层 */}
       <div className="fixed inset-0 noise z-50 pointer-events-none opacity-20 dark:opacity-20 opacity-5" />
 
-      {/* Hero Section */}
+      {/* 英雄区域 */}
       <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
         <Hero3D />
-        {/* Professional Background Elements */}
+        {/* 专业背景元素 */}
         <div className="absolute inset-0 grid-pattern dark:opacity-100 opacity-0 pointer-events-none" />
         <div className="absolute inset-0 grid-pattern-light dark:opacity-0 opacity-100 pointer-events-none" />
         
-        {/* Animated Background Orbs */}
+        {/* 动态背景光晕 */}
         <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[120px] animate-pulse" />
         <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px] animate-pulse delay-1000" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-500/5 rounded-full blur-[150px]" />
@@ -170,16 +170,16 @@ export default function LandingPage() {
               >
                 <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-500 text-[10px] font-bold uppercase tracking-[0.3em] mb-8 backdrop-blur-md">
                   <ShieldCheck className="w-4 h-4" />
-                  {t('enterprise_grade_infrastructure')}
+                  企业级基础设施
                 </motion.div>
                 
                 <motion.h1 variants={itemVariants} className="hero-title text-6xl md:text-8xl lg:text-9xl font-display font-black tracking-tighter leading-[0.85] mb-8 uppercase">
-                  {t('hero_title_1')} <br />
-                  <span className="stroke-text opacity-40">{t('hero_title_2')}</span>
+                  智医云 <br />
+                  <span className="stroke-text opacity-40">智能医疗网络</span>
                 </motion.h1>
                 
                 <motion.p variants={itemVariants} className="hero-subtitle text-lg md:text-xl text-gray-400 font-medium max-w-2xl mx-auto lg:mx-0 mb-12 leading-relaxed">
-                  {t('hero_subtitle')}
+                  连接医生、患者、药房和物流的统一数字化平台，提供无缝的医疗保健体验。
                 </motion.p>
                 
                 <motion.div variants={itemVariants} className="hero-cta flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-6">
@@ -187,7 +187,7 @@ export default function LandingPage() {
                     to="/register" 
                     className="w-full sm:w-auto px-12 py-6 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold text-xs uppercase tracking-widest transition-all shadow-[0_20px_50px_rgba(37,99,235,0.3)] flex items-center justify-center gap-3 group"
                   >
-                    {t('initialize_protocol')}
+                    注册
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                   <Link 
@@ -195,13 +195,13 @@ export default function LandingPage() {
                     className="w-full sm:w-auto px-12 py-6 bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 text-gray-900 dark:text-white border border-gray-200 dark:border-white/10 rounded-2xl font-bold text-xs uppercase tracking-widest transition-all backdrop-blur-md flex items-center justify-center gap-3"
                   >
                     <Terminal className="w-5 h-5 text-blue-500" />
-                    {t('portal_access')}
+                    登录
                   </Link>
                 </motion.div>
               </motion.div>
             </div>
 
-            {/* Floating Dashboard Preview */}
+            {/* 浮动仪表盘预览 */}
             <motion.div 
               initial={{ opacity: 0, x: 100, rotateY: -20 }}
               animate={{ opacity: 1, x: 0, rotateY: 0 }}
@@ -211,7 +211,7 @@ export default function LandingPage() {
               <div className="relative z-10 bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-white/10 rounded-[3rem] p-8 shadow-[0_50px_100px_rgba(0,0,0,0.1)] dark:shadow-[0_50px_100px_rgba(0,0,0,0.5)] backdrop-blur-3xl overflow-hidden group">
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-transparent to-purple-600/10 opacity-50" />
                 
-                {/* Mock UI Elements */}
+                {/* 模拟界面元素 */}
                 <div className="relative space-y-6">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -261,41 +261,39 @@ export default function LandingPage() {
                   </div>
                 </div>
 
-                {/* Floating Badge */}
+                {/* 浮动标签 */}
                 <motion.div 
                   animate={{ y: [0, -10, 0] }}
                   transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                   className="absolute -top-6 -right-6 bg-blue-600 text-white px-6 py-3 rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-2xl z-20"
                 >
-                  AI Active
+                  AI 活跃中
                 </motion.div>
               </div>
 
-              {/* Decorative Elements */}
+              {/* 装饰元素 */}
               <div className="absolute -z-10 -top-12 -left-12 w-64 h-64 bg-blue-600/20 rounded-full blur-3xl animate-pulse" />
               <div className="absolute -z-10 -bottom-12 -right-12 w-64 h-64 bg-purple-600/20 rounded-full blur-3xl animate-pulse delay-700" />
             </motion.div>
           </div>
         </motion.div>
-
-        {/* Removed Trust Bar */}
       </section>
 
-      {/* Marquee Section */}
+      {/* 跑马灯区域 */}
       <section className="py-8 lg:py-12 border-y border-gray-200 dark:border-white/5 overflow-hidden bg-gray-50 dark:bg-white/2">
         <div className="marquee">
           {[1,2,3,4,5,6,7,8].map(i => (
             <div key={i} className="flex items-center gap-12 lg:gap-24 px-6 lg:px-12">
               <span className="text-[8vw] md:text-[4vw] font-display font-black uppercase tracking-tighter text-gray-900 dark:text-white opacity-10 hover:opacity-100 transition-opacity duration-500 cursor-default">
-                {t('precision')}
+                精准医疗
               </span>
               <Activity className="w-6 h-6 lg:w-8 lg:h-8 text-blue-500/50" />
               <span className="text-[8vw] md:text-[4vw] font-display font-black uppercase tracking-tighter text-gray-900 dark:text-white opacity-10 hover:opacity-100 transition-opacity duration-500 cursor-default">
-                {t('scalability')}
+                弹性扩展
               </span>
               <Activity className="w-6 h-6 lg:w-8 lg:h-8 text-purple-500/50" />
               <span className="text-[8vw] md:text-[4vw] font-display font-black uppercase tracking-tighter text-gray-900 dark:text-white opacity-10 hover:opacity-100 transition-opacity duration-500 cursor-default">
-                {t('innovation')}
+                持续创新
               </span>
               <Activity className="w-6 h-6 lg:w-8 lg:h-8 text-yellow-500/50" />
             </div>
@@ -303,28 +301,28 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Architecture Section */}
+      {/* 架构区域 */}
       <section id="architecture" className="py-24 lg:py-48 relative overflow-hidden reveal-up">
         <div className="container mx-auto px-6 relative z-10">
           <div className="flex flex-col lg:flex-row gap-24 items-start">
             <div className="lg:w-1/3">
               <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-full text-[8px] font-bold uppercase tracking-[0.3em] mb-8 text-blue-500">
                 <Cpu className="w-3 h-3" />
-                {t('synapse_core')}
+                智医核心
               </div>
               <h2 className="text-4xl lg:text-6xl font-display font-bold uppercase tracking-tighter mb-8 leading-none">
-                {t('architecture_title')}
+                技术架构
               </h2>
               <p className="text-gray-500 text-sm leading-relaxed uppercase tracking-wider">
-                {t('architecture_desc')}
+                专为医疗行业构建的分布式、安全、可扩展的基础设施。
               </p>
             </div>
             <div className="lg:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-1 bg-gray-200 dark:bg-white/5 border border-gray-200 dark:border-white/5">
               {[
-                { icon: Network, title: t('distributed_mesh'), desc: t('distributed_mesh_desc') },
-                { icon: Server, title: t('edge_computing'), desc: t('edge_computing_desc') },
-                { icon: Lock, title: t('quantum_safe'), desc: t('quantum_safe_desc') },
-                { icon: BarChart3, title: t('neural_analytics'), desc: t('neural_analytics_desc') }
+                { icon: Network, title: "分布式网络", desc: "多区域节点部署，99.99% 可用性保障" },
+                { icon: Server, title: "边缘计算", desc: "毫秒级响应，实时数据处理" },
+                { icon: Lock, title: "量子安全加密", desc: "符合 HIPAA/GDPR 标准的端到端加密" },
+                { icon: BarChart3, title: "神经分析引擎", desc: "AI 驱动预测分析与智能决策支持" }
               ].map((item, i) => (
                 <div key={i} className="p-12 bg-white dark:bg-[#050505] hover:bg-gray-50 dark:hover:bg-white/2 transition-colors group">
                   <item.icon className="w-8 h-8 text-blue-500 mb-8 group-hover:scale-110 transition-transform" />
@@ -337,15 +335,15 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Solutions Bento Grid */}
+      {/* 解决方案 Bento 网格 */}
       <section id="solutions" className="py-24 lg:py-48 relative overflow-hidden bg-gray-50 dark:bg-white/2 border-y border-gray-200 dark:border-white/5 reveal-up">
         <div className="container mx-auto px-6 relative z-10">
           <div className="text-center mb-24">
             <h2 className="text-5xl lg:text-8xl font-display font-black text-gray-900 dark:text-white uppercase tracking-tighter mb-6">
-              {t('solutions_title')}
+              解决方案
             </h2>
             <p className="text-gray-500 font-bold uppercase tracking-widest text-sm">
-              {t('solutions_subtitle')}
+              为现代医疗打造的智能化工具
             </p>
           </div>
 
@@ -358,13 +356,13 @@ export default function LandingPage() {
                 <div className="w-16 h-16 bg-blue-600/10 rounded-2xl flex items-center justify-center text-blue-500 border border-blue-500/20 mb-8 group-hover:scale-110 transition-transform">
                   <Brain className="w-8 h-8" />
                 </div>
-                <h3 className="text-4xl font-display font-bold text-gray-900 dark:text-white mb-4 uppercase tracking-tighter">{t('ai_diagnostics')}</h3>
+                <h3 className="text-4xl font-display font-bold text-gray-900 dark:text-white mb-4 uppercase tracking-tighter">AI 辅助诊断</h3>
                 <p className="text-gray-500 font-medium text-lg max-w-xl mb-8">
-                  {t('ai_diagnostics_desc')}
+                  基于深度学习算法的辅助诊断系统，提高诊断准确率，减少误诊风险。
                 </p>
                 <div className="flex items-center gap-4">
-                  <div className="px-4 py-2 bg-gray-100 dark:bg-white/5 rounded-xl text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest border border-gray-200 dark:border-white/5">99.9% Accuracy</div>
-                  <div className="px-4 py-2 bg-gray-100 dark:bg-white/5 rounded-xl text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest border border-gray-200 dark:border-white/5">Real-time Analysis</div>
+                  <div className="px-4 py-2 bg-gray-100 dark:bg-white/5 rounded-xl text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest border border-gray-200 dark:border-white/5">99.9% 准确率</div>
+                  <div className="px-4 py-2 bg-gray-100 dark:bg-white/5 rounded-xl text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest border border-gray-200 dark:border-white/5">实时分析</div>
                 </div>
               </div>
               <div className="absolute -right-20 -bottom-20 w-96 h-96 bg-blue-600/5 rounded-full blur-[120px]" />
@@ -378,9 +376,9 @@ export default function LandingPage() {
                 <div className="w-16 h-16 bg-purple-600/10 rounded-2xl flex items-center justify-center text-purple-500 border border-purple-500/20 mb-8 group-hover:scale-110 transition-transform">
                   <ShieldCheck className="w-8 h-8" />
                 </div>
-                <h3 className="text-3xl font-display font-bold text-gray-900 dark:text-white mb-4 uppercase tracking-tighter">{t('secure_records')}</h3>
+                <h3 className="text-3xl font-display font-bold text-gray-900 dark:text-white mb-4 uppercase tracking-tighter">安全病历</h3>
                 <p className="text-gray-500 font-medium mb-8">
-                  {t('secure_records_desc')}
+                  区块链技术确保病历不可篡改，细粒度权限控制保护患者隐私。
                 </p>
               </div>
               <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-purple-600/5 rounded-full blur-[100px]" />
@@ -394,9 +392,9 @@ export default function LandingPage() {
                 <div className="w-16 h-16 bg-emerald-600/10 rounded-2xl flex items-center justify-center text-emerald-500 border border-emerald-500/20 mb-8 group-hover:scale-110 transition-transform">
                   <Activity className="w-8 h-8" />
                 </div>
-                <h3 className="text-3xl font-display font-bold text-gray-900 dark:text-white mb-4 uppercase tracking-tighter">{t('telemedicine')}</h3>
+                <h3 className="text-3xl font-display font-bold text-gray-900 dark:text-white mb-4 uppercase tracking-tighter">远程医疗</h3>
                 <p className="text-gray-500 font-medium mb-8">
-                  {t('telemedicine_desc')}
+                  高清视频会诊，实时数据同步，打破地域限制。
                 </p>
               </div>
               <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-emerald-600/5 rounded-full blur-[100px]" />
@@ -411,9 +409,9 @@ export default function LandingPage() {
                   <div className="w-16 h-16 bg-orange-600/10 rounded-2xl flex items-center justify-center text-orange-500 border border-orange-500/20 mb-8 group-hover:scale-110 transition-transform">
                     <Database className="w-8 h-8" />
                   </div>
-                  <h3 className="text-4xl font-display font-bold text-gray-900 dark:text-white mb-4 uppercase tracking-tighter">{t('smart_inventory')}</h3>
+                  <h3 className="text-4xl font-display font-bold text-gray-900 dark:text-white mb-4 uppercase tracking-tighter">智能库存</h3>
                   <p className="text-gray-500 font-medium text-lg mb-8">
-                    {t('smart_inventory_desc')}
+                    药品和医疗物资的全链路追踪，预测性补货提醒，避免断供风险。
                   </p>
                 </div>
                 <div className="w-full md:w-64 h-48 bg-gray-100 dark:bg-white/5 rounded-[2rem] border border-gray-200 dark:border-white/10 flex items-center justify-center overflow-hidden">
@@ -430,63 +428,11 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Global Network Section */}
-      <EcommerceSlider />
-      <section id="global" className="py-24 lg:py-48 px-6 relative overflow-hidden reveal-up">
-        <div className="container mx-auto">
-          <div className="flex flex-col lg:flex-row items-center gap-24">
-            <div className="lg:w-1/2 relative">
-              <div className="absolute inset-0 bg-blue-600/20 rounded-full blur-[120px] animate-pulse" />
-              <motion.div
-                initial={{ rotate: 0 }}
-                animate={{ rotate: 360 }}
-                transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-                className="relative z-10 w-full aspect-square border border-gray-200 dark:border-white/10 rounded-full flex items-center justify-center"
-              >
-                <div className="absolute inset-0 border-2 border-dashed border-blue-500/20 rounded-full animate-spin-slow" />
-                <Globe className="w-32 h-32 lg:w-64 lg:h-64 text-blue-500 opacity-50" />
-              </motion.div>
-            </div>
-            
-            <div className="lg:w-1/2 space-y-12">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 border border-blue-500/20 rounded-full text-[10px] font-bold uppercase tracking-widest text-blue-500 dark:text-blue-400">
-                <Globe className="w-3 h-3" />
-                {t('app_name')} {t('global_network')}
-              </div>
-              <h2 className="text-5xl lg:text-8xl font-display font-black uppercase tracking-tighter leading-none text-gray-900 dark:text-white">
-                {t('healthcare')} <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-600">{t('without_borders')}</span>
-              </h2>
-              <p className="text-gray-500 text-lg uppercase tracking-widest leading-relaxed">
-                {t('global_network_desc')}
-              </p>
-              
-              <div className="grid grid-cols-2 gap-8 pt-8">
-                <div className="space-y-2">
-                  <p className="text-4xl font-display font-bold text-gray-900 dark:text-white tracking-tighter">120+</p>
-                  <p className="text-[10px] font-bold text-gray-500 dark:text-gray-600 uppercase tracking-widest">{t('countries_active')}</p>
-                </div>
-                <div className="space-y-2">
-                  <p className="text-4xl font-display font-bold text-gray-900 dark:text-white tracking-tighter">50K+</p>
-                  <p className="text-[10px] font-bold text-gray-500 dark:text-gray-600 uppercase tracking-widest">{t('global_suppliers')}</p>
-                </div>
-              </div>
-              
-              <div className="pt-8">
-                <Link 
-                  to="/sourcing-solutions"
-                  className="inline-flex items-center gap-4 bg-gray-900 dark:bg-white text-white dark:text-black px-10 py-5 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all duration-500 group"
-                >
-                  {t('explore_global_sourcing')}
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* 全球网络区域 - Removed as requested */}
+      {/* <EcommerceSlider /> */}
+      {/* <section id="global" ... > ... </section> */}
 
-      {/* CTA Section */}
+      {/* 行动号召区域 */}
       <section className="py-24 lg:py-48 relative overflow-hidden flex flex-col items-center justify-center text-center reveal-up">
         <div className="container mx-auto px-6 relative z-10">
           <motion.div
@@ -495,11 +441,11 @@ export default function LandingPage() {
             transition={{ duration: 1 }}
           >
             <h2 className="text-[10vw] font-display font-black leading-[0.85] tracking-tighter uppercase mb-12 text-gray-900 dark:text-white">
-              {t('ready_to_initialize_1')} <br />
-              <span className="text-blue-500">{t('ready_to_initialize_2')}</span>
+              准备好 <br />
+              <span className="text-blue-500">加入未来医疗</span>
             </h2>
             <p className="text-gray-500 text-sm max-w-xl mx-auto mb-16 font-bold uppercase tracking-[0.3em]">
-              {t('cta_subtitle')}
+              立即体验智医云带来的医疗数字化变革
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
               {user ? (
@@ -507,7 +453,7 @@ export default function LandingPage() {
                   to="/dashboard" 
                   className="w-full sm:w-auto bg-blue-600 text-white px-12 py-6 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-blue-700 transition-all duration-500 shadow-2xl shadow-blue-500/20"
                 >
-                  {t('go_to_dashboard')}
+                  进入仪表盘
                 </Link>
               ) : (
                 <>
@@ -515,13 +461,13 @@ export default function LandingPage() {
                     to="/register" 
                     className="w-full sm:w-auto bg-gray-900 dark:bg-white text-white dark:text-black px-12 py-6 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all duration-500 shadow-2xl shadow-white/10"
                   >
-                    {t('request_access')}
+                    申请访问
                   </Link>
                   <Link 
                     to="/login" 
                     className="w-full sm:w-auto bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-600 dark:text-white px-12 py-6 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-gray-200 dark:hover:bg-white/10 transition-all duration-500 backdrop-blur-xl"
                   >
-                    {t('portal_login')}
+                    门户登录
                   </Link>
                 </>
               )}
@@ -533,7 +479,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Footer */}
+      {/* 页脚 */}
       <footer className="py-24 px-6 border-t border-gray-200 dark:border-white/5">
         <div className="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-24">
           <div className="md:col-span-2">
@@ -541,30 +487,30 @@ export default function LandingPage() {
               <div className="w-8 h-8 bg-gray-900 dark:bg-white rounded-full flex items-center justify-center text-white dark:text-black">
                 <Brain className="w-5 h-5" />
               </div>
-              <span className="text-xl font-display font-bold tracking-tighter uppercase text-gray-900 dark:text-white">{t('app_name')}</span>
+              <span className="text-xl font-display font-bold tracking-tighter uppercase text-gray-900 dark:text-white">智医云</span>
             </div>
             <p className="text-gray-500 max-w-sm text-[10px] font-bold uppercase tracking-widest leading-relaxed mb-12">
-              {t('footer_desc')}
+              智医云是下一代智能医疗操作系统，连接医疗生态系统的每一个环节。
             </p>
           </div>
           <div>
-            <h5 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-400 mb-8">{t('platform')}</h5>
+            <h5 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-400 mb-8">平台</h5>
             <ul className="space-y-4 text-[10px] font-bold text-gray-500 dark:text-gray-600 uppercase tracking-widest">
-              <li><a href="#architecture" className="hover:text-gray-900 dark:hover:text-white transition-colors">{t('architecture')}</a></li>
-              <li><a href="#security" className="hover:text-gray-900 dark:hover:text-white transition-colors">{t('security')}</a></li>
+              <li><a href="#architecture" className="hover:text-gray-900 dark:hover:text-white transition-colors">技术架构</a></li>
+              <li><a href="#security" className="hover:text-gray-900 dark:hover:text-white transition-colors">安全保障</a></li>
             </ul>
           </div>
           <div>
-            <h5 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-400 mb-8">{t('company')}</h5>
+            <h5 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-400 mb-8">公司</h5>
             <ul className="space-y-4 text-[10px] font-bold text-gray-500 dark:text-gray-600 uppercase tracking-widest">
-              <li><a href="#" className="hover:text-gray-900 dark:hover:text-white transition-colors">{t('about_us')}</a></li>
-              <li><a href="#" className="hover:text-gray-900 dark:hover:text-white transition-colors">{t('contact')}</a></li>
+              <li><a href="#" className="hover:text-gray-900 dark:hover:text-white transition-colors">关于我们</a></li>
+              <li><a href="#" className="hover:text-gray-900 dark:hover:text-white transition-colors">联系我们</a></li>
             </ul>
           </div>
         </div>
         <div className="container mx-auto mt-24 pt-12 border-t border-gray-200 dark:border-white/5 flex justify-between items-center text-[8px] font-bold text-gray-400 dark:text-gray-700 uppercase tracking-[0.4em]">
-          <span>{t('all_rights_reserved')}</span>
-          <span>{t('all_protocols_active')}</span>
+          <span>© 2025 智医云. 保留所有权利。</span>
+          <span>所有协议运行中</span>
         </div>
       </footer>
 

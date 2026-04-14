@@ -67,12 +67,10 @@ async function startServer() {
     });
 
     socket.on('driver_location_update', (data) => {
-      // data: { ambulanceId: string, location: { lat: number, lng: number }, requestId?: string }
       io.emit('ambulance_location_changed', data);
     });
 
     socket.on('rider_location_update', (data) => {
-      // data: { orderId: string, location: { lat: number, lng: number } }
       io.emit('rider_location_changed', data);
     });
 

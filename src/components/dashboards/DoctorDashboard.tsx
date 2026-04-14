@@ -64,7 +64,7 @@ export default function DoctorDashboard({ user }: any) {
         setQueue(data);
       }
     } catch (error) {
-      console.error('Error fetching queue:', error);
+      console.error('获取排队列表失败:', error);
     } finally {
       setLoadingQueue(false);
     }
@@ -85,7 +85,7 @@ export default function DoctorDashboard({ user }: any) {
         fetchQueue();
       }
     } catch (error) {
-      console.error('Error updating queue status:', error);
+      console.error('更新排队状态失败:', error);
     }
   };
 
@@ -100,7 +100,7 @@ export default function DoctorDashboard({ user }: any) {
         setDashboardData(data);
       }
     } catch (error) {
-      console.error('Error fetching dashboard data:', error);
+      console.error('获取仪表盘数据失败:', error);
     } finally {
       setLoadingDashboard(false);
     }
@@ -112,7 +112,7 @@ export default function DoctorDashboard({ user }: any) {
     try {
       const token = localStorage.getItem('token');
       
-      // Fetch patient data, records, and lab reports from backend first
+      // 先从后端获取患者数据、病历和检验报告
       const [patientRes, recordsRes, labsRes] = await Promise.all([
         fetch(`/api/patients/${patientId}`, { headers: { Authorization: `Bearer ${token}` } }),
         fetch(`/api/medical-records/patient/${patientId}`, { headers: { Authorization: `Bearer ${token}` } }),
@@ -126,12 +126,12 @@ export default function DoctorDashboard({ user }: any) {
           labsRes.json()
         ]);
 
-        // Call Gemini directly from frontend
+        // 直接从前端调用 Gemini 服务
         const insights = await getCDSSInsights(patient, records, labs);
         setCdssInsights(insights);
       }
     } catch (error) {
-      console.error('Error running CDSS analysis:', error);
+      console.error('运行 CDSS 分析失败:', error);
     } finally {
       setIsAnalyzing(false);
     }
@@ -153,7 +153,7 @@ export default function DoctorDashboard({ user }: any) {
         });
       }
     } catch (error) {
-      console.error('Error fetching profile:', error);
+      console.error('获取医生资料失败:', error);
     }
   };
 
@@ -167,7 +167,7 @@ export default function DoctorDashboard({ user }: any) {
         }
       }
     } catch (error) {
-      console.error('Error fetching departments:', error);
+      console.error('获取科室列表失败:', error);
     }
   };
 
@@ -188,10 +188,10 @@ export default function DoctorDashboard({ user }: any) {
         setProfile(updatedProfile);
         setIsEditingProfile(false);
       } else {
-        console.error('Failed to update profile');
+        console.error('更新资料失败');
       }
     } catch (error) {
-      console.error('Error updating profile:', error);
+      console.error('更新资料出错:', error);
     } finally {
       setIsSaving(false);
     }
@@ -226,7 +226,7 @@ export default function DoctorDashboard({ user }: any) {
       animate="visible"
       className="relative space-y-10 pb-12"
     >
-      {/* Welcome Header */}
+      {/* 欢迎头部 */}
       <motion.div 
         variants={itemVariants}
         className="relative bg-gray-50 dark:bg-white/2 p-8 lg:p-16 rounded-[2rem] lg:rounded-[3rem] text-gray-900 dark:text-white overflow-hidden border border-gray-200 dark:border-white/5 group transition-colors duration-500"
@@ -239,16 +239,16 @@ export default function DoctorDashboard({ user }: any) {
           >
             <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-600/10 text-blue-600 dark:text-blue-400 rounded-full text-[8px] lg:text-[10px] font-bold uppercase tracking-widest mb-6 border border-blue-500/20 backdrop-blur-sm">
               <Activity className="w-3 h-3" />
-              On Duty • {profile?.department_id?.name || 'General Medicine'}
+              值班中 • {profile?.department_id?.name || '综合内科'}
             </div>
             <h2 className="text-2xl sm:text-4xl lg:text-6xl font-display font-bold mb-6 tracking-tight leading-tight break-words">
-              Welcome back, <br />
+              欢迎回来， <br />
               <span className="text-blue-600 dark:text-blue-500">Dr. {user?.username}</span>
             </h2>
             <div className="flex flex-col gap-2 mb-8 lg:mb-10">
               <p className="text-gray-600 dark:text-gray-400 text-base lg:text-lg font-medium leading-relaxed">
-                You have <span className="text-gray-900 dark:text-white font-bold">{dashboardData?.stats?.totalAppointments || 0} appointments</span> scheduled for today. 
-                Your first patient is arriving in <span className="text-blue-600 dark:text-blue-400 font-bold underline underline-offset-4">15 minutes</span>.
+                您今天有 <span className="text-gray-900 dark:text-white font-bold">{dashboardData?.stats?.totalAppointments || 0} 个预约</span>。
+                第一位患者将在 <span className="text-blue-600 dark:text-blue-400 font-bold underline underline-offset-4">15 分钟</span> 后到达。
               </p>
               {profile && (
                 <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mt-2">
@@ -260,29 +260,29 @@ export default function DoctorDashboard({ user }: any) {
             <div className="flex flex-col sm:flex-row flex-wrap gap-4">
               <Link to="/records" className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-6 lg:px-8 py-4 rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-blue-600 hover:text-white transition-all shadow-xl shadow-black/10 dark:shadow-black/20 text-sm lg:text-base">
                 <Plus className="w-5 h-5" />
-                New Medical Record
+                新建病历
               </Link>
               <Link to="/patients" className="bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white px-6 lg:px-8 py-4 rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-gray-200 dark:hover:bg-white/10 transition-all border border-gray-200 dark:border-white/10 text-sm lg:text-base">
                 <Search className="w-5 h-5 text-gray-400" />
-                Search Patients
+                查找患者
               </Link>
               <button 
                 onClick={() => setIsEditingProfile(true)}
                 className="bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white px-6 lg:px-8 py-4 rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-gray-200 dark:hover:bg-white/10 transition-all border border-gray-200 dark:border-white/10 text-sm lg:text-base"
               >
                 <Edit className="w-5 h-5 text-gray-400" />
-                Edit Profile
+                编辑资料
               </button>
             </div>
           </motion.div>
         </div>
         
-        {/* Abstract Background Elements */}
+        {/* 抽象背景元素 */}
         <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-blue-600/5 dark:from-blue-600/10 to-transparent -z-0" />
         <div className="absolute -right-20 -top-20 w-96 h-96 bg-blue-600 rounded-full blur-[120px] opacity-5 dark:opacity-10 group-hover:scale-110 transition-transform duration-1000" />
         <div className="absolute bottom-10 right-10 w-64 h-64 bg-indigo-600 rounded-full blur-[100px] opacity-5 dark:opacity-10 group-hover:translate-x-10 transition-transform duration-1000" />
         
-        {/* Floating Stat Card */}
+        {/* 浮动统计卡片 */}
         <div className="absolute top-12 right-12 hidden xl:block">
           <motion.div 
             initial={{ opacity: 0, x: 50 }}
@@ -297,13 +297,13 @@ export default function DoctorDashboard({ user }: any) {
               <span className="text-[10px] font-bold text-green-600 dark:text-green-400">+12%</span>
             </div>
             <p className="text-2xl font-display font-bold text-gray-900 dark:text-white mb-1">{dashboardData?.stats?.recoveryRate || 0}%</p>
-            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Recovery Rate</p>
+            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">康复率</p>
           </motion.div>
         </div>
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Patient Queue Section */}
+        {/* 患者排队队列 */}
         <motion.div 
           variants={itemVariants}
           className="lg:col-span-3 bg-gray-50 dark:bg-white/2 rounded-[2.5rem] border border-gray-200 dark:border-white/5 overflow-hidden flex flex-col group"
@@ -312,13 +312,13 @@ export default function DoctorDashboard({ user }: any) {
             <div>
               <h3 className="text-xl lg:text-2xl font-display font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-3">
                 <Users className="w-6 h-6 text-emerald-600 dark:text-emerald-500" />
-                Live Patient Queue
+                实时患者队列
               </h3>
-              <p className="text-sm text-gray-500 font-medium">Manage patients waiting in your department.</p>
+              <p className="text-sm text-gray-500 font-medium">管理您科室中等待的患者。</p>
             </div>
             <div className="flex items-center gap-3">
               <div className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-[10px] font-bold text-emerald-600 dark:text-emerald-500 uppercase tracking-widest">
-                {queue.filter(q => q.status === 'Waiting').length} Waiting
+                {queue.filter(q => q.status === 'Waiting').length} 等待中
               </div>
               <button 
                 onClick={fetchQueue}
@@ -333,23 +333,23 @@ export default function DoctorDashboard({ user }: any) {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-gray-200 dark:border-white/5 bg-gray-100/50 dark:bg-white/2">
-                  <th className="p-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest">Token</th>
-                  <th className="p-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest">Patient</th>
-                  <th className="p-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest">Department</th>
-                  <th className="p-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest">Priority</th>
-                  <th className="p-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest">Wait Time</th>
-                  <th className="p-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest">Status</th>
-                  <th className="p-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest text-right">Actions</th>
-                </tr>
+                  <th className="p-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest">序号</th>
+                  <th className="p-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest">患者</th>
+                  <th className="p-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest">科室</th>
+                  <th className="p-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest">优先级</th>
+                  <th className="p-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest">等待时间</th>
+                  <th className="p-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest">状态</th>
+                  <th className="p-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest text-right">操作</th>
+                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-white/5">
                 {loadingQueue ? (
                   <tr>
-                    <td colSpan={7} className="p-12 text-center text-gray-500 font-bold uppercase tracking-widest text-xs">Loading queue...</td>
+                    <td colSpan={7} className="p-12 text-center text-gray-500 font-bold uppercase tracking-widest text-xs">加载队列中...</td>
                   </tr>
                 ) : queue.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="p-12 text-center text-gray-500 font-bold uppercase tracking-widest text-xs">No patients in queue</td>
+                    <td colSpan={7} className="p-12 text-center text-gray-500 font-bold uppercase tracking-widest text-xs">队列中暂无患者</td>
                   </tr>
                 ) : (
                   queue.map((item) => (
@@ -362,13 +362,13 @@ export default function DoctorDashboard({ user }: any) {
                       <td className="p-6">
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 bg-gray-100 dark:bg-white/5 rounded-lg flex items-center justify-center text-xs font-bold text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-white/5">
-                            {item.patient_id?.fullName?.charAt(0) || 'P'}
+                            {item.patient_id?.fullName?.charAt(0) || '患'}
                           </div>
-                          <span className="text-sm font-bold text-gray-900 dark:text-white">{item.patient_id?.fullName || 'Unknown Patient'}</span>
+                          <span className="text-sm font-bold text-gray-900 dark:text-white">{item.patient_id?.fullName || '未知患者'}</span>
                         </div>
                       </td>
                       <td className="p-6">
-                        <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">{item.department_id?.name || 'General'}</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">{item.department_id?.name || '综合'}</span>
                       </td>
                       <td className="p-6">
                         <span className={`px-2 py-1 rounded-md text-[8px] font-bold uppercase tracking-widest border ${
@@ -376,13 +376,13 @@ export default function DoctorDashboard({ user }: any) {
                           item.priority === 'Urgent' ? 'bg-orange-500/10 text-orange-600 dark:text-orange-500 border-orange-500/20' :
                           'bg-blue-500/10 text-blue-600 dark:text-blue-500 border-blue-500/20'
                         }`}>
-                          {item.priority}
+                          {item.priority === 'Emergency' ? '紧急' : item.priority === 'Urgent' ? '加急' : '普通'}
                         </span>
                       </td>
                       <td className="p-6">
                         <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                           <Clock className="w-3 h-3" />
-                          {Math.floor((new Date().getTime() - new Date(item.createdAt).getTime()) / 60000)}m
+                          {Math.floor((new Date().getTime() - new Date(item.createdAt).getTime()) / 60000)} 分钟
                         </div>
                       </td>
                       <td className="p-6">
@@ -392,7 +392,7 @@ export default function DoctorDashboard({ user }: any) {
                         }`}>
                           {item.status === 'Waiting' && <span className="w-1.5 h-1.5 bg-orange-600 dark:bg-orange-500 rounded-full animate-pulse" />}
                           {item.status === 'In Progress' && <span className="w-1.5 h-1.5 bg-blue-600 dark:bg-blue-500 rounded-full animate-ping" />}
-                          {item.status}
+                          {item.status === 'Waiting' ? '等待中' : '就诊中'}
                         </span>
                       </td>
                       <td className="p-6 text-right">
@@ -402,7 +402,7 @@ export default function DoctorDashboard({ user }: any) {
                               onClick={() => handleUpdateQueueStatus(item._id, 'In Progress')}
                               className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-[10px] font-bold uppercase tracking-widest hover:bg-blue-700 transition-colors"
                             >
-                              Start Call
+                              开始叫号
                             </button>
                           )}
                           {item.status === 'In Progress' && (
@@ -410,7 +410,7 @@ export default function DoctorDashboard({ user }: any) {
                               onClick={() => handleUpdateQueueStatus(item._id, 'Completed')}
                               className="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-[10px] font-bold uppercase tracking-widest hover:bg-emerald-700 transition-colors"
                             >
-                              Complete
+                              完成
                             </button>
                           )}
                           <button 
@@ -429,7 +429,7 @@ export default function DoctorDashboard({ user }: any) {
           </div>
         </motion.div>
 
-        {/* Clinical Decision Support System (CDSS) */}
+        {/* 临床决策支持系统 (CDSS) */}
         <motion.div 
           variants={itemVariants}
           className="lg:col-span-3 bg-gradient-to-br from-blue-600/5 to-indigo-600/5 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-500/20 rounded-[2.5rem] p-8 lg:p-12 relative overflow-hidden group mb-8 transition-colors duration-500"
@@ -440,13 +440,13 @@ export default function DoctorDashboard({ user }: any) {
               <ShieldCheck className="w-8 h-8 text-blue-600 dark:text-blue-400" />
             </div>
             <div className="flex-1">
-              <h3 className="text-2xl font-display font-bold text-gray-900 dark:text-white mb-2">Clinical Decision Support System (CDSS)</h3>
+              <h3 className="text-2xl font-display font-bold text-gray-900 dark:text-white mb-2">临床决策支持系统 (CDSS)</h3>
               <p className="text-blue-600/70 dark:text-blue-200/70 text-sm max-w-2xl leading-relaxed">
-                Insights based on evidence-based guidelines and patient history to assist in accurate diagnosis and treatment planning.
+                基于循证指南和患者病史的洞察，辅助准确诊断和治疗方案制定。
               </p>
               {cdssInsights && (
                 <div className="mt-4 p-4 bg-blue-500/10 rounded-xl border border-blue-500/20">
-                  <p className="text-xs text-blue-600 dark:text-blue-200 font-medium italic">"{cdssInsights.summary}"</p>
+                  <p className="text-xs text-blue-600 dark:text-blue-200 font-medium italic">“{cdssInsights.summary}”</p>
                 </div>
               )}
             </div>
@@ -456,7 +456,7 @@ export default function DoctorDashboard({ user }: any) {
                 onChange={(e) => setSelectedPatientId(e.target.value)}
                 value={selectedPatientId}
               >
-                <option value="" disabled className="bg-white dark:bg-[#0a0a0a]">Select Patient to Analyze</option>
+                <option value="" disabled className="bg-white dark:bg-[#0a0a0a]">选择要分析的患者</option>
                 {dashboardData?.appointments?.map((apt: any) => (
                   <option key={apt.patientId} value={apt.patientId} className="bg-white dark:bg-[#0a0a0a]">{apt.patient}</option>
                 ))}
@@ -467,7 +467,7 @@ export default function DoctorDashboard({ user }: any) {
                 className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-sm transition-colors shadow-lg shadow-blue-500/20 shrink-0 whitespace-nowrap flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 {isAnalyzing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
-                {isAnalyzing ? 'Analyzing...' : 'Run Analysis'}
+                {isAnalyzing ? '分析中...' : '运行分析'}
               </button>
             </div>
           </div>
@@ -478,7 +478,9 @@ export default function DoctorDashboard({ user }: any) {
                   <p className={`text-[10px] font-bold uppercase tracking-widest mb-2 ${
                     suggestion.type === 'Diagnosis Suggestion' ? 'text-blue-600 dark:text-blue-400' : 
                     suggestion.type === 'Treatment Guideline' ? 'text-purple-600 dark:text-purple-400' : 'text-emerald-600 dark:text-emerald-400'
-                  }`}>{suggestion.type}</p>
+                  }`}>
+                    {suggestion.type === 'Diagnosis Suggestion' ? '诊断建议' : suggestion.type === 'Treatment Guideline' ? '治疗指南' : '预防保健'}
+                  </p>
                   <p className="text-sm font-medium text-gray-900 dark:text-white mb-2">{suggestion.title}</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">{suggestion.description}</p>
                 </div>
@@ -486,19 +488,19 @@ export default function DoctorDashboard({ user }: any) {
             ) : (
               <>
                 <div className="bg-white dark:bg-black/20 p-6 rounded-2xl border border-gray-200 dark:border-white/5 opacity-50 shadow-sm dark:shadow-none">
-                  <p className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-2">Diagnosis Suggestion</p>
-                  <p className="text-sm font-medium text-gray-900 dark:text-white mb-2">Select a patient</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Analysis will appear here after running the system.</p>
+                  <p className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-2">诊断建议</p>
+                  <p className="text-sm font-medium text-gray-900 dark:text-white mb-2">选择患者</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">运行系统后，分析结果将显示在此处。</p>
                 </div>
                 <div className="bg-white dark:bg-black/20 p-6 rounded-2xl border border-gray-200 dark:border-white/5 opacity-50 shadow-sm dark:shadow-none">
-                  <p className="text-[10px] font-bold text-purple-600 dark:text-purple-400 uppercase tracking-widest mb-2">Treatment Guideline</p>
-                  <p className="text-sm font-medium text-gray-900 dark:text-white mb-2">Select a patient</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Analysis will appear here after running the system.</p>
+                  <p className="text-[10px] font-bold text-purple-600 dark:text-purple-400 uppercase tracking-widest mb-2">治疗指南</p>
+                  <p className="text-sm font-medium text-gray-900 dark:text-white mb-2">选择患者</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">运行系统后，分析结果将显示在此处。</p>
                 </div>
                 <div className="bg-white dark:bg-black/20 p-6 rounded-2xl border border-gray-200 dark:border-white/5 opacity-50 shadow-sm dark:shadow-none">
-                  <p className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-2">Preventive Care</p>
-                  <p className="text-sm font-medium text-gray-900 dark:text-white mb-2">Select a patient</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Analysis will appear here after running the system.</p>
+                  <p className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-2">预防保健</p>
+                  <p className="text-sm font-medium text-gray-900 dark:text-white mb-2">选择患者</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">运行系统后，分析结果将显示在此处。</p>
                 </div>
               </>
             )}
@@ -508,7 +510,7 @@ export default function DoctorDashboard({ user }: any) {
             <div className="mt-8 p-6 bg-red-500/10 border border-red-500/20 rounded-2xl relative z-10">
               <h4 className="text-red-600 dark:text-red-400 font-bold text-xs uppercase tracking-widest mb-4 flex items-center gap-2">
                 <ShieldAlert className="w-4 h-4" />
-                Clinical Alerts Detected
+                检测到临床警报
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {cdssInsights.alerts.map((alert: any, index: number) => (
@@ -527,7 +529,7 @@ export default function DoctorDashboard({ user }: any) {
           )}
         </motion.div>
 
-        {/* Critical Alerts Section */}
+        {/* 紧急警报区域 */}
         <motion.div 
           variants={itemVariants}
           className="lg:col-span-3 bg-red-600/5 border border-red-500/10 rounded-[2rem] p-6 lg:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 relative overflow-hidden group"
@@ -537,8 +539,8 @@ export default function DoctorDashboard({ user }: any) {
               <ShieldAlert className="w-8 h-8" />
             </div>
             <div>
-              <h3 className="text-xl font-display font-bold text-gray-900 dark:text-white uppercase tracking-tighter">Critical Alerts</h3>
-              <p className="text-[10px] text-red-600/60 dark:text-red-400/60 font-bold uppercase tracking-[0.3em]">Immediate Action Required • {dashboardData?.alerts?.length || 0} Pending</p>
+              <h3 className="text-xl font-display font-bold text-gray-900 dark:text-white uppercase tracking-tighter">紧急警报</h3>
+              <p className="text-[10px] text-red-600/60 dark:text-red-400/60 font-bold uppercase tracking-[0.3em]">需立即处理 • {dashboardData?.alerts?.length || 0} 条待处理</p>
             </div>
           </div>
           <div className="flex flex-wrap gap-4 relative z-10">
@@ -549,13 +551,13 @@ export default function DoctorDashboard({ user }: any) {
               </div>
             ))}
             {(!dashboardData?.alerts || dashboardData.alerts.length === 0) && (
-              <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">No active alerts</span>
+              <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">暂无活动警报</span>
             )}
           </div>
           <div className="absolute -right-20 -top-20 w-64 h-64 bg-red-600/10 rounded-full blur-[100px] group-hover:scale-150 transition-transform duration-1000" />
         </motion.div>
 
-        {/* Upcoming Appointments */}
+        {/* 今日预约 */}
         <motion.div 
           variants={itemVariants}
           className="lg:col-span-2 bg-gray-50 dark:bg-white/2 rounded-[2rem] lg:rounded-[2.5rem] border border-gray-200 dark:border-white/5 overflow-hidden flex flex-col group"
@@ -564,11 +566,11 @@ export default function DoctorDashboard({ user }: any) {
             <div>
               <h3 className="text-xl lg:text-2xl font-display font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-3">
                 <Calendar className="w-6 h-6 text-blue-600" />
-                Today's Schedule
+                今日日程
               </h3>
-              <p className="text-sm text-gray-500 font-medium">Manage your daily patient consultations.</p>
+              <p className="text-sm text-gray-500 font-medium">管理您每日的患者接诊。</p>
             </div>
-            <button className="text-xs font-bold text-blue-600 hover:underline underline-offset-4 text-left">View Full Calendar</button>
+            <button className="text-xs font-bold text-blue-600 hover:underline underline-offset-4 text-left">查看完整日历</button>
           </div>
           <motion.div 
             variants={containerVariants}
@@ -587,18 +589,18 @@ export default function DoctorDashboard({ user }: any) {
               />
             ))}
             {(!dashboardData?.appointments || dashboardData.appointments.length === 0) && (
-              <div className="p-12 text-center text-gray-500 font-bold uppercase tracking-widest text-xs">No appointments scheduled</div>
+              <div className="p-12 text-center text-gray-500 font-bold uppercase tracking-widest text-xs">暂无预约安排</div>
             )}
           </motion.div>
           <div className="p-8 mt-auto bg-gray-100/50 dark:bg-white/2 text-center">
             <button className="text-sm font-bold text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors flex items-center gap-2 mx-auto">
-              Load More Appointments
+              加载更多预约
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
         </motion.div>
 
-        {/* Quick Actions & Stats */}
+        {/* 快捷操作与统计 */}
         <div className="space-y-8">
           <motion.div 
             variants={itemVariants}
@@ -608,11 +610,11 @@ export default function DoctorDashboard({ user }: any) {
               <div className="w-10 h-10 lg:w-12 lg:h-12 bg-blue-500/20 rounded-2xl flex items-center justify-center mb-6 backdrop-blur-md border border-blue-500/20">
                 <Users className="w-6 h-6 text-blue-600 dark:text-blue-400" />
               </div>
-              <h3 className="text-xl lg:text-2xl font-display font-bold mb-4 leading-tight">Total <br />Patients</h3>
+              <h3 className="text-xl lg:text-2xl font-display font-bold mb-4 leading-tight">患者<br />总数</h3>
               <p className="text-4xl lg:text-5xl font-display font-bold text-gray-900 dark:text-white mb-2">
                 {dashboardData?.stats?.patientsCount || 0}
               </p>
-              <p className="text-blue-600/70 dark:text-blue-100/70 text-xs font-bold uppercase tracking-widest">Active Registrations</p>
+              <p className="text-blue-600/70 dark:text-blue-100/70 text-xs font-bold uppercase tracking-widest">活跃注册数</p>
             </div>
             <div className="absolute -right-4 -top-4 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700" />
           </motion.div>
@@ -625,18 +627,18 @@ export default function DoctorDashboard({ user }: any) {
               <div className="w-10 h-10 lg:w-12 lg:h-12 bg-purple-500/20 rounded-2xl flex items-center justify-center mb-6 backdrop-blur-md border border-purple-500/20">
                 <FileText className="w-6 h-6 text-purple-600 dark:text-purple-400" />
               </div>
-              <h3 className="text-xl lg:text-2xl font-display font-bold mb-4 leading-tight">Medical <br />Records</h3>
+              <h3 className="text-xl lg:text-2xl font-display font-bold mb-4 leading-tight">病历<br />数量</h3>
               <p className="text-4xl lg:text-5xl font-display font-bold text-gray-900 dark:text-white mb-2">
                 {dashboardData?.stats?.recordsCount || 0}
               </p>
-              <p className="text-purple-600/70 dark:text-purple-100/70 text-xs font-bold uppercase tracking-widest">Total Consultations</p>
+              <p className="text-purple-600/70 dark:text-purple-100/70 text-xs font-bold uppercase tracking-widest">总接诊次数</p>
             </div>
             <div className="absolute -right-4 -top-4 w-24 h-24 bg-purple-500/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700" />
           </motion.div>
         </div>
       </div>
 
-      {/* Edit Profile Modal */}
+      {/* 编辑资料模态框 */}
       <AnimatePresence>
         {isEditingProfile && (
           <motion.div
@@ -652,7 +654,7 @@ export default function DoctorDashboard({ user }: any) {
               className="bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-white/10 rounded-[2rem] p-8 w-full max-w-md shadow-2xl"
             >
               <div className="flex items-center justify-between mb-8">
-                <h3 className="text-2xl font-display font-bold text-gray-900 dark:text-white">Edit Profile</h3>
+                <h3 className="text-2xl font-display font-bold text-gray-900 dark:text-white">编辑资料</h3>
                 <button 
                   onClick={() => setIsEditingProfile(false)}
                   className="p-2 hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl transition-colors text-gray-500 hover:text-gray-900 dark:hover:text-white"
@@ -663,33 +665,33 @@ export default function DoctorDashboard({ user }: any) {
 
               <div className="space-y-6">
                 <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Specialization</label>
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">专业方向</label>
                   <input
                     type="text"
                     value={editForm.specialization}
                     onChange={(e) => setEditForm({ ...editForm, specialization: e.target.value })}
                     className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                    placeholder="e.g. Cardiologist"
+                    placeholder="例如：心血管内科"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Contact Number</label>
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">联系电话</label>
                   <input
                     type="text"
                     value={editForm.contact}
                     onChange={(e) => setEditForm({ ...editForm, contact: e.target.value })}
                     className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                    placeholder="e.g. +1 234 567 8900"
+                    placeholder="例如：+86 123 4567 8900"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Department</label>
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">所属科室</label>
                   <select
                     value={editForm.department_id}
                     onChange={(e) => setEditForm({ ...editForm, department_id: e.target.value })}
                     className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all appearance-none"
                   >
-                    <option value="" className="bg-white dark:bg-gray-900">Select Department</option>
+                    <option value="" className="bg-white dark:bg-gray-900">请选择科室</option>
                     {departments.map(dept => (
                       <option key={dept._id} value={dept._id} className="bg-white dark:bg-gray-900">
                         {dept.name}
@@ -708,7 +710,7 @@ export default function DoctorDashboard({ user }: any) {
                   ) : (
                     <>
                       <Save className="w-5 h-5" />
-                      Save Changes
+                      保存更改
                     </>
                   )}
                 </button>
@@ -727,6 +729,8 @@ function AppointmentItem({ time, patient, type, status, color, avatar, variants 
     green: 'bg-green-500/10 text-green-600 dark:text-green-500 border-green-500/20',
     blue: 'bg-blue-500/10 text-blue-600 dark:text-blue-500 border-blue-500/20',
   };
+
+  const statusText = status === 'Waiting' ? '等待中' : status === 'In Progress' ? '就诊中' : '已完成';
 
   return (
     <motion.div 
@@ -752,7 +756,7 @@ function AppointmentItem({ time, patient, type, status, color, avatar, variants 
       <div className="flex items-center justify-between sm:justify-end gap-4 lg:gap-6">
         <span className={`px-3 lg:px-4 py-1.5 rounded-xl text-[8px] lg:text-[10px] font-bold uppercase tracking-widest border ${colors[color]} flex items-center gap-2`}>
           {status === 'Waiting' && <span className="w-1.5 h-1.5 bg-orange-600 dark:bg-orange-500 rounded-full animate-pulse" />}
-          {status}
+          {statusText}
         </span>
         <div className="w-8 h-8 lg:w-10 lg:h-10 flex items-center justify-center bg-gray-100 dark:bg-white/5 rounded-xl text-gray-500 group-hover:bg-blue-600 group-hover:text-white transition-all border border-gray-200 dark:border-white/5">
           <ChevronRight className="w-4 h-4 lg:w-5 lg:h-5" />
