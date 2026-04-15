@@ -13,31 +13,34 @@ import {
   CheckCircle2
 } from 'lucide-react';
 
+import { useTranslation } from 'react-i18next';
+
 export default function SourcingSolutions() {
+  const { t } = useTranslation();
   const solutions = [
     {
-      title: "Global Medical Sourcing",
-      desc: "Direct access to certified manufacturers worldwide, eliminating middlemen and reducing costs.",
+      title: t("global_medical_sourcing"),
+      desc: t("global_medical_sourcing_desc"),
       icon: Globe,
-      features: ["Verified Suppliers", "Quality Assurance", "Direct Logistics"]
+      features: [t("verified_suppliers"), t("quality_assurance"), t("direct_logistics")]
     },
     {
-      title: "Bulk Procurement",
-      desc: "Scalable sourcing solutions for hospitals and large medical groups with volume-based pricing.",
+      title: t("bulk_procurement"),
+      desc: t("bulk_procurement_desc"),
       icon: Package,
-      features: ["Volume Discounts", "Inventory Management", "Scheduled Deliveries"]
+      features: [t("volume_discounts"), t("inventory_management"), t("scheduled_deliveries")]
     },
     {
-      title: "Equipment Leasing",
-      desc: "Flexible financing and leasing options for high-end medical machinery and diagnostic tools.",
+      title: t("equipment_leasing"),
+      desc: t("equipment_leasing_desc"),
       icon: Building2,
-      features: ["Flexible Terms", "Maintenance Included", "Upgrade Paths"]
+      features: [t("flexible_terms"), t("maintenance_included"), t("upgrade_paths")]
     },
     {
-      title: "Supply Chain Analytics",
-      desc: "Real-time tracking and predictive analytics to optimize your medical supply chain.",
+      title: t("supply_chain_analytics"),
+      desc: t("supply_chain_analytics_desc"),
       icon: BarChart3,
-      features: ["Real-time Tracking", "Demand Forecasting", "Cost Analysis"]
+      features: [t("realtime_tracking"), t("demand_forecasting"), t("cost_analysis")]
     }
   ];
 
@@ -53,7 +56,7 @@ export default function SourcingSolutions() {
             className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 border border-blue-500/20 rounded-full text-[10px] font-bold uppercase tracking-widest mb-8 text-blue-400"
           >
             <Globe className="w-3 h-3" />
-            Global Trade Protocol v4.0
+            {t('global_trade_protocol')}
           </motion.div>
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
@@ -61,7 +64,7 @@ export default function SourcingSolutions() {
             transition={{ delay: 0.1 }}
             className="text-5xl sm:text-7xl font-display font-black uppercase tracking-tighter leading-none mb-8"
           >
-            Sourcing <span className="text-blue-500">Solutions</span>
+            {t('sourcing')} <span className="text-blue-500">{t('solutions')}</span>
           </motion.h1>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
@@ -69,7 +72,7 @@ export default function SourcingSolutions() {
             transition={{ delay: 0.2 }}
             className="text-gray-500 text-lg uppercase tracking-widest leading-relaxed max-w-2xl mx-auto"
           >
-            Revolutionizing medical procurement through direct global connections and AI-driven logistics.
+            {t('sourcing_desc')}
           </motion.p>
         </div>
       </section>
@@ -106,21 +109,21 @@ export default function SourcingSolutions() {
         <div className="relative z-10 flex flex-col lg:flex-row items-center gap-16">
           <div className="lg:w-1/2 space-y-8">
             <h2 className="text-4xl lg:text-6xl font-display font-black uppercase tracking-tighter leading-none">
-              Streamlined <br />Procurement
+              {t('streamlined_procurement')}
             </h2>
             <p className="text-blue-100 text-sm uppercase tracking-widest leading-relaxed">
-              Our automated system handles everything from verification to customs clearance, ensuring your supplies arrive on time and within budget.
+              {t('streamlined_procurement_desc')}
             </p>
             <button className="px-10 py-5 bg-white text-blue-600 rounded-2xl font-bold uppercase tracking-widest text-xs hover:bg-blue-50 transition-all shadow-2xl">
-              Start Sourcing
+              {t('start_sourcing')}
             </button>
           </div>
           <div className="lg:w-1/2 grid grid-cols-2 gap-4">
             {[
-              { label: 'Verified Suppliers', value: '5,000+' },
-              { label: 'Countries Covered', value: '120+' },
-              { label: 'Avg. Cost Saving', value: '35%' },
-              { label: 'Delivery Success', value: '99.9%' }
+              { label: t('verified_suppliers'), value: '5,000+' },
+              { label: t('countries_covered'), value: '120+' },
+              { label: t('avg_cost_saving'), value: '35%' },
+              { label: t('delivery_success'), value: '99.9%' }
             ].map(stat => (
               <div key={stat.label} className="p-8 bg-white/10 backdrop-blur-md rounded-3xl border border-white/10">
                 <p className="text-3xl font-display font-black mb-1">{stat.value}</p>

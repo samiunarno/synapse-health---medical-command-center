@@ -47,13 +47,54 @@ export default function DoctorDashboard({ user }: any) {
   const [selectedPatientId, setSelectedPatientId] = useState<string>('');
   const [queue, setQueue] = useState<any[]>([]);
   const [loadingQueue, setLoadingQueue] = useState(true);
+  const [commissions, setCommissions] = useState<any>(null);
+  const [isWithdrawing, setIsWithdrawing] = useState(false);
 
   useEffect(() => {
     fetchProfile();
     fetchDepartments();
     fetchDashboardData();
     fetchQueue();
+    fetchCommissions();
   }, []);
+
+  const fetchCommissions = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('/api/commissions', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        setCommissions(await res.json());
+      }
+    } catch (error) {
+      console.error('Error fetching commissions:', error);
+    }
+  };
+
+  const handleWithdraw = async () => {
+    if (!commissions?.commissionBalance || commissions.commissionBalance <= 0) return;
+    setIsWithdrawing(true);
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('/api/commissions/withdraw', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}` 
+        },
+        body: JSON.stringify({ amount: commissions.commissionBalance })
+      });
+      if (res.ok) {
+        fetchCommissions();
+        alert(t('withdrawal_success'));
+      }
+    } catch (error) {
+      console.error('Error withdrawing:', error);
+    } finally {
+      setIsWithdrawing(false);
+    }
+  };
 
   const fetchQueue = async () => {
     try {
@@ -268,13 +309,19 @@ export default function DoctorDashboard({ user }: any) {
                 <Search className="w-5 h-5 text-gray-400" />
                 {t('search_patients')}
               </Link>
-              <button 
-                onClick={() => setIsEditingProfile(true)}
-                className="bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white px-6 lg:px-8 py-4 rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-gray-200 dark:hover:bg-white/10 transition-all border border-gray-200 dark:border-white/10 text-sm lg:text-base"
-              >
-                <Edit className="w-5 h-5 text-gray-400" />
-                {t('edit_profile')}
-              </button>
+              <div className="bg-blue-600/10 dark:bg-blue-600/20 px-6 lg:px-8 py-4 rounded-2xl border border-blue-500/20 flex items-center gap-4">
+                <div>
+                  <p className="text-[8px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest">{t('commission_balance')}</p>
+                  <p className="text-lg font-display font-bold text-gray-900 dark:text-white">${commissions?.commissionBalance?.toFixed(2) || '0.00'}</p>
+                </div>
+                <button 
+                  onClick={handleWithdraw}
+                  disabled={isWithdrawing || !commissions?.commissionBalance || commissions.commissionBalance <= 0}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-blue-700 transition-all disabled:opacity-50"
+                >
+                  {isWithdrawing ? <Loader2 className="w-4 h-4 animate-spin" /> : t('withdraw')}
+                </button>
+              </div>
             </div>
           </motion.div>
         </div>
@@ -347,11 +394,11 @@ export default function DoctorDashboard({ user }: any) {
               <tbody className="divide-y divide-gray-200 dark:divide-white/5">
                 {loadingQueue ? (
                   <tr>
-                    <td colSpan={7} className="p-12 text-center text-gray-500 font-bold uppercase tracking-widest text-xs">Loading queue...</td>
+                    <td colSpan={7} className="p-12 text-center text-gray-500 font-bold uppercase tracking-widest text-xs">{t('loading_queue')}</td>
                   </tr>
                 ) : queue.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="p-12 text-center text-gray-500 font-bold uppercase tracking-widest text-xs">No patients in queue</td>
+                    <td colSpan={7} className="p-12 text-center text-gray-500 font-bold uppercase tracking-widest text-xs">{t('no_patients_in_queue')}</td>
                   </tr>
                 ) : (
                   queue.map((item) => (
@@ -366,11 +413,11 @@ export default function DoctorDashboard({ user }: any) {
                           <div className="w-8 h-8 bg-gray-100 dark:bg-white/5 rounded-lg flex items-center justify-center text-xs font-bold text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-white/5">
                             {item.patient_id?.fullName?.charAt(0) || 'P'}
                           </div>
-                          <span className="text-sm font-bold text-gray-900 dark:text-white">{item.patient_id?.fullName || 'Unknown Patient'}</span>
+                          <span className="text-sm font-bold text-gray-900 dark:text-white">{item.patient_id?.fullName || t('unknown_patient')}</span>
                         </div>
                       </td>
                       <td className="p-6">
-                        <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">{item.department_id?.name || 'General'}</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">{item.department_id?.name || t('general')}</span>
                       </td>
                       <td className="p-6">
                         <span className={`px-2 py-1 rounded-md text-[8px] font-bold uppercase tracking-widest border ${
@@ -378,7 +425,7 @@ export default function DoctorDashboard({ user }: any) {
                           item.priority === 'Urgent' ? 'bg-orange-500/10 text-orange-600 dark:text-orange-500 border-orange-500/20' :
                           'bg-blue-500/10 text-blue-600 dark:text-blue-500 border-blue-500/20'
                         }`}>
-                          {item.priority}
+                          {t(item.priority.toLowerCase())}
                         </span>
                       </td>
                       <td className="p-6">
@@ -394,7 +441,7 @@ export default function DoctorDashboard({ user }: any) {
                         }`}>
                           {item.status === 'Waiting' && <span className="w-1.5 h-1.5 bg-orange-600 dark:bg-orange-500 rounded-full animate-pulse" />}
                           {item.status === 'In Progress' && <span className="w-1.5 h-1.5 bg-blue-600 dark:bg-blue-500 rounded-full animate-ping" />}
-                          {item.status}
+                          {t(item.status.toLowerCase().replace(/ /g, '_'))}
                         </span>
                       </td>
                       <td className="p-6 text-right">
@@ -510,7 +557,7 @@ export default function DoctorDashboard({ user }: any) {
             <div className="mt-8 p-6 bg-red-500/10 border border-red-500/20 rounded-2xl relative z-10">
               <h4 className="text-red-600 dark:text-red-400 font-bold text-xs uppercase tracking-widest mb-4 flex items-center gap-2">
                 <ShieldAlert className="w-4 h-4" />
-                Clinical Alerts Detected
+                {t('clinical_alerts_detected')}
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {cdssInsights.alerts.map((alert: any, index: number) => (
@@ -611,7 +658,11 @@ export default function DoctorDashboard({ user }: any) {
               <div className="w-10 h-10 lg:w-12 lg:h-12 bg-blue-500/20 rounded-2xl flex items-center justify-center mb-6 backdrop-blur-md border border-blue-500/20">
                 <Users className="w-6 h-6 text-blue-600 dark:text-blue-400" />
               </div>
-              <h3 className="text-xl lg:text-2xl font-display font-bold mb-4 leading-tight">{t('total_patients').split(' ')[0]} <br />{t('total_patients').split(' ')[1]}</h3>
+              <h3 className="text-xl lg:text-2xl font-display font-bold mb-4 leading-tight">
+                {t('total_patients').includes(' ') ? (
+                  <>{t('total_patients').split(' ')[0]} <br />{t('total_patients').split(' ')[1]}</>
+                ) : t('total_patients')}
+              </h3>
               <p className="text-4xl lg:text-5xl font-display font-bold text-gray-900 dark:text-white mb-2">
                 {dashboardData?.stats?.patientsCount || 0}
               </p>
@@ -628,7 +679,11 @@ export default function DoctorDashboard({ user }: any) {
               <div className="w-10 h-10 lg:w-12 lg:h-12 bg-purple-500/20 rounded-2xl flex items-center justify-center mb-6 backdrop-blur-md border border-purple-500/20">
                 <FileText className="w-6 h-6 text-purple-600 dark:text-purple-400" />
               </div>
-              <h3 className="text-xl lg:text-2xl font-display font-bold mb-4 leading-tight">{t('medical_records').split(' ')[0]} <br />{t('medical_records').split(' ')[1]}</h3>
+              <h3 className="text-xl lg:text-2xl font-display font-bold mb-4 leading-tight">
+                {t('medical_records').includes(' ') ? (
+                  <>{t('medical_records').split(' ')[0]} <br />{t('medical_records').split(' ')[1]}</>
+                ) : t('medical_records')}
+              </h3>
               <p className="text-4xl lg:text-5xl font-display font-bold text-gray-900 dark:text-white mb-2">
                 {dashboardData?.stats?.recordsCount || 0}
               </p>
@@ -672,7 +727,7 @@ export default function DoctorDashboard({ user }: any) {
                     value={editForm.specialization}
                     onChange={(e) => setEditForm({ ...editForm, specialization: e.target.value })}
                     className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                    placeholder="e.g. Cardiologist"
+                    placeholder={t('specialization_placeholder')}
                   />
                 </div>
                 <div>
@@ -682,7 +737,7 @@ export default function DoctorDashboard({ user }: any) {
                     value={editForm.contact}
                     onChange={(e) => setEditForm({ ...editForm, contact: e.target.value })}
                     className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                    placeholder="e.g. +1 234 567 8900"
+                    placeholder={t('contact_placeholder')}
                   />
                 </div>
                 <div>
@@ -740,7 +795,7 @@ function AppointmentItem({ time, patient, type, status, color, avatar, variants,
       <div className="flex flex-col sm:flex-row sm:items-center gap-6 lg:gap-8">
         <div className="flex sm:flex-col items-center justify-center sm:w-20 lg:w-24 gap-2 sm:gap-0">
           <p className="text-sm font-bold text-gray-900 dark:text-white">{time.split(' ')[0]}</p>
-          <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{time.split(' ')[1]}</p>
+          {time.includes(' ') && <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{time.split(' ')[1]}</p>}
         </div>
         <div className="flex items-center gap-4">
           <div className="w-10 h-10 lg:w-12 lg:h-12 bg-gray-100 dark:bg-white/5 rounded-2xl flex items-center justify-center font-bold text-gray-500 group-hover:bg-blue-600/20 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-all text-xs lg:text-base border border-gray-200 dark:border-white/5">

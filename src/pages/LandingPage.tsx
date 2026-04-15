@@ -5,14 +5,14 @@ import { useTranslation } from 'react-i18next';
 import { 
   Activity, Shield, Database, Globe, 
   Brain, ArrowRight, Fingerprint, Network,
-  Terminal, Cpu, Lock, CheckSquare, HelpCircle
+  Terminal, Cpu, Lock, CheckSquare, QrCode, HelpCircle
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import CookieConsent from '../components/CookieConsent';
 import GlobalNavbar from '../components/GlobalNavbar';
 import EcommerceSlider from '../components/EcommerceSlider';
 import QRCodePaymentModal from '../components/QRCodePaymentModal';
-import { CreditCard, QrCode } from 'lucide-react';
+import { CreditCard } from 'lucide-react';
 
 export default function LandingPage() {
   const { user } = useAuth();

@@ -10,12 +10,18 @@ import {
   getMyMedicineOrders,
   getAllMedicineOrders,
   updateMedicineOrderStatus,
+  payMedicineOrder,
   checkInteractions,
-  simulateRider
+  simulateRider,
+  getCommissions,
+  withdrawCommission
 } from '../controllers/pharmacyController';
 import { authenticate, authorize } from '../middleware/auth';
 
 const router = express.Router();
+
+router.get('/commissions', authenticate, authorize(['Pharmacy', 'Admin']), getCommissions);
+router.post('/withdraw', authenticate, authorize(['Pharmacy']), withdrawCommission);
 
 router.get('/medicines', authenticate, getMedicines);
 router.post('/medicines', authenticate, authorize(['Admin', 'Staff']), createMedicine);
@@ -30,6 +36,7 @@ router.post('/orders', authenticate, authorize(['Patient']), createMedicineOrder
 router.get('/orders/me', authenticate, authorize(['Patient', 'Hospital']), getMyMedicineOrders);
 router.get('/orders/all', authenticate, authorize(['Admin', 'Staff', 'Pharmacist', 'Rider', 'Pharmacy']), getAllMedicineOrders);
 router.put('/orders/:id/status', authenticate, authorize(['Admin', 'Staff', 'Pharmacist', 'Rider', 'Pharmacy']), updateMedicineOrderStatus);
+router.post('/orders/:id/pay', authenticate, payMedicineOrder);
 router.post('/orders/:id/simulate', authenticate, simulateRider);
 
 export default router;

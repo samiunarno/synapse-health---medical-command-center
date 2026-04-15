@@ -10,10 +10,10 @@ export interface AIAnalysisResult {
  */
 export async function analyzeMedicalData(patientData: any, language: string = 'zh'): Promise<AIAnalysisResult> {
   // Read from environment variables
-  const apiKey = import.meta.env.VITE_CHINESE_AI_API_KEY;
+  const apiKey = (import.meta as any).env.VITE_CHINESE_AI_API_KEY;
   // Default to DeepSeek's endpoint, but can be changed to Qwen or Kimi
-  const endpoint = import.meta.env.VITE_CHINESE_AI_ENDPOINT || 'https://api.deepseek.com/v1/chat/completions';
-  const model = import.meta.env.VITE_CHINESE_AI_MODEL || 'deepseek-chat';
+  const endpoint = (import.meta as any).env.VITE_CHINESE_AI_ENDPOINT || 'https://api.deepseek.com/v1/chat/completions';
+  const model = (import.meta as any).env.VITE_CHINESE_AI_MODEL || 'deepseek-chat';
 
   // ==========================================
   // COMPETITION SAFETY FALLBACK (Mock Mode)

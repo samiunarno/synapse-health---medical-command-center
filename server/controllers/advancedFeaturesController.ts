@@ -10,6 +10,7 @@ import AmbulanceRequest from '../models/AmbulanceRequest';
 import BloodDonor from '../models/BloodDonor';
 import Vaccination from '../models/Vaccination';
 import Bed from '../models/Bed';
+import Doctor from '../models/Doctor';
 import Department from '../models/Department';
 import Ward from '../models/Ward';
 import LabReport from '../models/LabReport';
@@ -257,7 +258,24 @@ export const simulateAmbulance = async (req: Request, res: Response) => {
 // Billing Controllers
 export const getBills = async (req: Request, res: Response) => {
   try {
+    const user = (req as any).user;
+    if (user.role !== 'Admin' && user.role !== 'Staff') {
+      return res.status(403).json({ error: 'Access denied' });
+    }
     const bills = await Billing.find().populate('patient_id');
+    res.json(bills);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getMyBills = async (req: Request, res: Response) => {
+  try {
+    const user = (req as any).user;
+    const patient = await Patient.findOne({ patient_id: user.reference_id });
+    if (!patient) return res.status(404).json({ error: 'Patient profile not found' });
+
+    const bills = await Billing.find({ patient_id: patient._id }).sort({ createdAt: -1 });
     res.json(bills);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -285,6 +303,16 @@ export const processPayment = async (req: Request, res: Response) => {
       payment_method,
       transaction_id
     }, { new: true });
+    
+    if (bill && bill.status === 'Paid' && bill.doctor_id) {
+      const doctor = await Doctor.findById(bill.doctor_id);
+      if (doctor) {
+        const commission = bill.amount * 0.8; // 80% commission
+        (doctor as any).commissionBalance = ((doctor as any).commissionBalance || 0) + commission;
+        (doctor as any).totalEarnings = ((doctor as any).totalEarnings || 0) + commission;
+        await doctor.save();
+      }
+    }
     
     res.json(bill);
   } catch (error: any) {

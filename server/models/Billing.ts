@@ -2,6 +2,8 @@ import mongoose from 'mongoose';
 
 const billingSchema = new mongoose.Schema({
   patient_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Patient', required: true },
+  doctor_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Doctor' },
+  pharmacy_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Pharmacy' },
   amount: { type: Number, required: true },
   description: { type: String, required: true },
   status: { type: String, enum: ['Pending', 'Paid', 'Failed', 'Refunded'], default: 'Pending' },

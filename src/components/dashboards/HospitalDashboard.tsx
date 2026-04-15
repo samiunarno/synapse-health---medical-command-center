@@ -10,7 +10,9 @@ import {
   Plus,
   ArrowUpRight,
   Stethoscope,
-  Heart
+  Heart,
+  DollarSign,
+  Loader2
 } from 'lucide-react';
 import { useAuth } from '../AuthContext';
 import { useTranslation } from 'react-i18next';
@@ -18,20 +20,59 @@ import { useTranslation } from 'react-i18next';
 export default function HospitalDashboard() {
   const { t } = useTranslation();
   const { user, token } = useAuth();
-  const [stats, setStats] = useState<any>(null);
+  const [dashboardData, setDashboardData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [commissions, setCommissions] = useState<any>(null);
+  const [isWithdrawing, setIsWithdrawing] = useState(false);
 
   useEffect(() => {
     fetchHospitalStats();
+    fetchCommissions();
   }, []);
 
-  const fetchHospitalStats = async () => {
+  const fetchCommissions = async () => {
     try {
-      const res = await fetch('/api/analytics/stats', {
+      const res = await fetch('/api/commissions', {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
-        setStats(await res.json());
+        setCommissions(await res.json());
+      }
+    } catch (err) {
+      console.error('Failed to fetch commissions:', err);
+    }
+  };
+
+  const handleWithdraw = async () => {
+    if (!commissions?.commissionBalance || commissions.commissionBalance <= 0) return;
+    setIsWithdrawing(true);
+    try {
+      const res = await fetch('/api/commissions/withdraw', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ amount: commissions.commissionBalance })
+      });
+      if (res.ok) {
+        fetchCommissions();
+        alert(t('withdrawal_success'));
+      }
+    } catch (err) {
+      console.error('Withdrawal failed:', err);
+    } finally {
+      setIsWithdrawing(false);
+    }
+  };
+
+  const fetchHospitalStats = async () => {
+    try {
+      const res = await fetch('/api/analytics/hospital-dashboard', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        setDashboardData(await res.json());
       }
     } catch (err) {
       console.error('Failed to fetch hospital stats:', err);
@@ -42,11 +83,14 @@ export default function HospitalDashboard() {
 
   if (loading) return <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div></div>;
 
+  const stats = dashboardData?.stats;
+  const hospital = dashboardData?.hospital;
+
   const cards = [
     { label: t('total_patients'), value: stats?.totalPatients || 0, icon: Users, color: 'blue', trend: '+12%' },
-    { label: t('active_doctors'), value: stats?.totalDoctors || 0, icon: Stethoscope, color: 'purple', trend: '+5%' },
+    { label: t('active_doctors'), value: stats?.totalStaff || 0, icon: Stethoscope, color: 'purple', trend: '+5%' },
     { label: t('bed_occupancy'), value: '84%', icon: Bed, color: 'emerald', trend: '-2%' },
-    { label: t('revenue'), value: '$124.5k', icon: TrendingUp, color: 'blue', trend: '+18%' }
+    { label: t('revenue'), value: `$${stats?.totalRevenue?.toLocaleString() || '0'}`, icon: TrendingUp, color: 'blue', trend: '+18%' }
   ];
 
   return (
@@ -103,7 +147,7 @@ export default function HospitalDashboard() {
             {['Cardiology', 'Neurology', 'Pediatrics', 'Oncology'].map((dept, i) => (
               <div key={dept} className="space-y-3">
                 <div className="flex justify-between text-xs font-bold uppercase tracking-widest">
-                  <span className="text-gray-900 dark:text-white">{dept}</span>
+                  <span className="text-gray-900 dark:text-white">{t(dept.toLowerCase())}</span>
                   <span className="text-gray-500">{85 - i * 10}% {t('efficiency')}</span>
                 </div>
                 <div className="h-2 bg-gray-200 dark:bg-white/5 rounded-full overflow-hidden">
@@ -119,13 +163,35 @@ export default function HospitalDashboard() {
           </div>
         </div>
 
-        <div className="bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-[3rem] p-10 space-y-8 transition-colors duration-500">
-          <h3 className="text-2xl font-display font-bold text-gray-900 dark:text-white uppercase tracking-tight">{t('system_alerts')}</h3>
-          <div className="space-y-4">
+        <div className="space-y-8">
+          <div className="bg-blue-600 rounded-[3rem] p-10 text-white space-y-6 shadow-2xl shadow-blue-500/20">
+            <div className="flex justify-between items-start">
+              <DollarSign className="w-12 h-12" />
+              <div className="text-right">
+                <p className="text-[10px] font-bold uppercase tracking-widest opacity-70">{t('commission_balance')}</p>
+                <p className="text-3xl font-display font-bold">${commissions?.commissionBalance?.toFixed(2) || '0.00'}</p>
+              </div>
+            </div>
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-widest opacity-70 mb-1">{t('total_platform_sales')}</p>
+              <p className="text-xl font-display font-bold">${commissions?.totalSales?.toFixed(2) || '0.00'}</p>
+            </div>
+            <button 
+              onClick={handleWithdraw}
+              disabled={isWithdrawing || !commissions?.commissionBalance || commissions.commissionBalance <= 0}
+              className="w-full py-4 bg-white text-blue-600 rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:bg-blue-50 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {isWithdrawing ? <Loader2 className="w-4 h-4 animate-spin" /> : t('withdraw_funds')}
+            </button>
+          </div>
+
+          <div className="bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-[3rem] p-10 space-y-8 transition-colors duration-500">
+            <h3 className="text-2xl font-display font-bold text-gray-900 dark:text-white uppercase tracking-tight">{t('system_alerts')}</h3>
+            <div className="space-y-4">
             {[
-              { type: t('critical'), msg: t('oxygen_low_ward_b'), time: '2m ago', color: 'red' },
-              { type: t('warning'), msg: t('staff_shortage_icu'), time: '15m ago', color: 'amber' },
-              { type: t('info'), msg: t('new_equipment_delivered'), time: '1h ago', color: 'blue' }
+              { type: t('critical'), msg: t('oxygen_low_ward_b'), time: t('minutes_ago', { count: 2 }), color: 'red' },
+              { type: t('warning'), msg: t('staff_shortage_icu'), time: t('minutes_ago', { count: 15 }), color: 'amber' },
+              { type: t('info'), msg: t('new_equipment_delivered'), time: t('hours_ago', { count: 1 }), color: 'blue' }
             ].map((alert, i) => (
               <div key={i} className="p-4 bg-white dark:bg-white/2 rounded-2xl border border-gray-200 dark:border-white/5 flex items-start gap-4 shadow-sm dark:shadow-none">
                 <div className={`w-2 h-2 rounded-full mt-1.5 bg-${alert.color}-500`} />
@@ -142,5 +208,6 @@ export default function HospitalDashboard() {
         </div>
       </div>
     </div>
+  </div>
   );
 }

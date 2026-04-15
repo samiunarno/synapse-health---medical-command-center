@@ -185,14 +185,14 @@ export default function DriverDashboard() {
                       <MapPin className="w-5 h-5 text-red-500" />
                       <div className="text-xs font-bold uppercase tracking-widest">{t('pickup')}</div>
                     </div>
-                    <p className="text-gray-900 dark:text-white font-medium pl-8">{activeRequest.pickup_location.address || 'Coordinates Provided'}</p>
+                    <p className="text-gray-900 dark:text-white font-medium pl-8">{activeRequest.pickup_location.address || t('coordinates_provided')}</p>
                   </div>
                   <div className="space-y-4">
                     <div className="flex items-center gap-3 text-gray-500 dark:text-gray-400">
                       <Navigation className="w-5 h-5 text-emerald-500" />
                       <div className="text-xs font-bold uppercase tracking-widest">{t('destination')}</div>
                     </div>
-                    <p className="text-gray-900 dark:text-white font-medium pl-8">{activeRequest.destination_location?.address || 'Hospital Emergency'}</p>
+                    <p className="text-gray-900 dark:text-white font-medium pl-8">{activeRequest.destination_location?.address || t('hospital_emergency')}</p>
                   </div>
                 </div>
 
@@ -204,7 +204,7 @@ export default function DriverDashboard() {
                     <div>
                       <p className="text-gray-900 dark:text-white font-bold uppercase tracking-tight">{activeRequest.patient_id?.name || t('emergency_patient')}</p>
                       <div className="flex items-center gap-2 text-gray-500 text-[10px] font-bold uppercase tracking-widest">
-                        <Phone className="w-3 h-3" /> {activeRequest.patient_id?.contact || 'N/A'}
+                        <Phone className="w-3 h-3" /> {activeRequest.patient_id?.contact || t('na')}
                       </div>
                     </div>
                   </div>
@@ -285,7 +285,7 @@ export default function DriverDashboard() {
                         <AlertCircle className="w-5 h-5" />
                       </div>
                       <div>
-                        <h4 className="text-gray-900 dark:text-white font-bold uppercase tracking-tight text-sm">Emergency</h4>
+                        <h4 className="text-gray-900 dark:text-white font-bold uppercase tracking-tight text-sm">{t('emergency')}</h4>
                         <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">{new Date(request.createdAt).toLocaleTimeString()}</p>
                       </div>
                     </div>
@@ -295,7 +295,7 @@ export default function DriverDashboard() {
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-gray-500 text-[10px] font-bold uppercase tracking-widest">
-                      <MapPin className="w-3 h-3" /> {request.pickup_location.address || 'Location Provided'}
+                      <MapPin className="w-3 h-3" /> {request.pickup_location.address || t('location_provided')}
                     </div>
                   </div>
                   <button 

@@ -8,6 +8,10 @@ const doctorSchema = new mongoose.Schema({
   contact: { type: String, required: true },
   specialization: { type: String, required: true },
   department_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Department' },
+  commissionBalance: { type: Number, default: 0 },
+  totalEarnings: { type: Number, default: 0 },
+  rating: { type: Number, default: 0 },
+  reviewCount: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now }
 });
 

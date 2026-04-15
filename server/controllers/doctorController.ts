@@ -78,7 +78,9 @@ export const getApprovedDoctors = async (req: Request, res: Response) => {
       role: 'Doctor', 
       status: 'Approved', 
       isBanned: false 
-    }).select('-password');
+    })
+    .select('-password')
+    .sort({ averageRating: -1, 'ratings.length': -1 }); // Ranking system: sort by average rating
     res.json(approvedDoctors);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -241,6 +243,49 @@ export const getMyPrescriptions = async (req: Request, res: Response) => {
       .populate('doctor_id', 'name specialization')
       .sort({ date: -1 });
     res.json(prescriptions);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getCommissions = async (req: Request, res: Response) => {
+  try {
+    const user = (req as any).user;
+    const doctor = await Doctor.findOne({ doctor_id: user.reference_id });
+    if (!doctor) return res.status(404).json({ error: 'Doctor profile not found' });
+    
+    res.json({
+      commissionBalance: (doctor as any).commissionBalance || 0,
+      totalEarnings: (doctor as any).totalEarnings || 0
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const withdrawCommission = async (req: Request, res: Response) => {
+  try {
+    const user = (req as any).user;
+    const { amount } = req.body;
+    
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ error: 'Invalid withdrawal amount' });
+    }
+
+    const doctor = await Doctor.findOne({ doctor_id: user.reference_id });
+    if (!doctor) return res.status(404).json({ error: 'Doctor profile not found' });
+    
+    if (((doctor as any).commissionBalance || 0) < amount) {
+      return res.status(400).json({ error: 'Insufficient commission balance' });
+    }
+
+    (doctor as any).commissionBalance = ((doctor as any).commissionBalance || 0) - amount;
+    await doctor.save();
+    
+    res.json({ 
+      message: 'Withdrawal successful', 
+      newBalance: (doctor as any).commissionBalance 
+    });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }

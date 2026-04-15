@@ -3,6 +3,7 @@ import Medicine from '../models/Medicine';
 import Prescription from '../models/Prescription';
 import MedicineOrder from '../models/MedicineOrder';
 import Patient from '../models/Patient';
+import Pharmacy from '../models/Pharmacy';
 
 export const createMedicineOrder = async (req: Request, res: Response) => {
   try {
@@ -79,6 +80,33 @@ export const updateMedicineOrderStatus = async (req: Request, res: Response) => 
     const order = await MedicineOrder.findByIdAndUpdate(id, { status, rider_id, rider_status }, { new: true })
       .populate('medicines.medicine_id')
       .populate('rider_id', 'fullName username');
+    
+    if (order && order.status === 'Delivered' && order.payment_status === 'Paid' && order.pharmacy_id) {
+      const pharmacy = await Pharmacy.findById(order.pharmacy_id);
+      if (pharmacy) {
+        const commission = order.total_price * 0.9; // 90% to pharmacy
+        (pharmacy as any).commissionBalance = ((pharmacy as any).commissionBalance || 0) + commission;
+        (pharmacy as any).totalSales = ((pharmacy as any).totalSales || 0) + order.total_price;
+        await pharmacy.save();
+      }
+    }
+
+    req.app.get('io')?.emit('medicine_order_updated', order);
+    res.json(order);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const payMedicineOrder = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { payment_method } = req.body;
+    
+    const order = await MedicineOrder.findByIdAndUpdate(id, {
+      payment_status: 'Paid',
+      payment_method
+    }, { new: true });
     
     req.app.get('io')?.emit('medicine_order_updated', order);
     res.json(order);
@@ -231,6 +259,49 @@ export const checkInteractions = async (req: Request, res: Response) => {
     } else {
       res.json(null);
     }
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getCommissions = async (req: Request, res: Response) => {
+  try {
+    const user = (req as any).user;
+    const pharmacy = await Pharmacy.findOne({ pharmacy_id: user.reference_id });
+    if (!pharmacy) return res.status(404).json({ error: 'Pharmacy profile not found' });
+    
+    res.json({
+      commissionBalance: (pharmacy as any).commissionBalance || 0,
+      totalSales: (pharmacy as any).totalSales || 0
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const withdrawCommission = async (req: Request, res: Response) => {
+  try {
+    const user = (req as any).user;
+    const { amount } = req.body;
+    
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ error: 'Invalid withdrawal amount' });
+    }
+
+    const pharmacy = await Pharmacy.findOne({ pharmacy_id: user.reference_id });
+    if (!pharmacy) return res.status(404).json({ error: 'Pharmacy profile not found' });
+    
+    if (((pharmacy as any).commissionBalance || 0) < amount) {
+      return res.status(400).json({ error: 'Insufficient commission balance' });
+    }
+
+    (pharmacy as any).commissionBalance = ((pharmacy as any).commissionBalance || 0) - amount;
+    await pharmacy.save();
+    
+    res.json({ 
+      message: 'Withdrawal successful', 
+      newBalance: (pharmacy as any).commissionBalance 
+    });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }

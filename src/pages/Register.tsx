@@ -3,8 +3,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../components/AuthContext';
 import { Activity, User, Lock, Phone, Calendar, Briefcase, Stethoscope, ArrowRight, Sparkles, CheckCircle2, Shield, Zap, Layers, Pill, Truck, Building2, Store, ShoppingBag } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-
 import { useTranslation } from 'react-i18next';
+import axios from 'axios';
 
 export default function Register() {
   const { t } = useTranslation();
@@ -37,20 +37,16 @@ export default function Register() {
   }, [user, navigate]);
 
   useEffect(() => {
-    fetch('/api/departments')
-      .then(res => res.json())
-      .then(data => {
-        if (Array.isArray(data)) {
-          setDepartments(data);
-        } else {
-          console.error('Departments API did not return an array:', data);
-          setDepartments([]);
-        }
-      })
-      .catch(err => {
+    const fetchDepts = async () => {
+      try {
+        const res = await axios.get('/api/departments');
+        setDepartments(res.data);
+      } catch (err) {
         console.error('Failed to fetch departments:', err);
         setDepartments([]);
-      });
+      }
+    };
+    fetchDepts();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -58,23 +54,13 @@ export default function Register() {
     setIsLoading(true);
     setError('');
     try {
-      const res = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...formData,
-          doctorType: formData.role === 'Doctor' ? formData.specialization : undefined,
-        }),
-      });
-      const data = await res.json();
-      if (res.ok) {
+      const res = await axios.post('/api/auth/register', formData);
+      if (res.status === 201) {
         setSuccess(true);
         setTimeout(() => navigate('/login'), 2000);
-      } else {
-        setError(data.error || 'Registration failed');
       }
-    } catch (err) {
-      setError('Failed to connect to server');
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Registration failed');
     } finally {
       setIsLoading(false);
     }

@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 const medicineOrderSchema = new mongoose.Schema({
   patient_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Patient', required: true },
   user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  pharmacy_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Pharmacy' },
   medicines: [{
     medicine_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Medicine', required: true },
     quantity: { type: Number, required: true, min: 1 }

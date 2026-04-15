@@ -151,8 +151,8 @@ export default function AdminDashboard({
             {t('system_core')} v4.2.0
           </div>
           <h1 className="text-3xl sm:text-6xl lg:text-8xl font-display font-black text-gray-900 dark:text-white mb-4 tracking-tighter uppercase leading-none break-words">
-            {t('mission_control').split(' ')[0]} <br />
-            <span className="text-transparent stroke-text">{t('mission_control').split(' ')[1]}</span>
+            {t('mission_control_line1')} <br />
+            <span className="text-transparent stroke-text">{t('mission_control_line2')}</span>
           </h1>
           <p className="text-gray-500 font-bold text-sm uppercase tracking-widest flex items-center gap-3">
             <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
@@ -162,7 +162,7 @@ export default function AdminDashboard({
         <div className="flex flex-wrap items-center gap-4">
           <div className="bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 px-8 py-4 rounded-2xl font-mono text-xs font-bold text-gray-500 dark:text-gray-400 flex items-center gap-4 backdrop-blur-xl">
             <Calendar className="w-4 h-4 text-blue-600 dark:text-blue-500" />
-            {new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase()} • {new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })} UTC
+            {new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase()} • {new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })} {t('utc')}
           </div>
           <button 
             onClick={handleExport}
@@ -210,9 +210,27 @@ export default function AdminDashboard({
           title={t('total_revenue')} 
           value={`$${(stats?.totalRevenue || 0).toLocaleString()}`} 
           icon={DollarSign} 
-          trend="Optimal" 
+          trend={t('optimal')} 
           trendUp={true}
           color="green"
+          variants={itemVariants}
+        />
+        <StatCard 
+          title={t('platform_commissions')} 
+          value={`$${(stats?.totalCommissionBalance || 0).toLocaleString()}`} 
+          icon={DollarSign} 
+          trend="+24.2%" 
+          trendUp={true}
+          color="amber"
+          variants={itemVariants}
+        />
+        <StatCard 
+          title={t('platform_sales')} 
+          value={`$${(stats?.totalPlatformSales || 0).toLocaleString()}`} 
+          icon={ShoppingCart} 
+          trend="+32.1%" 
+          trendUp={true}
+          color="rose"
           variants={itemVariants}
         />
       </motion.div>
@@ -563,7 +581,7 @@ export default function AdminDashboard({
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="font-bold text-gray-900 dark:text-white text-base lg:text-lg uppercase tracking-tighter truncate">{user.username}</p>
-                        <p className="text-[8px] font-mono font-bold text-gray-500 dark:text-gray-600 uppercase tracking-widest truncate">ID: {user._id.slice(-12)}</p>
+                        <p className="text-[8px] font-mono font-bold text-gray-500 dark:text-gray-600 uppercase tracking-widest truncate">{t('id_label')}: {user._id.slice(-12)}</p>
                       </div>
                     </div>
                   </td>
@@ -699,6 +717,8 @@ function StatCard({ title, value, icon: Icon, trend, trendUp, color, variants }:
     purple: 'bg-purple-600/10 text-purple-500 border-purple-500/20',
     orange: 'bg-orange-600/10 text-orange-500 border-orange-500/20',
     green: 'bg-green-600/10 text-green-500 border-green-500/20',
+    amber: 'bg-amber-600/10 text-amber-500 border-amber-500/20',
+    rose: 'bg-rose-600/10 text-rose-500 border-rose-500/20',
   };
 
   return (

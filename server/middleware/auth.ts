@@ -1,24 +1,39 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-
-const JWT_SECRET = process.env.JWT_SECRET || 'medflow-secret-key-2026';
+import User from '../models/User';
 
 export interface AuthRequest extends Request {
   user?: {
     id: string;
     role: string;
+    email?: string;
   };
 }
 
-export const authenticate = (req: AuthRequest, res: Response, next: NextFunction) => {
+export const authenticate = async (req: AuthRequest, res: Response, next: NextFunction) => {
   const token = req.headers.authorization?.split(' ')[1];
   if (!token) return res.status(401).json({ error: 'No token provided' });
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as { id: string; role: string };
-    req.user = decoded;
+    const decoded: any = jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret');
+    
+    const user = await User.findById(decoded.id);
+    if (!user) return res.status(401).json({ error: 'User not found' });
+    
+    if (user.isBanned) return res.status(403).json({ error: 'Your account has been banned.' });
+    if (user.status !== 'Approved' && user.role !== 'Admin') {
+      return res.status(403).json({ error: `Your account is ${user.status.toLowerCase()}.` });
+    }
+
+    req.user = {
+      id: user._id.toString(),
+      role: user.role,
+      email: user.email
+    };
+    
     next();
   } catch (error) {
+    console.error('Auth Error:', error);
     res.status(401).json({ error: 'Invalid token' });
   }
 };

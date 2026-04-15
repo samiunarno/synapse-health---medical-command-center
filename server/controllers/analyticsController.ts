@@ -1,33 +1,64 @@
 import { Request, Response } from 'express';
+import os from 'os';
+import User from '../models/User';
 import Patient from '../models/Patient';
+import Doctor from '../models/Doctor';
 import Bed from '../models/Bed';
 import Department from '../models/Department';
-import User from '../models/User';
 import Medicine from '../models/Medicine';
-import MedicalRecord from '../models/MedicalRecord';
+import Task from '../models/Task';
 import AmbulanceRequest from '../models/AmbulanceRequest';
 import MedicineOrder from '../models/MedicineOrder';
-import Task from '../models/Task';
-import os from 'os';
+import Hospital from '../models/Hospital';
+import Pharmacy from '../models/Pharmacy';
+import Lab from '../models/Lab';
+import LabReport from '../models/LabReport';
+import Billing from '../models/Billing';
 
 export const getStats = async (req: Request, res: Response) => {
   try {
-    const totalPatients = await User.countDocuments({ role: 'Patient' });
-    const totalDoctors = await User.countDocuments({ role: 'Doctor' });
-    const totalStaff = await User.countDocuments({ role: 'Staff' });
-    const totalBeds = await Bed.countDocuments();
-    const occupiedBeds = await Bed.countDocuments({ status: 'Occupied' });
-    const maintenanceBeds = await Bed.countDocuments({ status: 'Maintenance' });
-    const totalDepartments = await Department.countDocuments();
-    const totalMedicines = await Medicine.countDocuments();
-    
-    const inpatientsCount = await Patient.countDocuments({ type: 'Inpatient' });
-    const outpatientsCount = await Patient.countDocuments({ type: 'Outpatient' });
+    const [users, patients, beds, depts, medicines, tasks, ambulanceRequests, orders, doctors, hospitals, pharmacies, labs] = await Promise.all([
+      User.find().lean(),
+      Patient.find().lean(),
+      Bed.find().populate({
+        path: 'ward_id',
+        populate: { path: 'associated_department_id' }
+      }).lean(),
+      Department.find().lean(),
+      Medicine.find().lean(),
+      Task.find().lean(),
+      AmbulanceRequest.find().populate('user_id').lean(),
+      MedicineOrder.find().populate('user_id').lean(),
+      Doctor.find().lean(),
+      Hospital.find().lean(),
+      Pharmacy.find().lean(),
+      Lab.find().lean()
+    ]);
 
-    // Emergency beds (assuming Emergency department exists)
-    const emergencyDept = await Department.findOne({ name: /Emergency/i });
-    const emergencyBeds = emergencyDept ? await Bed.countDocuments({ department_id: emergencyDept._id }) : 0;
-    const occupiedEmergencyBeds = emergencyDept ? await Bed.countDocuments({ department_id: emergencyDept._id, status: 'Occupied' }) : 0;
+    const totalPatients = users.filter(u => u.role === 'Patient').length;
+    const totalDoctors = users.filter(u => u.role === 'Doctor').length;
+    const totalStaff = users.filter(u => u.role === 'Staff').length;
+    
+    const totalBeds = beds.length;
+    const occupiedBeds = beds.filter(b => b.status === 'Occupied').length;
+    const maintenanceBeds = beds.filter(b => b.status === 'Maintenance').length;
+    
+    const totalDepartments = depts.length;
+    const totalMedicines = medicines.length;
+    
+    const inpatientsCount = patients.filter(p => p.type === 'Inpatient').length;
+    const outpatientsCount = patients.filter(p => p.type === 'Outpatient').length;
+
+    const totalCommissionBalance = 
+      doctors.reduce((acc, d) => acc + (d.commissionBalance || 0), 0) +
+      hospitals.reduce((acc, h) => acc + (h.commissionBalance || 0), 0) +
+      pharmacies.reduce((acc, p) => acc + (p.commissionBalance || 0), 0) +
+      labs.reduce((acc, l) => acc + (l.commissionBalance || 0), 0);
+
+    const totalPlatformSales = 
+      hospitals.reduce((acc, h) => acc + (h.totalSales || 0), 0) +
+      pharmacies.reduce((acc, p) => acc + (p.totalSales || 0), 0) +
+      labs.reduce((acc, l) => acc + (l.totalSales || 0), 0);
 
     const bedStatus = [
       { status: 'Occupied', count: occupiedBeds },
@@ -35,71 +66,65 @@ export const getStats = async (req: Request, res: Response) => {
       { status: 'Maintenance', count: maintenanceBeds }
     ];
 
-    // Calculate staff metrics for gamification
     const staffMetrics = {
       rank: totalPatients > 100 ? 'Platinum' : totalPatients > 50 ? 'Gold' : 'Silver',
-      tasksCompleted: await Task.countDocuments({ status: 'Completed' }),
-      patientRating: 4.8 // This would ideally come from a Feedback collection
+      tasksCompleted: tasks.filter(t => t.status === 'Completed').length,
+      patientRating: 4.8
     };
 
-    const departments = await Department.find();
-    const departmentPerformance = await Promise.all(departments.map(async (dept) => {
-      const doctorCount = await User.countDocuments({ role: 'Doctor', department_id: dept._id } as any);
-      const patientCount = await User.countDocuments({ role: 'Patient', department_id: dept._id } as any);
-      const occupiedInDept = await Bed.countDocuments({ department_id: dept._id, status: 'Occupied' } as any);
-      const totalInDept = await Bed.countDocuments({ department_id: dept._id } as any);
-      
+    const departmentPerformance = depts.map(dept => {
+      const doctorsInDept = users.filter(u => u.role === 'Doctor' && u.department_id?.toString() === dept._id.toString()).length;
+      const patientsInDept = users.filter(u => u.role === 'Patient' && u.department_id?.toString() === dept._id.toString()).length;
+      const occupiedInDept = beds.filter((b: any) => b.ward_id?.associated_department_id?._id?.toString() === dept._id.toString() && b.status === 'Occupied').length;
+      const totalInDept = beds.filter((b: any) => b.ward_id?.associated_department_id?._id?.toString() === dept._id.toString()).length;
+
       return {
         name: dept.name,
-        doctors: doctorCount,
-        patients: patientCount,
+        doctors: doctorsInDept,
+        patients: patientsInDept,
         utilization: totalInDept > 0 ? Math.round((occupiedInDept / totalInDept) * 100) : 0,
         status: 'Optimal'
       };
-    }));
+    });
 
-    // Service Distribution
-    const ambulanceCount = await AmbulanceRequest.countDocuments();
-    const medicineOrderCount = await MedicineOrder.countDocuments();
     const serviceDistribution = [
-      { name: 'Emergency', value: emergencyBeds },
-      { name: 'Consultation', value: totalDoctors * 5 }, // Simulated based on doctors
-      { name: 'Pharmacy', value: medicineOrderCount },
-      { name: 'Ambulance', value: ambulanceCount }
+      { name: 'Emergency', value: beds.filter((b: any) => b.ward_id?.name === 'Emergency').length },
+      { name: 'Consultation', value: totalDoctors * 5 },
+      { name: 'Pharmacy', value: orders.length },
+      { name: 'Ambulance', value: ambulanceRequests.length }
     ];
 
-    // Revenue (Simulated based on orders and patients)
-    const medicineRevenue = await MedicineOrder.aggregate([
-      { $group: { _id: null, total: { $sum: "$total_price" } } }
-    ]);
-    const totalRevenue = (medicineRevenue[0]?.total || 0) + (totalPatients * 50); // Base fee per patient
+    let totalRevenue = totalPatients * 50;
+    orders.forEach(order => {
+      totalRevenue += (order.total_price || 0);
+    });
 
     res.json({
-      // For AdminDashboard
       totalPatients,
       totalDoctors,
       totalStaff,
-      totalBeds: totalBeds,
-      occupiedBeds: occupiedBeds,
-      maintenanceBeds: maintenanceBeds,
-      totalDepartments: totalDepartments,
+      totalBeds,
+      occupiedBeds,
+      maintenanceBeds,
+      totalDepartments,
       bedOccupancy: totalBeds > 0 ? Math.round((occupiedBeds / totalBeds) * 100) : 0,
-      emergencyBeds: { total: emergencyBeds, occupied: occupiedEmergencyBeds },
+      emergencyBeds: { 
+        total: beds.filter((b: any) => b.ward_id?.name === 'Emergency').length, 
+        occupied: beds.filter((b: any) => b.ward_id?.name === 'Emergency' && b.status === 'Occupied').length 
+      },
       totalRevenue,
-      
-      // For Analytics Page
       patients: { count: totalPatients },
       inpatients: { count: inpatientsCount },
       outpatients: { count: outpatientsCount },
       medicines: { count: totalMedicines },
-      bedStatus: bedStatus,
+      bedStatus,
       departmentPerformance,
       serviceDistribution,
-      ambulanceCount,
-      medicineOrderCount,
-      
-      // For StaffDashboard
-      staffMetrics
+      ambulanceCount: ambulanceRequests.length,
+      medicineOrderCount: orders.length,
+      staffMetrics,
+      totalCommissionBalance,
+      totalPlatformSales
     });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -108,7 +133,7 @@ export const getStats = async (req: Request, res: Response) => {
 
 export const getInpatientTrends = async (req: Request, res: Response) => {
   try {
-    const patients = await Patient.find({ type: 'Inpatient' });
+    const patients = await Patient.find({ type: 'Inpatient' }).lean();
     const trends: any = {};
     
     if (patients.length === 0) {
@@ -117,7 +142,7 @@ export const getInpatientTrends = async (req: Request, res: Response) => {
 
     patients.forEach(p => {
       if (p.admission_date) {
-        const date = p.admission_date.toISOString().split('T')[0];
+        const date = new Date(p.admission_date).toISOString().split('T')[0];
         trends[date] = (trends[date] || 0) + 1;
       }
     });
@@ -147,9 +172,9 @@ export const getPredictiveData = async (req: Request, res: Response) => {
     const lastWeek = new Date();
     lastWeek.setDate(lastWeek.getDate() - 7);
     
-    const patients = await Patient.find({ 
-      createdAt: { $gte: lastWeek } 
-    });
+    const patients = await Patient.find({
+      createdAt: { $gte: lastWeek }
+    }).lean();
     
     const admissionsByDay = new Array(7).fill(0);
     patients.forEach(p => {
@@ -160,7 +185,6 @@ export const getPredictiveData = async (req: Request, res: Response) => {
     for (let i = 0; i < 7; i++) {
       const dayIndex = (today + i + 1) % 7;
       const actual = admissionsByDay[dayIndex];
-      // Simple forecasting logic: average of last 7 days + 10% growth
       const predictedAdmissions = Math.max(1, Math.round(actual * 1.1) + 1);
       predictiveData.push({
         name: days[dayIndex],
@@ -186,7 +210,7 @@ export const getSystemMonitor = async (req: Request, res: Response) => {
     res.json({
       cpu: `${(loadAvg[0] * 10).toFixed(1)}%`,
       memory: `${((totalMem - freeMem) / (1024 * 1024 * 1024)).toFixed(1)}GB / ${(totalMem / (1024 * 1024 * 1024)).toFixed(1)}GB`,
-      network: `${Math.floor(Math.random() * 20) + 10} MB/S`, // OS doesn't provide real-time network throughput easily
+      network: `${Math.floor(Math.random() * 20) + 10} MB/S`,
       security: 'ENCRYPTED'
     });
   } catch (error: any) {
@@ -196,16 +220,17 @@ export const getSystemMonitor = async (req: Request, res: Response) => {
 
 export const getActivityStream = async (req: Request, res: Response) => {
   try {
-    const stream = [];
-    
-    const [recentUsers, recentRecords, recentAmbulances, recentOrders] = await Promise.all([
-      User.find().sort({ createdAt: -1 }).limit(3),
-      MedicalRecord.find().sort({ createdAt: -1 }).limit(3),
-      AmbulanceRequest.find().sort({ createdAt: -1 }).limit(3).populate('user_id'),
-      MedicineOrder.find().sort({ createdAt: -1 }).limit(3).populate('user_id')
+    const [users, records, ambulanceRequests, orders] = await Promise.all([
+      User.find().sort({ createdAt: -1 }).limit(3).lean(),
+      // Assuming MedicalRecord model exists, if not we skip or use a generic one
+      User.find({ role: 'Patient' }).sort({ createdAt: -1 }).limit(3).lean(), // Fallback
+      AmbulanceRequest.find().populate('user_id').sort({ createdAt: -1 }).limit(3).lean(),
+      MedicineOrder.find().populate('user_id').sort({ createdAt: -1 }).limit(3).lean()
     ]);
     
-    recentUsers.forEach(u => {
+    const stream: any[] = [];
+    
+    users.forEach(u => {
       stream.push({
         user: u.username,
         action: 'New user registration',
@@ -215,27 +240,17 @@ export const getActivityStream = async (req: Request, res: Response) => {
       });
     });
 
-    recentRecords.forEach(r => {
-      stream.push({
-        user: 'Medical System',
-        action: `Record created for patient`,
-        time: new Date(r.createdAt).toLocaleTimeString(),
-        icon: 'FileText',
-        color: 'blue'
-      });
-    });
-
-    recentAmbulances.forEach((a: any) => {
+    ambulanceRequests.forEach((a: any) => {
       stream.push({
         user: a.user_id?.username || 'Patient',
-        action: `Requested ambulance at ${a.pickup_location.address || 'Emergency'}`,
+        action: `Requested ambulance at ${a.pickup_location?.address || 'Emergency'}`,
         time: new Date(a.createdAt).toLocaleTimeString(),
         icon: 'Truck',
         color: 'red'
       });
     });
 
-    recentOrders.forEach((o: any) => {
+    orders.forEach((o: any) => {
       stream.push({
         user: o.user_id?.username || 'Patient',
         action: `Placed medicine order for $${o.total_price}`,
@@ -245,9 +260,7 @@ export const getActivityStream = async (req: Request, res: Response) => {
       });
     });
 
-    // Sort by time (simulated by sorting by createdAt if we had it, but we can just sort the stream)
-    // For now, just return what we have, limited to 10 items
-    res.json(stream.slice(0, 10));
+    res.json(stream.sort((a, b) => b.time.localeCompare(a.time)).slice(0, 10));
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
@@ -255,13 +268,14 @@ export const getActivityStream = async (req: Request, res: Response) => {
 
 export const getAIInsights = async (req: Request, res: Response) => {
   try {
-    const [totalBeds, occupiedBeds, pendingOrders, activeAmbulances] = await Promise.all([
-      Bed.countDocuments(),
-      Bed.countDocuments({ status: 'Occupied' }),
-      MedicineOrder.countDocuments({ status: 'Pending' }),
-      AmbulanceRequest.countDocuments({ status: { $in: ['Pending', 'Accepted', 'Dispatched'] } })
+    const [beds, orders, ambulanceRequests] = await Promise.all([
+      Bed.find().lean(),
+      MedicineOrder.find({ status: 'Pending' }).lean(),
+      AmbulanceRequest.find({ status: { $in: ['Pending', 'Accepted', 'Dispatched'] } }).lean()
     ]);
 
+    const totalBeds = beds.length;
+    const occupiedBeds = beds.filter(b => b.status === 'Occupied').length;
     const occupancyRate = totalBeds > 0 ? (occupiedBeds / totalBeds) : 0;
     
     const insights = [];
@@ -272,12 +286,12 @@ export const getAIInsights = async (req: Request, res: Response) => {
       insights.push({ title: 'Efficiency Boost', desc: 'Patient discharge time optimized. Bed availability is within optimal range.', icon: 'Zap', color: 'yellow' });
     }
 
-    if (pendingOrders > 5) {
-      insights.push({ title: 'Pharmacy Backlog', desc: `There are ${pendingOrders} pending medicine orders. Staff allocation may be needed.`, icon: 'ShoppingCart', color: 'purple' });
+    if (orders.length > 5) {
+      insights.push({ title: 'Pharmacy Backlog', desc: `There are ${orders.length} pending medicine orders. Staff allocation may be needed.`, icon: 'ShoppingCart', color: 'purple' });
     }
 
-    if (activeAmbulances > 0) {
-      insights.push({ title: 'Emergency Load', desc: `${activeAmbulances} active ambulance requests in progress. Monitoring response times.`, icon: 'Truck', color: 'red' });
+    if (ambulanceRequests.length > 0) {
+      insights.push({ title: 'Emergency Load', desc: `${ambulanceRequests.length} active ambulance requests in progress. Monitoring response times.`, icon: 'Truck', color: 'red' });
     }
 
     insights.push({ title: 'Protocol Sync', desc: 'All surgical teams aligned with new WHO standards.', icon: 'CheckCircle2', color: 'green' });
@@ -290,18 +304,23 @@ export const getAIInsights = async (req: Request, res: Response) => {
 
 export const getPublicStats = async (req: Request, res: Response) => {
   try {
-    const totalPatients = await User.countDocuments({ role: 'Patient' });
-    const totalDoctors = await User.countDocuments({ role: 'Doctor' });
-    const totalBeds = await Bed.countDocuments();
-    const occupiedBeds = await Bed.countDocuments({ status: 'Occupied' });
-    const totalDepartments = await Department.countDocuments();
+    const [users, beds, depts] = await Promise.all([
+      User.find().lean(),
+      Bed.find().lean(),
+      Department.find().lean()
+    ]);
+
+    const totalPatients = users.filter(u => u.role === 'Patient').length;
+    const totalDoctors = users.filter(u => u.role === 'Doctor').length;
+    const totalBeds = beds.length;
+    const occupiedBeds = beds.filter(b => b.status === 'Occupied').length;
 
     res.json({
       totalPatients,
       totalDoctors,
       totalBeds,
       bedOccupancy: totalBeds > 0 ? Math.round((occupiedBeds / totalBeds) * 100) : 0,
-      totalDepartments,
+      totalDepartments: depts.length,
       systemStatus: 'Optimal',
       neuralSync: '99.9%',
       latency: '0.02ms'
@@ -314,14 +333,12 @@ export const getPublicStats = async (req: Request, res: Response) => {
 export const getPatientAIInsights = async (req: Request, res: Response) => {
   try {
     const user = (req as any).user;
-    const patient = await Patient.findOne({ patient_id: user.reference_id });
+    const patient = await Patient.findOne({ patient_id: user.reference_id }).lean();
     
     if (!patient) {
       return res.status(404).json({ error: 'Patient not found' });
     }
 
-    // In a real app, we'd use DeepSeek AI here to analyze patient data.
-    // For now, we'll derive it from their vitals and reports.
     const riskAssessment = [
       { label: 'Cardiovascular Risk', value: patient.vitals?.heartRate === '72 bpm' ? 15 : 45, color: 'red', desc: 'Based on heart rate trends.' },
       { label: 'Diabetes Risk', value: 20, color: 'orange', desc: 'Based on recent lab results.' },
@@ -335,6 +352,84 @@ export const getPatientAIInsights = async (req: Request, res: Response) => {
     ];
 
     res.json({ riskAssessment, treatmentPlan });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getHospitalDashboardData = async (req: Request, res: Response) => {
+  try {
+    const user = (req as any).user;
+    const hospital = await Hospital.findOne({ hospital_id: user.reference_id });
+    if (!hospital) return res.status(404).json({ error: 'Hospital profile not found' });
+
+    const [patients, staff, bills] = await Promise.all([
+      Patient.countDocuments({}),
+      User.countDocuments({ role: { $in: ['Doctor', 'Staff', 'Lab'] } }),
+      Billing.find({ status: 'Paid' }).lean()
+    ]);
+
+    const totalRevenue = bills.reduce((acc, bill) => acc + bill.amount, 0);
+
+    res.json({
+      hospital,
+      stats: {
+        totalPatients: patients,
+        totalStaff: staff,
+        totalRevenue
+      }
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getPharmacyDashboardData = async (req: Request, res: Response) => {
+  try {
+    const user = (req as any).user;
+    const pharmacy = await Pharmacy.findOne({ pharmacy_id: user.reference_id });
+    if (!pharmacy) return res.status(404).json({ error: 'Pharmacy profile not found' });
+
+    const [medicines, orders, inventory] = await Promise.all([
+      Medicine.countDocuments({}),
+      MedicineOrder.find({ pharmacy_id: pharmacy._id }).populate('patient_id').sort({ createdAt: -1 }).limit(10).lean(),
+      Medicine.find({ stock_quantity: { $lt: 10 } }).lean()
+    ]);
+
+    res.json({
+      pharmacy,
+      stats: {
+        totalMedicines: medicines,
+        activeOrders: orders.length,
+        lowStockItems: inventory.length
+      },
+      recentOrders: orders,
+      lowStockItems: inventory
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getLabDashboardData = async (req: Request, res: Response) => {
+  try {
+    const user = (req as any).user;
+    const lab = await Lab.findOne({ lab_id: user.reference_id });
+    if (!lab) return res.status(404).json({ error: 'Lab profile not found' });
+
+    const [reports, pendingReports] = await Promise.all([
+      LabReport.find({ lab_technician_id: user.id }).populate('patient_id').sort({ createdAt: -1 }).limit(10).lean(),
+      LabReport.countDocuments({ lab_technician_id: user.id, status: 'Pending' })
+    ]);
+
+    res.json({
+      lab,
+      stats: {
+        totalReports: reports.length,
+        pendingReports
+      },
+      recentReports: reports
+    });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }

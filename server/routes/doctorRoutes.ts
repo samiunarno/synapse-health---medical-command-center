@@ -2,7 +2,8 @@ import express from 'express';
 import { 
   getDoctors, getDoctor, createDoctor, updateDoctor, deleteDoctor, 
   getApprovedDoctors, updateDoctorProfile, getDoctorProfile, 
-  getDoctorDashboardData, createPrescription, getPrescriptions, getMyPrescriptions 
+  getDoctorDashboardData, createPrescription, getPrescriptions, getMyPrescriptions,
+  getCommissions, withdrawCommission
 } from '../controllers/doctorController';
 import { authenticate, authorize } from '../middleware/auth';
 
@@ -12,6 +13,8 @@ router.get('/', authenticate, getDoctors);
 router.get('/approved', authenticate, getApprovedDoctors);
 router.get('/profile', authenticate, authorize(['Doctor']), getDoctorProfile);
 router.get('/dashboard-data', authenticate, authorize(['Doctor']), getDoctorDashboardData);
+router.get('/commissions', authenticate, authorize(['Doctor']), getCommissions);
+router.post('/withdraw', authenticate, authorize(['Doctor']), withdrawCommission);
 router.get('/:id', authenticate, getDoctor);
 router.put('/profile', authenticate, authorize(['Doctor']), updateDoctorProfile);
 

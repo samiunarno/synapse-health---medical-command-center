@@ -10,7 +10,9 @@ import {
   User,
   Activity,
   ArrowUpRight,
-  Filter
+  Filter,
+  DollarSign,
+  Loader2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { io } from 'socket.io-client';
@@ -37,6 +39,8 @@ export default function LabDashboard() {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState('');
   const [patients, setPatients] = React.useState<any[]>([]);
+  const [commissions, setCommissions] = React.useState<any>(null);
+  const [isWithdrawing, setIsWithdrawing] = React.useState(false);
   
   const [formData, setFormData] = React.useState({
     patient_id: '',
@@ -44,6 +48,42 @@ export default function LabDashboard() {
     result_details: '',
     status: 'Pending'
   });
+
+  const fetchCommissions = async () => {
+    try {
+      const res = await fetch('/api/commissions', {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      if (res.ok) {
+        setCommissions(await res.json());
+      }
+    } catch (err) {
+      console.error('Failed to fetch commissions:', err);
+    }
+  };
+
+  const handleWithdraw = async () => {
+    if (!commissions?.commissionBalance || commissions.commissionBalance <= 0) return;
+    setIsWithdrawing(true);
+    try {
+      const res = await fetch('/api/commissions/withdraw', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ amount: commissions.commissionBalance })
+      });
+      if (res.ok) {
+        fetchCommissions();
+        alert(t('withdrawal_success'));
+      }
+    } catch (err) {
+      console.error('Withdrawal failed:', err);
+    } finally {
+      setIsWithdrawing(false);
+    }
+  };
 
   const fetchReports = async () => {
     try {
@@ -78,6 +118,7 @@ export default function LabDashboard() {
   React.useEffect(() => {
     fetchReports();
     fetchPatients();
+    fetchCommissions();
     
     const socket = io(window.location.origin);
     
@@ -131,9 +172,9 @@ export default function LabDashboard() {
   };
 
   const filteredReports = reports.filter(r => 
-    r.test_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    r.patient_id.fullName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    r.patient_id.username.toLowerCase().includes(searchQuery.toLowerCase())
+    r.test_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    r.patient_id?.fullName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    r.patient_id?.username?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const stats = [
@@ -165,35 +206,65 @@ export default function LabDashboard() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat, idx) => (
-          <motion.div
-            key={stat.label}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: idx * 0.1 }}
-            className="glass-dark p-8 rounded-[2.5rem] relative overflow-hidden group"
-          >
-            <div className="relative z-10">
-              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-6 border border-white/10 group-hover:scale-110 transition-transform duration-500 ${
-                stat.color === 'blue' ? 'bg-blue-600/20 text-blue-500' :
-                stat.color === 'green' ? 'bg-green-600/20 text-green-500' :
-                stat.color === 'yellow' ? 'bg-yellow-600/20 text-yellow-500' :
-                'bg-red-600/20 text-red-500'
-              }`}>
-                <stat.icon className="w-6 h-6" />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {stats.map((stat, idx) => (
+            <motion.div
+              key={stat.label}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.1 }}
+              className="glass-dark p-8 rounded-[2.5rem] relative overflow-hidden group"
+            >
+              <div className="relative z-10">
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-6 border border-white/10 group-hover:scale-110 transition-transform duration-500 ${
+                  stat.color === 'blue' ? 'bg-blue-600/20 text-blue-500' :
+                  stat.color === 'green' ? 'bg-green-600/20 text-green-500' :
+                  stat.color === 'yellow' ? 'bg-yellow-600/20 text-yellow-500' :
+                  'bg-red-600/20 text-red-500'
+                }`}>
+                  <stat.icon className="w-6 h-6" />
+                </div>
+                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.3em] mb-1">{stat.label}</p>
+                <h3 className="text-3xl font-display font-bold text-white tracking-tighter">{stat.value}</h3>
               </div>
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.3em] mb-1">{stat.label}</p>
-              <h3 className="text-3xl font-display font-bold text-white tracking-tighter">{stat.value}</h3>
+              <div className={`absolute -right-4 -bottom-4 w-24 h-24 rounded-full blur-3xl opacity-20 transition-transform duration-700 group-hover:scale-150 ${
+                stat.color === 'blue' ? 'bg-blue-600' :
+                stat.color === 'green' ? 'bg-green-600' :
+                stat.color === 'yellow' ? 'bg-yellow-600' :
+                'bg-red-600'
+              }`} />
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="glass-dark p-10 rounded-[3rem] border border-white/10 space-y-8 relative overflow-hidden group">
+          <div className="relative z-10 space-y-6">
+            <div className="flex justify-between items-start">
+              <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-2xl shadow-blue-600/20">
+                <DollarSign className="w-8 h-8" />
+              </div>
+              <div className="text-right">
+                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">{t('commission_balance')}</p>
+                <h3 className="text-4xl font-display font-bold text-white tracking-tighter">${commissions?.commissionBalance?.toFixed(2) || '0.00'}</h3>
+              </div>
             </div>
-            <div className={`absolute -right-4 -bottom-4 w-24 h-24 rounded-full blur-3xl opacity-20 transition-transform duration-700 group-hover:scale-150 ${
-              stat.color === 'blue' ? 'bg-blue-600' :
-              stat.color === 'green' ? 'bg-green-600' :
-              stat.color === 'yellow' ? 'bg-yellow-600' :
-              'bg-red-600'
-            }`} />
-          </motion.div>
-        ))}
+            
+            <div className="p-6 bg-white/5 rounded-2xl border border-white/5">
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">{t('total_platform_sales')}</p>
+              <p className="text-2xl font-display font-bold text-white tracking-tighter">${commissions?.totalSales?.toFixed(2) || '0.00'}</p>
+            </div>
+
+            <button 
+              onClick={handleWithdraw}
+              disabled={isWithdrawing || !commissions?.commissionBalance || commissions.commissionBalance <= 0}
+              className="w-full py-5 bg-white text-black rounded-2xl font-bold uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all duration-500 disabled:opacity-50 flex items-center justify-center gap-3"
+            >
+              {isWithdrawing ? <Loader2 className="w-5 h-5 animate-spin" /> : t('withdraw_funds')}
+            </button>
+          </div>
+          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 blur-[100px] -z-10" />
+        </div>
       </div>
 
       {/* Reports Table */}
@@ -315,7 +386,7 @@ export default function LabDashboard() {
                     onChange={(e) => setFormData({ ...formData, patient_id: e.target.value })}
                     className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold text-white focus:ring-2 focus:ring-blue-500/50 outline-none appearance-none"
                   >
-                    <option value="" className="bg-black text-white">SELECT PATIENT</option>
+                    <option value="" className="bg-black text-white">{t('select_patient_placeholder')}</option>
                     {patients.map(p => (
                       <option key={p._id} value={p._id} className="bg-black text-white">
                         {p.fullName || p.username} ({p.email})
@@ -331,7 +402,7 @@ export default function LabDashboard() {
                     type="text"
                     value={formData.test_name}
                     onChange={(e) => setFormData({ ...formData, test_name: e.target.value })}
-                    placeholder="E.G. BLOOD ANALYSIS, MRI SCAN..."
+                    placeholder={t('test_name_placeholder')}
                     className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold text-white placeholder:text-gray-700 focus:ring-2 focus:ring-blue-500/50 outline-none uppercase tracking-widest"
                   />
                 </div>
@@ -342,7 +413,7 @@ export default function LabDashboard() {
                     required
                     value={formData.result_details}
                     onChange={(e) => setFormData({ ...formData, result_details: e.target.value })}
-                    placeholder="ENTER DETAILED DIAGNOSTIC RESULTS..."
+                    placeholder={t('results_placeholder')}
                     rows={4}
                     className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold text-white placeholder:text-gray-700 focus:ring-2 focus:ring-blue-500/50 outline-none uppercase tracking-widest resize-none"
                   />
@@ -356,8 +427,8 @@ export default function LabDashboard() {
                       onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
                       className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold text-white focus:ring-2 focus:ring-blue-500/50 outline-none appearance-none"
                     >
-                      <option value="Pending" className="bg-black text-white">PENDING</option>
-                      <option value="Completed" className="bg-black text-white">COMPLETED</option>
+                      <option value="Pending" className="bg-black text-white">{t('pending')}</option>
+                      <option value="Completed" className="bg-black text-white">{t('completed')}</option>
                     </select>
                   </div>
                   <div className="flex items-end">

@@ -295,7 +295,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
             <nav className="flex-1 px-6 space-y-3 overflow-y-auto custom-scrollbar pt-4">
               <div className="px-4 mb-6">
-                <p className="text-[10px] font-bold text-gray-400 dark:text-gray-600 uppercase tracking-[0.4em]">{t('language')}</p>
+                <p className="text-[10px] font-bold text-gray-400 dark:text-gray-600 uppercase tracking-[0.4em]">{t('menu')}</p>
               </div>
               {filteredNavItems.map((item) => {
                 const isActive = location.pathname === item.path || (item.path === '/dashboard' && location.pathname === '/');

@@ -13,8 +13,7 @@ export const getDepartments = async (req: Request, res: Response) => {
 export const createDepartment = async (req: Request, res: Response) => {
   try {
     const { name, description, associated_ward_id } = req.body;
-    const department = new Department({ name, description, associated_ward_id });
-    await department.save();
+    const department = await Department.create({ name, description, associated_ward_id });
     res.status(201).json(department);
   } catch (error: any) {
     res.status(500).json({ error: error.message });

@@ -176,7 +176,7 @@ export default function RiderDashboard() {
                   </div>
                   <div className="text-right">
                     <span className="px-4 py-2 bg-blue-600/10 dark:bg-blue-600/20 border border-blue-500/20 dark:border-blue-500/30 text-blue-600 dark:text-blue-400 rounded-full text-[10px] font-bold uppercase tracking-widest">
-                      {activeOrder.rider_status}
+                      {t(activeOrder.rider_status.toLowerCase().replace(/([A-Z])/g, '_$1').toLowerCase())}
                     </span>
                   </div>
                 </div>
@@ -206,7 +206,7 @@ export default function RiderDashboard() {
                     <div>
                       <p className="text-gray-900 dark:text-white font-bold uppercase tracking-tight">{activeOrder.patient_id?.name || t('customer')}</p>
                       <div className="flex items-center gap-2 text-gray-500 text-[10px] font-bold uppercase tracking-widest">
-                        <Phone className="w-3 h-3" /> {activeOrder.patient_id?.contact || 'N/A'}
+                        <Phone className="w-3 h-3" /> {activeOrder.patient_id?.contact || t('na')}
                       </div>
                     </div>
                   </div>

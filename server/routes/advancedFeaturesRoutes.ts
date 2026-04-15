@@ -3,7 +3,7 @@ import {
   getQueue, addToQueue, updateQueueStatus, getMyQueueStatus,
   getSchedules, createSchedule, 
   getAmbulances, updateAmbulanceLocation, requestAmbulance, getMyAmbulanceRequests, getAllAmbulanceRequests, updateAmbulanceRequestStatus, simulateAmbulance,
-  getBills, createBill, processPayment,
+  getBills, getMyBills, createBill, processPayment,
   getIoTDevices, createIoTDevice, updateIoTDevice, getMyIoTDevices,
   getCampaigns, createCampaign, donateToCampaign,
   getBloodDonors, registerAsDonor,
@@ -128,6 +128,7 @@ router.post('/ambulances/:id/simulate', authenticate, simulateAmbulance);
 
 // Billing Routes
 router.get('/billing', authenticate, getBills);
+router.get('/billing/me', authenticate, getMyBills);
 router.post('/billing', authenticate, authorize(['Admin', 'Staff']), createBill);
 router.post('/billing/:id/pay', authenticate, processPayment);
 

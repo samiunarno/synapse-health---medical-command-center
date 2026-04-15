@@ -17,9 +17,9 @@ import { useTranslation } from 'react-i18next';
 export default function PharmacyDashboard() {
   const { t } = useTranslation();
   const { user, token } = useAuth();
-  const [orders, setOrders] = useState<any[]>([]);
-  const [inventory, setInventory] = useState<any[]>([]);
+  const [dashboardData, setDashboardData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isWithdrawing, setIsWithdrawing] = useState(false);
 
   useEffect(() => {
     fetchPharmacyData();
@@ -27,13 +27,12 @@ export default function PharmacyDashboard() {
 
   const fetchPharmacyData = async () => {
     try {
-      const [ordersRes, inventoryRes] = await Promise.all([
-        fetch('/api/pharmacy/orders/all', { headers: { Authorization: `Bearer ${token}` } }),
-        fetch('/api/pharmacy/medicines', { headers: { Authorization: `Bearer ${token}` } })
-      ]);
-      
-      if (ordersRes.ok) setOrders(await ordersRes.json());
-      if (inventoryRes.ok) setInventory(await inventoryRes.json());
+      const res = await fetch('/api/analytics/pharmacy-dashboard', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        setDashboardData(await res.json());
+      }
     } catch (err) {
       console.error('Failed to fetch pharmacy data:', err);
     } finally {
@@ -41,7 +40,38 @@ export default function PharmacyDashboard() {
     }
   };
 
+  const handleWithdraw = async () => {
+    const balance = dashboardData?.pharmacy?.commissionBalance || 0;
+    if (balance <= 0) return;
+    
+    setIsWithdrawing(true);
+    try {
+      const res = await fetch('/api/commissions/withdraw', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ amount: balance })
+      });
+      
+      if (res.ok) {
+        fetchPharmacyData();
+        alert(t('withdrawal_success'));
+      }
+    } catch (err) {
+      console.error('Withdrawal failed:', err);
+    } finally {
+      setIsWithdrawing(false);
+    }
+  };
+
   if (loading) return <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div></div>;
+
+  const pharmacy = dashboardData?.pharmacy;
+  const stats = dashboardData?.stats;
+  const orders = dashboardData?.recentOrders || [];
+  const lowStockItems = dashboardData?.lowStockItems || [];
 
   return (
     <div className="space-y-8 p-6">
@@ -87,12 +117,12 @@ export default function PharmacyDashboard() {
                 {orders.slice(0, 5).map((order) => (
                   <tr key={order._id} className="border-b border-gray-200 dark:border-white/5 hover:bg-gray-100 dark:hover:bg-white/2 transition-colors">
                     <td className="px-8 py-6 text-xs font-bold text-gray-900 dark:text-white uppercase tracking-tight">#{order._id.slice(-6)}</td>
-                    <td className="px-8 py-6 text-xs text-gray-500 dark:text-gray-400">{order.medicines.length} Items</td>
+                    <td className="px-8 py-6 text-xs text-gray-500 dark:text-gray-400">{order.medicines.length} {t('items')}</td>
                     <td className="px-8 py-6">
                       <span className={`px-3 py-1 rounded-full text-[8px] font-bold uppercase tracking-widest ${
                         order.status === 'Delivered' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-500' : 'bg-blue-500/10 text-blue-600 dark:text-blue-500'
                       }`}>
-                        {order.status}
+                        {t(order.status.toLowerCase())}
                       </span>
                     </td>
                     <td className="px-8 py-6">
@@ -119,7 +149,7 @@ export default function PharmacyDashboard() {
             {t('inventory_alerts')}
           </h2>
           <div className="space-y-4">
-            {inventory.filter(m => m.stock_quantity < 20).map((item) => (
+            {lowStockItems.map((item: any) => (
               <div key={item._id} className="p-6 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-3xl flex justify-between items-center group hover:bg-gray-100 dark:hover:bg-white/10 transition-all">
                 <div>
                   <h4 className="text-gray-900 dark:text-white font-bold uppercase tracking-tight text-sm">{item.brand_name}</h4>
@@ -131,14 +161,24 @@ export default function PharmacyDashboard() {
                 </div>
               </div>
             ))}
-            <div className="p-8 bg-emerald-600 rounded-[2.5rem] text-white space-y-4">
-              <TrendingUp className="w-10 h-10" />
-              <h3 className="text-2xl font-display font-bold uppercase tracking-tighter">{t('sales_performance')}</h3>
-              <p className="text-emerald-100 text-xs font-bold uppercase tracking-widest leading-relaxed">{t('sales_up_desc')}</p>
-              <button className="w-full py-4 bg-white text-emerald-600 rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:bg-emerald-50 transition-all">
-                {t('view_analytics')}
-              </button>
-            </div>
+              <div className="p-8 bg-emerald-600 rounded-[2.5rem] text-white space-y-4">
+                <div className="flex justify-between items-start">
+                  <TrendingUp className="w-10 h-10" />
+                  <div className="text-right">
+                    <p className="text-[10px] font-bold uppercase tracking-widest opacity-70">{t('commission_balance')}</p>
+                    <p className="text-2xl font-display font-bold">${pharmacy?.commissionBalance?.toFixed(2) || '0.00'}</p>
+                  </div>
+                </div>
+                <h3 className="text-2xl font-display font-bold uppercase tracking-tighter">{t('sales_performance')}</h3>
+                <p className="text-emerald-100 text-xs font-bold uppercase tracking-widest leading-relaxed">{t('total_sales')}: ${pharmacy?.totalSales?.toFixed(2) || '0.00'}</p>
+                <button 
+                  onClick={handleWithdraw}
+                  disabled={isWithdrawing || !pharmacy?.commissionBalance || pharmacy.commissionBalance <= 0}
+                  className="w-full py-4 bg-white text-emerald-600 rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:bg-emerald-50 transition-all disabled:opacity-50"
+                >
+                  {isWithdrawing ? t('processing') : t('withdraw_funds')}
+                </button>
+              </div>
           </div>
         </div>
       </div>

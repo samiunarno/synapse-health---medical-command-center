@@ -5,8 +5,10 @@ import { Calendar, Clock, Video, Users, CheckCircle, CreditCard, QrCode, Loader2
 import { motion, AnimatePresence } from 'motion/react';
 import { io } from 'socket.io-client';
 import { suggestDoctor } from '../services/aiService';
+import { useTranslation } from 'react-i18next';
 
 export default function Appointments() {
+  const { t } = useTranslation();
   const { token, user } = useAuth();
   const [appointments, setAppointments] = useState<any[]>([]);
   const [doctors, setDoctors] = useState<any[]>([]);
@@ -170,15 +172,15 @@ export default function Appointments() {
     <div className="space-y-8">
       <header className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-display font-bold text-white">Appointments</h1>
-          <p className="text-gray-400">Manage your consultations and payments.</p>
+          <h1 className="text-3xl font-display font-bold text-white">{t('appointments')}</h1>
+          <p className="text-gray-400">{t('manage_consultations')}</p>
         </div>
         {user?.role === 'Patient' && (
           <button
             onClick={() => setIsBooking(true)}
             className="bg-blue-600 text-white px-6 py-3 rounded-2xl font-bold hover:bg-blue-700 transition-all"
           >
-            Book Appointment
+            {t('book_appointment')}
           </button>
         )}
       </header>
@@ -193,7 +195,7 @@ export default function Appointments() {
               exit={{ opacity: 0, scale: 0.9 }}
               className="bg-[#0a0a0a] border border-white/10 rounded-3xl p-8 w-full max-w-md"
             >
-              <h2 className="text-2xl font-bold text-white mb-6">Book Consultation</h2>
+              <h2 className="text-2xl font-bold text-white mb-6">{t('book_consultation')}</h2>
               
               {/* Smart Match Section */}
               <div className="mb-6 p-4 bg-blue-600/5 border border-blue-500/20 rounded-2xl">
@@ -204,7 +206,7 @@ export default function Appointments() {
                 <div className="flex gap-2">
                   <input
                     type="text"
-                    placeholder="Describe your symptoms..."
+                    placeholder={t('describe_symptoms')}
                     value={symptoms}
                     onChange={(e) => setSymptoms(e.target.value)}
                     className="flex-1 bg-white/5 border border-white/10 rounded-xl p-3 text-sm text-white focus:ring-2 focus:ring-blue-500/20 transition-all"
@@ -224,8 +226,8 @@ export default function Appointments() {
                     animate={{ opacity: 1, y: 0 }}
                     className="mt-4 p-3 bg-white/5 rounded-xl border border-white/5"
                   >
-                    <p className="text-[10px] text-blue-400 font-bold uppercase mb-1">AI Recommendation:</p>
-                    <p className="text-xs text-white font-medium mb-1">Recommended Specialty: {matchResult.specialty}</p>
+                    <p className="text-[10px] text-blue-400 font-bold uppercase mb-1">{t('ai_recommendation')}</p>
+                    <p className="text-xs text-white font-medium mb-1">{t('recommended_specialty')} {matchResult.specialty}</p>
                     <p className="text-[10px] text-gray-500 leading-relaxed">{matchResult.reasoning}</p>
                   </motion.div>
                 )}
@@ -233,7 +235,7 @@ export default function Appointments() {
 
               <form onSubmit={handleBook} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Select Doctor</label>
+                  <label className="block text-xs font-bold text-gray-500 uppercase mb-2">{t('select_doctor')}</label>
                   <select
                     required
                     value={selectedDoctor}

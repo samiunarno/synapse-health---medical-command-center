@@ -42,6 +42,7 @@ import cdssRoutes from './server/routes/cdssRoutes';
 import chatbotRoutes from './server/routes/chatbotRoutes';
 import productRoutes from './server/routes/productRoutes';
 import verificationRoutes from './server/routes/verificationRoutes';
+import commissionRoutes from './server/routes/commissionRoutes';
 import { seedDatabase } from './server/seed';
 import { initVerificationCron } from './server/services/verificationService';
 
@@ -162,6 +163,7 @@ async function startServer() {
   app.use('/api/chatbot', chatbotRoutes);
   app.use('/api/products', productRoutes);
   app.use('/api/verification', verificationRoutes);
+  app.use('/api/commissions', commissionRoutes);
 
   // Health Check
   app.get('/api/health', (req, res) => {

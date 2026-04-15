@@ -62,6 +62,7 @@ export default function GlobalNavbar() {
         {/* Desktop Nav */}
         <div className="hidden lg:flex items-center gap-8 xl:gap-12 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-600 dark:text-gray-400">
           <Link to="/" className={`hover:text-blue-500 transition-colors interactive ${location.pathname === '/' ? 'text-blue-500' : ''}`}>{t('home')}</Link>
+          <Link to="/presentation" className={`hover:text-blue-500 transition-colors interactive ${location.pathname === '/presentation' ? 'text-blue-500' : ''}`}>{t('pitch_deck')}</Link>
           <Link to="/ecommerce" className={`hover:text-blue-500 transition-colors interactive ${location.pathname === '/ecommerce' ? 'text-blue-500' : ''}`}>{t('marketplace')}</Link>
 
           {user ? (
@@ -108,7 +109,7 @@ export default function GlobalNavbar() {
             <button 
               onClick={logout}
               className="hidden sm:flex w-10 h-10 items-center justify-center bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-full border border-red-500/20 transition-all interactive"
-              title="Logout"
+              title={t('logout')}
             >
               <LogOut className="w-4 h-4" />
             </button>
