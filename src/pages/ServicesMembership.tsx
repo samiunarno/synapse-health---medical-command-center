@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'motion/react';
+import QRCodePaymentModal from '../components/QRCodePaymentModal';
 import { 
   Shield, 
   Zap, 
@@ -14,6 +15,17 @@ import {
 } from 'lucide-react';
 
 export default function ServicesMembership() {
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<{name: string, price: number} | null>(null);
+
+  const handleSubscribe = (planName: string, priceString: string) => {
+    if (priceString === '$0' || priceString === 'Custom') {
+      return;
+    }
+    const price = parseInt(priceString.replace(/[^0-9]/g, ''));
+    setSelectedPlan({ name: planName, price });
+    setIsPaymentModalOpen(true);
+  };
   const plans = [
     {
       name: "Standard",
@@ -120,7 +132,9 @@ export default function ServicesMembership() {
                 </li>
               ))}
             </ul>
-            <button className={`w-full py-5 rounded-2xl font-bold uppercase tracking-widest text-xs transition-all ${
+            <button 
+              onClick={() => handleSubscribe(plan.name, plan.price)}
+              className={`w-full py-5 rounded-2xl font-bold uppercase tracking-widest text-xs transition-all flex items-center justify-center gap-2 ${
               plan.popular 
                 ? 'bg-white text-purple-600 hover:bg-purple-50' 
                 : 'bg-white/5 border border-white/10 text-white hover:bg-white/10'
@@ -158,6 +172,12 @@ export default function ServicesMembership() {
           </button>
         </div>
       </section>
+      <QRCodePaymentModal 
+        isOpen={isPaymentModalOpen} 
+        onClose={() => setIsPaymentModalOpen(false)} 
+        amount={selectedPlan?.price}
+        planName={selectedPlan?.name}
+      />
     </div>
   );
 }

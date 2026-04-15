@@ -46,13 +46,14 @@ import ServicesMembership from './pages/ServicesMembership';
 import HelpCenter from './pages/HelpCenter';
 import Chatbot from './components/Chatbot';
 import SOSButton from './components/SOSButton';
+import CustomCursor from './components/CustomCursor';
 
 import ErrorBoundary from './components/ErrorBoundary';
 
 function PrivateRoute({ children, roles }: { children: React.ReactNode; roles?: string[] }) {
   const { user, loading } = useAuth();
 
-  if (loading) return <div className="flex items-center justify-center h-screen">Loading...</div>;
+  if (loading) return <div className="flex items-center justify-center h-screen bg-[#050505] text-white font-bold uppercase tracking-[0.3em]">正在加载系统核心...</div>;
   if (!user) return <Navigate to="/login" />;
   if (roles && !roles.includes(user.role)) return <Navigate to="/dashboard" />;
 
@@ -65,56 +66,59 @@ export default function App() {
       <ThemeProvider>
         <AuthProvider>
           <SocketProvider>
-            <Router>
-            <Chatbot />
-            <SOSButton />
-            <Routes>
-              <Route path="/" element={<Landing />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/presentation" element={<Presentation />} />
-
-              <Route path="/services-membership" element={<ServicesMembership />} />
-              <Route path="/help-center" element={<HelpCenter />} />
-              
-              <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-              <Route path="/patients" element={<PrivateRoute roles={['Admin', 'Doctor', 'Staff']}><Patients /></PrivateRoute>} />
-              <Route path="/doctors" element={<PrivateRoute roles={['Admin', 'Staff']}><Doctors /></PrivateRoute>} />
-              <Route path="/wards" element={<PrivateRoute roles={['Admin', 'Staff']}><Wards /></PrivateRoute>} />
-              <Route path="/pharmacy" element={<PrivateRoute roles={['Admin', 'Staff', 'Doctor', 'Pharmacist', 'Patient']}><Pharmacy /></PrivateRoute>} />
-              <Route path="/records" element={<PrivateRoute roles={['Admin', 'Doctor', 'Patient', 'Pharmacist']}><MedicalRecords /></PrivateRoute>} />
-              <Route path="/analytics" element={<PrivateRoute roles={['Admin']}><Analytics /></PrivateRoute>} />
-              <Route path="/users" element={<PrivateRoute roles={['Admin']}><UserManagement /></PrivateRoute>} />
-              <Route path="/appointments" element={<PrivateRoute><Appointments /></PrivateRoute>} />
-              <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
-              <Route path="/search" element={<PrivateRoute><Search /></PrivateRoute>} />
-              <Route path="/video-conference" element={<PrivateRoute><VideoConference /></PrivateRoute>} />
-              <Route path="/tasks" element={<PrivateRoute roles={['Admin', 'Doctor', 'Staff']}><Tasks /></PrivateRoute>} />
-              <Route path="/map" element={<PrivateRoute><MapTracking /></PrivateRoute>} />
-              <Route path="/bridge" element={<PrivateRoute><Billing /></PrivateRoute>} />
-              <Route path="/iot" element={<PrivateRoute roles={['Admin', 'Doctor', 'Staff']}><IoTDevices /></PrivateRoute>} />
-              <Route path="/ambulance" element={<PrivateRoute roles={['Patient', 'Admin', 'Staff']}><AmbulanceService /></PrivateRoute>} />
-              <Route path="/prescription-ai" element={<PrivateRoute roles={['Patient', 'Admin', 'Doctor']}><PrescriptionAI /></PrivateRoute>} />
-              <Route path="/health-ai" element={<PrivateRoute roles={['Patient', 'Admin', 'Doctor']}><HealthAI /></PrivateRoute>} />
-              <Route path="/wearables" element={<PrivateRoute roles={['Patient', 'Admin', 'Doctor']}><Wearables /></PrivateRoute>} />
-              <Route path="/blood-hub" element={<PrivateRoute><BloodHub /></PrivateRoute>} />
-              <Route path="/symptoms" element={<PrivateRoute><SymptomChecker /></PrivateRoute>} />
-              <Route path="/vaccinations" element={<PrivateRoute><VaccinationTracker /></PrivateRoute>} />
-              <Route path="/tele-health" element={<PrivateRoute><TeleHealth /></PrivateRoute>} />
-              <Route path="/prescriptions" element={<PrivateRoute><Prescriptions /></PrivateRoute>} />
-              <Route path="/lab-interpreter" element={<PrivateRoute><LabReportInterpreter /></PrivateRoute>} />
-              <Route path="/health-id" element={<PrivateRoute><DigitalHealthID /></PrivateRoute>} />
-              <Route path="/medicine-inventory" element={<PrivateRoute><MedicineInventory /></PrivateRoute>} />
-              <Route path="/appointment-optimizer" element={<PrivateRoute><AppointmentOptimizer /></PrivateRoute>} />
-              <Route path="/organ-donation" element={<PrivateRoute><OrganDonation /></PrivateRoute>} />
-              <Route path="/ai-chatbot" element={<PrivateRoute><AIChatbot /></PrivateRoute>} />
-              <Route path="/ecommerce" element={<Ecommerce />} />
-              <Route path="/admin/products" element={<PrivateRoute roles={['Admin']}><AdminProducts /></PrivateRoute>} />
-              
-              <Route path="*" element={<Navigate to="/" />} />
-            </Routes>
-          </Router>
-        </SocketProvider>
+            <div className="lg:cursor-none min-h-screen">
+              <Router>
+                <CustomCursor />
+                <Chatbot />
+                <SOSButton />
+                <Routes>
+                  <Route path="/" element={<Landing />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/presentation" element={<Presentation />} />
+                  <Route path="/sourcing-solutions" element={<SourcingSolutions />} />
+                  <Route path="/services-membership" element={<ServicesMembership />} />
+                  <Route path="/help-center" element={<HelpCenter />} />
+                  
+                  <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+                  <Route path="/patients" element={<PrivateRoute roles={['Admin', 'Doctor', 'Staff']}><Patients /></PrivateRoute>} />
+                  <Route path="/doctors" element={<PrivateRoute roles={['Admin', 'Staff']}><Doctors /></PrivateRoute>} />
+                  <Route path="/wards" element={<PrivateRoute roles={['Admin', 'Staff']}><Wards /></PrivateRoute>} />
+                  <Route path="/pharmacy" element={<PrivateRoute roles={['Admin', 'Staff', 'Doctor', 'Pharmacist', 'Patient']}><Pharmacy /></PrivateRoute>} />
+                  <Route path="/records" element={<PrivateRoute roles={['Admin', 'Doctor', 'Patient', 'Pharmacist']}><MedicalRecords /></PrivateRoute>} />
+                  <Route path="/analytics" element={<PrivateRoute roles={['Admin']}><Analytics /></PrivateRoute>} />
+                  <Route path="/users" element={<PrivateRoute roles={['Admin']}><UserManagement /></PrivateRoute>} />
+                  <Route path="/appointments" element={<PrivateRoute><Appointments /></PrivateRoute>} />
+                  <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
+                  <Route path="/search" element={<PrivateRoute><Search /></PrivateRoute>} />
+                  <Route path="/video-conference" element={<PrivateRoute><VideoConference /></PrivateRoute>} />
+                  <Route path="/tasks" element={<PrivateRoute roles={['Admin', 'Doctor', 'Staff']}><Tasks /></PrivateRoute>} />
+                  <Route path="/map" element={<PrivateRoute><MapTracking /></PrivateRoute>} />
+                  <Route path="/bridge" element={<PrivateRoute><Billing /></PrivateRoute>} />
+                  <Route path="/iot" element={<PrivateRoute roles={['Admin', 'Doctor', 'Staff']}><IoTDevices /></PrivateRoute>} />
+                  <Route path="/ambulance" element={<PrivateRoute roles={['Patient', 'Admin', 'Staff']}><AmbulanceService /></PrivateRoute>} />
+                  <Route path="/prescription-ai" element={<PrivateRoute roles={['Patient', 'Admin', 'Doctor']}><PrescriptionAI /></PrivateRoute>} />
+                  <Route path="/health-ai" element={<PrivateRoute roles={['Patient', 'Admin', 'Doctor']}><HealthAI /></PrivateRoute>} />
+                  <Route path="/wearables" element={<PrivateRoute roles={['Patient', 'Admin', 'Doctor']}><Wearables /></PrivateRoute>} />
+                  <Route path="/blood-hub" element={<PrivateRoute><BloodHub /></PrivateRoute>} />
+                  <Route path="/symptoms" element={<PrivateRoute><SymptomChecker /></PrivateRoute>} />
+                  <Route path="/vaccinations" element={<PrivateRoute><VaccinationTracker /></PrivateRoute>} />
+                  <Route path="/tele-health" element={<PrivateRoute><TeleHealth /></PrivateRoute>} />
+                  <Route path="/prescriptions" element={<PrivateRoute><Prescriptions /></PrivateRoute>} />
+                  <Route path="/lab-interpreter" element={<PrivateRoute><LabReportInterpreter /></PrivateRoute>} />
+                  <Route path="/health-id" element={<PrivateRoute><DigitalHealthID /></PrivateRoute>} />
+                  <Route path="/medicine-inventory" element={<PrivateRoute><MedicineInventory /></PrivateRoute>} />
+                  <Route path="/appointment-optimizer" element={<PrivateRoute><AppointmentOptimizer /></PrivateRoute>} />
+                  <Route path="/organ-donation" element={<PrivateRoute><OrganDonation /></PrivateRoute>} />
+                  <Route path="/ai-chatbot" element={<PrivateRoute><AIChatbot /></PrivateRoute>} />
+                  <Route path="/ecommerce" element={<Ecommerce />} />
+                  <Route path="/admin/products" element={<PrivateRoute roles={['Admin']}><AdminProducts /></PrivateRoute>} />
+                  
+                  <Route path="*" element={<Navigate to="/" />} />
+                </Routes>
+              </Router>
+            </div>
+          </SocketProvider>
       </AuthProvider>
     </ThemeProvider>
   </ErrorBoundary>

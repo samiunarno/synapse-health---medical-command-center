@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import Patient from '../models/Patient';
 import MedicalRecord from '../models/MedicalRecord';
 import LabReport from '../models/LabReport';
-import { getCDSSInsights } from '../services/kimiService';
+import { getCDSSInsights } from '../services/aiService';
 
 export const getPatientInsights = async (req: Request, res: Response) => {
   try {
@@ -20,7 +20,7 @@ export const getPatientInsights = async (req: Request, res: Response) => {
     // Fetch lab reports
     const labReports = await LabReport.find({ patient_id: patientId }).sort({ createdAt: -1 }).limit(5);
 
-    // Get insights from Kimi AI
+    // Get insights from DeepSeek AI
     const insights = await getCDSSInsights(patient, medicalRecords, labReports);
 
     res.json(insights);

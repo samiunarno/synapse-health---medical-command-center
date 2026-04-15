@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Brain, Sparkles, Activity, CheckCircle2, AlertCircle, Loader2, ShieldAlert } from 'lucide-react';
+import { Brain, Sparkles, Activity, CheckCircle2, AlertCircle, Loader2, ShieldAlert, RefreshCcw } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { getHealthInsights } from '../lib/kimi';
+import { getHealthInsights } from '../services/aiService';
+import { useTranslation } from 'react-i18next';
 
 interface HealthInsightsProps {
   patientData: any;
 }
 
 export default function HealthInsights({ patientData }: HealthInsightsProps) {
+  const { t } = useTranslation();
   const [insights, setInsights] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -19,7 +21,7 @@ export default function HealthInsights({ patientData }: HealthInsightsProps) {
       const data = await getHealthInsights(patientData);
       setInsights(data);
     } catch (err) {
-      setError('Failed to generate AI insights. Please try again later.');
+      setError(t('failed_generate_insights'));
       console.error(err);
     } finally {
       setLoading(false);
@@ -50,9 +52,9 @@ export default function HealthInsights({ patientData }: HealthInsightsProps) {
           <div>
             <h2 className="text-2xl font-display font-bold text-white flex items-center gap-3">
               <Sparkles className="w-6 h-6 text-blue-500" />
-              AI Health Neural-Sync
+              {t('ai_health_neural_sync')}
             </h2>
-            <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mt-1">Personalized Clinical Insights powered by Kimi AI</p>
+            <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mt-1">{t('personalized_clinical_insights')}</p>
           </div>
           <button 
             onClick={generateInsights}
@@ -69,7 +71,7 @@ export default function HealthInsights({ patientData }: HealthInsightsProps) {
               <div className="w-16 h-16 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
               <Brain className="w-6 h-6 text-blue-500 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-pulse" />
             </div>
-            <p className="text-gray-500 font-bold text-[10px] uppercase tracking-[0.4em] animate-pulse">Analyzing Bio-Data...</p>
+            <p className="text-gray-500 font-bold text-[10px] uppercase tracking-[0.4em] animate-pulse">{t('analyzing_bio_data')}</p>
           </div>
         ) : error ? (
           <div className="py-12 text-center">
@@ -79,7 +81,7 @@ export default function HealthInsights({ patientData }: HealthInsightsProps) {
               onClick={generateInsights}
               className="mt-6 px-6 py-2 bg-white/5 hover:bg-white/10 rounded-xl text-xs font-bold uppercase tracking-widest text-white border border-white/10"
             >
-              Retry Sync
+              {t('retry_sync')}
             </button>
           </div>
         ) : insights ? (
@@ -108,7 +110,7 @@ export default function HealthInsights({ patientData }: HealthInsightsProps) {
             <div className="bg-blue-600/5 border border-blue-500/10 rounded-3xl p-8">
               <h3 className="text-sm font-bold text-blue-400 uppercase tracking-[0.3em] mb-6 flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4" />
-                Actionable Recommendations
+                {t('actionable_recommendations')}
               </h3>
               <div className="space-y-4">
                 {insights.recommendations.map((rec: any, idx: number) => (
@@ -143,7 +145,7 @@ export default function HealthInsights({ patientData }: HealthInsightsProps) {
               className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold text-xs uppercase tracking-widest transition-all shadow-xl shadow-blue-500/20 flex items-center gap-3 mx-auto"
             >
               <Sparkles className="w-4 h-4" />
-              Initialize Health Sync
+              {t('initialize_health_sync')}
             </button>
           </div>
         )}
@@ -151,5 +153,3 @@ export default function HealthInsights({ patientData }: HealthInsightsProps) {
     </div>
   );
 }
-
-import { RefreshCcw } from 'lucide-react';

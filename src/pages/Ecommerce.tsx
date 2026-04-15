@@ -98,6 +98,11 @@ export default function Ecommerce() {
   };
 
   const handleCheckout = async () => {
+    if (!user) {
+      alert('Please log in to proceed to checkout.');
+      window.location.href = '/login';
+      return;
+    }
     if (cart.length === 0) return;
     
     try {

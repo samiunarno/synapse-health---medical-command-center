@@ -170,7 +170,7 @@ export default function Presentation() {
       )
     },
     {
-      title: "Kimi AI Hub",
+      title: "DeepSeek AI Hub",
       subtitle: "Intelligent Diagnostics",
       icon: <Brain className="w-10 h-10" />,
       content: (
@@ -178,7 +178,7 @@ export default function Presentation() {
           <div className="p-10 bg-white/5 border border-white/10 rounded-[2.5rem] space-y-4">
             <Activity className="w-10 h-10 text-blue-500" />
             <h4 className="text-white font-bold uppercase tracking-tight text-xl">Mood Analysis</h4>
-            <p className="text-gray-500 text-sm">Real-time emotional tracking and mental health support powered by Kimi AI.</p>
+            <p className="text-gray-500 text-sm">Real-time emotional tracking and mental health support powered by DeepSeek AI.</p>
           </div>
           <div className="p-10 bg-white/5 border border-white/10 rounded-[2.5rem] space-y-4">
             <Stethoscope className="w-10 h-10 text-purple-500" />
@@ -248,7 +248,7 @@ export default function Presentation() {
         <div className="grid grid-cols-4 gap-6 max-w-6xl">
           {[
             { name: 'MERN Stack', desc: 'MongoDB, Express, React, Node.js' },
-            { name: 'Kimi AI', desc: 'Advanced LLM for Medical Insights' },
+            { name: 'DeepSeek AI', desc: 'Advanced LLM for Medical Insights' },
             { name: 'Socket.io', desc: 'Real-time Communication' },
             { name: 'Motion', desc: 'Fluid Interactive Experiences' }
           ].map((tech) => (
@@ -405,7 +405,7 @@ export default function Presentation() {
           {[
             { phase: 'Phase 1', title: 'Conceptualization', desc: 'Defining the core ecosystem and identifying market gaps in global medical sourcing.', status: 'Completed' },
             { phase: 'Phase 2', title: 'Core Infrastructure', desc: 'Building the MERN foundation with real-time Socket.io integration and secure auth.', status: 'Completed' },
-            { phase: 'Phase 3', title: 'AI Integration', desc: 'Implementing Kimi & Gemini AI for clinical diagnostics and patient support.', status: 'In Progress' },
+            { phase: 'Phase 3', title: 'AI Integration', desc: 'Implementing DeepSeek AI for clinical diagnostics and patient support.', status: 'In Progress' },
             { phase: 'Phase 4', title: 'Global Scaling', desc: 'Onboarding international suppliers and expanding TeleHealth reach.', status: 'Upcoming' }
           ].map((step, i) => (
             <div key={step.title} className="relative group">
@@ -566,7 +566,7 @@ export default function Presentation() {
             <MessageSquare className="w-12 h-12" />
           </div>
           <h3 className="text-4xl font-display font-bold text-white uppercase tracking-tighter">Instant Answers. <br />Expert Guidance.</h3>
-          <p className="text-gray-400 leading-relaxed max-w-2xl mx-auto">Our Help Center integrates Kimi AI to provide instant solutions to your technical and clinical queries, 24/7.</p>
+          <p className="text-gray-400 leading-relaxed max-w-2xl mx-auto">Our Help Center integrates DeepSeek AI to provide instant solutions to your technical and clinical queries, 24/7.</p>
         </div>
       )
     },

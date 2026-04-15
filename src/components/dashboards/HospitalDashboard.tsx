@@ -13,8 +13,10 @@ import {
   Heart
 } from 'lucide-react';
 import { useAuth } from '../AuthContext';
+import { useTranslation } from 'react-i18next';
 
 export default function HospitalDashboard() {
+  const { t } = useTranslation();
   const { user, token } = useAuth();
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -41,10 +43,10 @@ export default function HospitalDashboard() {
   if (loading) return <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div></div>;
 
   const cards = [
-    { label: 'Total Patients', value: stats?.totalPatients || 0, icon: Users, color: 'blue', trend: '+12%' },
-    { label: 'Active Doctors', value: stats?.totalDoctors || 0, icon: Stethoscope, color: 'purple', trend: '+5%' },
-    { label: 'Bed Occupancy', value: '84%', icon: Bed, color: 'emerald', trend: '-2%' },
-    { label: 'Revenue', value: '$124.5k', icon: TrendingUp, color: 'blue', trend: '+18%' }
+    { label: t('total_patients'), value: stats?.totalPatients || 0, icon: Users, color: 'blue', trend: '+12%' },
+    { label: t('active_doctors'), value: stats?.totalDoctors || 0, icon: Stethoscope, color: 'purple', trend: '+5%' },
+    { label: t('bed_occupancy'), value: '84%', icon: Bed, color: 'emerald', trend: '-2%' },
+    { label: t('revenue'), value: '$124.5k', icon: TrendingUp, color: 'blue', trend: '+18%' }
   ];
 
   return (
@@ -55,12 +57,12 @@ export default function HospitalDashboard() {
             <Building2 className="w-10 h-10" />
           </div>
           <div>
-            <h1 className="text-4xl font-display font-bold text-white uppercase tracking-tighter">{user?.fullName || 'Hospital Center'}</h1>
-            <p className="text-gray-500 font-bold uppercase tracking-widest text-xs mt-2">Enterprise Healthcare Management</p>
+            <h1 className="text-4xl font-display font-bold text-gray-900 dark:text-white uppercase tracking-tighter">{user?.fullName || t('hospital_center')}</h1>
+            <p className="text-gray-500 font-bold uppercase tracking-widest text-xs mt-2">{t('enterprise_healthcare_mgmt')}</p>
           </div>
         </div>
-        <button className="px-8 py-4 bg-white text-black rounded-2xl font-bold uppercase tracking-widest text-xs hover:bg-blue-600 hover:text-white transition-all flex items-center gap-3">
-          <Plus className="w-4 h-4" /> Add Department
+        <button className="px-8 py-4 bg-gray-900 dark:bg-white text-white dark:text-black rounded-2xl font-bold uppercase tracking-widest text-xs hover:bg-blue-600 dark:hover:bg-blue-600 hover:text-white transition-all flex items-center gap-3">
+          <Plus className="w-4 h-4" /> {t('add_department')}
         </button>
       </div>
 
@@ -71,18 +73,18 @@ export default function HospitalDashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
-            className="p-8 bg-white/5 border border-white/10 rounded-[2.5rem] relative overflow-hidden group"
+            className="p-8 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-[2.5rem] relative overflow-hidden group transition-colors duration-500"
           >
             <div className="relative z-10">
-              <div className={`w-12 h-12 bg-${card.color}-600/20 rounded-2xl flex items-center justify-center text-${card.color}-500 mb-6 group-hover:scale-110 transition-transform`}>
+              <div className={`w-12 h-12 bg-${card.color}-500/10 dark:bg-${card.color}-600/20 rounded-2xl flex items-center justify-center text-${card.color}-600 dark:text-${card.color}-500 mb-6 group-hover:scale-110 transition-transform`}>
                 <card.icon className="w-6 h-6" />
               </div>
               <div className="flex justify-between items-end">
                 <div>
                   <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest mb-1">{card.label}</p>
-                  <h3 className="text-3xl font-display font-bold text-white tracking-tighter">{card.value}</h3>
+                  <h3 className="text-3xl font-display font-bold text-gray-900 dark:text-white tracking-tighter">{card.value}</h3>
                 </div>
-                <div className={`text-[10px] font-bold ${card.trend.startsWith('+') ? 'text-emerald-500' : 'text-red-500'} flex items-center gap-1`}>
+                <div className={`text-[10px] font-bold ${card.trend.startsWith('+') ? 'text-emerald-600 dark:text-emerald-500' : 'text-red-600 dark:text-red-500'} flex items-center gap-1`}>
                   {card.trend} <ArrowUpRight className="w-3 h-3" />
                 </div>
               </div>
@@ -92,19 +94,19 @@ export default function HospitalDashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 bg-white/5 border border-white/10 rounded-[3rem] p-10 space-y-8">
+        <div className="lg:col-span-2 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-[3rem] p-10 space-y-8 transition-colors duration-500">
           <div className="flex justify-between items-center">
-            <h3 className="text-2xl font-display font-bold text-white uppercase tracking-tight">Department Performance</h3>
+            <h3 className="text-2xl font-display font-bold text-gray-900 dark:text-white uppercase tracking-tight">{t('dept_performance')}</h3>
             <Calendar className="w-5 h-5 text-gray-500" />
           </div>
           <div className="space-y-6">
             {['Cardiology', 'Neurology', 'Pediatrics', 'Oncology'].map((dept, i) => (
               <div key={dept} className="space-y-3">
                 <div className="flex justify-between text-xs font-bold uppercase tracking-widest">
-                  <span className="text-white">{dept}</span>
-                  <span className="text-gray-500">{85 - i * 10}% Efficiency</span>
+                  <span className="text-gray-900 dark:text-white">{dept}</span>
+                  <span className="text-gray-500">{85 - i * 10}% {t('efficiency')}</span>
                 </div>
-                <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                <div className="h-2 bg-gray-200 dark:bg-white/5 rounded-full overflow-hidden">
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${85 - i * 10}%` }}
@@ -117,25 +119,25 @@ export default function HospitalDashboard() {
           </div>
         </div>
 
-        <div className="bg-white/5 border border-white/10 rounded-[3rem] p-10 space-y-8">
-          <h3 className="text-2xl font-display font-bold text-white uppercase tracking-tight">System Alerts</h3>
+        <div className="bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-[3rem] p-10 space-y-8 transition-colors duration-500">
+          <h3 className="text-2xl font-display font-bold text-gray-900 dark:text-white uppercase tracking-tight">{t('system_alerts')}</h3>
           <div className="space-y-4">
             {[
-              { type: 'Critical', msg: 'Oxygen Supply Low in Ward B', time: '2m ago', color: 'red' },
-              { type: 'Warning', msg: 'Staff Shortage in ICU', time: '15m ago', color: 'amber' },
-              { type: 'Info', msg: 'New Equipment Delivered', time: '1h ago', color: 'blue' }
+              { type: t('critical'), msg: t('oxygen_low_ward_b'), time: '2m ago', color: 'red' },
+              { type: t('warning'), msg: t('staff_shortage_icu'), time: '15m ago', color: 'amber' },
+              { type: t('info'), msg: t('new_equipment_delivered'), time: '1h ago', color: 'blue' }
             ].map((alert, i) => (
-              <div key={i} className="p-4 bg-white/2 rounded-2xl border border-white/5 flex items-start gap-4">
+              <div key={i} className="p-4 bg-white dark:bg-white/2 rounded-2xl border border-gray-200 dark:border-white/5 flex items-start gap-4 shadow-sm dark:shadow-none">
                 <div className={`w-2 h-2 rounded-full mt-1.5 bg-${alert.color}-500`} />
                 <div>
-                  <p className="text-white text-xs font-bold uppercase tracking-tight">{alert.msg}</p>
-                  <p className="text-gray-600 text-[8px] font-bold uppercase tracking-widest mt-1">{alert.time}</p>
+                  <p className="text-gray-900 dark:text-white text-xs font-bold uppercase tracking-tight">{alert.msg}</p>
+                  <p className="text-gray-500 dark:text-gray-600 text-[8px] font-bold uppercase tracking-widest mt-1">{alert.time}</p>
                 </div>
               </div>
             ))}
           </div>
-          <button className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl text-gray-400 text-[10px] font-bold uppercase tracking-widest hover:text-white transition-all">
-            View All Logs
+          <button className="w-full py-4 bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl text-gray-500 dark:text-gray-400 text-[10px] font-bold uppercase tracking-widest hover:text-gray-900 dark:hover:text-white transition-all">
+            {t('view_all_logs')}
           </button>
         </div>
       </div>

@@ -1,10 +1,7 @@
 import cron from 'node-cron';
 import User from '../models/User';
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { getAIResponse } from './aiService';
 import { v2 as cloudinary } from 'cloudinary';
-
-// Initialize Gemini
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 // Initialize Cloudinary
 cloudinary.config({
@@ -43,8 +40,6 @@ export const initVerificationCron = () => {
 
 export const analyzeDocumentWithAI = async (documentUrl: string, role: string) => {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    
     const prompt = `
       You are an expert document verification AI for Synapse Health.
       Analyze the document at this URL: ${documentUrl}
@@ -60,16 +55,8 @@ export const analyzeDocumentWithAI = async (documentUrl: string, role: string) =
       Return the result as a JSON object with fields: verdict, organizationName, licenseNumber, expiryDate, reasoning.
     `;
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
-    
-    // Clean the response text to ensure it's valid JSON
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      return JSON.parse(jsonMatch[0]);
-    }
-    return { verdict: 'Unknown', reasoning: 'AI failed to parse document correctly.' };
+    const response = await getAIResponse(prompt, 'You are an expert document verification AI. Return ONLY a JSON object.', true);
+    return JSON.parse(response || '{}');
   } catch (error) {
     console.error('AI Document Analysis Error:', error);
     return { verdict: 'Error', reasoning: 'AI analysis failed due to technical error.' };

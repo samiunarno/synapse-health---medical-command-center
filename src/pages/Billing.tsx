@@ -158,7 +158,7 @@ export default function Billing() {
 
                 <div className="space-y-4">
                   <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Select Payment Method</p>
-                  {['Card', 'UPI', 'Wallet', 'Insurance'].map((method) => (
+                  {['Card', 'UPI', 'Wallet', 'Insurance', 'WeChat', 'Alipay'].map((method) => (
                     <label key={method} className={`flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all ${
                       paymentMethod === method 
                         ? 'bg-blue-600/10 border-blue-500/40' 
@@ -188,6 +188,18 @@ export default function Billing() {
                     </label>
                   ))}
                 </div>
+
+                {(paymentMethod === 'WeChat' || paymentMethod === 'Alipay') && (
+                  <div className="bg-white p-4 rounded-xl mb-6 flex flex-col items-center justify-center shadow-2xl shadow-white/10">
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Scan with {paymentMethod}</p>
+                    <img 
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=SynapseHealth_Payment_${paymentMethod}_${Date.now()}`}
+                      alt="Payment QR Code"
+                      className="w-48 h-48"
+                      referrerPolicy="no-referrer"
+                    />
+                  </div>
+                )}
 
                 <button
                   onClick={handlePayment}

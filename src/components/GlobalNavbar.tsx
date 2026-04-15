@@ -52,81 +52,40 @@ export default function GlobalNavbar() {
         : 'bg-transparent py-8'
     }`}>
       <div className="max-w-[1400px] mx-auto px-6 flex justify-between items-center">
-        <Link to="/" className="flex items-center gap-2 group relative z-[110]">
+        <Link to="/" className="flex items-center gap-2 group relative z-[110] interactive">
           <div className="w-8 h-8 lg:w-10 lg:h-10 bg-gray-900 dark:bg-white rounded-full flex items-center justify-center text-white dark:text-black group-hover:rotate-12 transition-transform duration-500">
             <Brain className="w-4 h-4 lg:w-6 lg:h-6" />
           </div>
-          <span className="text-lg lg:text-2xl font-display font-bold tracking-tighter uppercase text-gray-900 dark:text-white">智医云</span>
+          <span className="text-lg lg:text-2xl font-display font-bold tracking-tighter uppercase text-gray-900 dark:text-white">{t('app_name')}</span>
         </Link>
 
-        {/* 桌面端导航 */}
+        {/* Desktop Nav */}
         <div className="hidden lg:flex items-center gap-8 xl:gap-12 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-600 dark:text-gray-400">
-          <Link to="/" className={`hover:text-blue-500 transition-colors ${location.pathname === '/' ? 'text-blue-500' : ''}`}>首页</Link>
-          <Link to="/ecommerce" className={`hover:text-blue-500 transition-colors ${location.pathname === '/ecommerce' ? 'text-blue-500' : ''}`}>商城</Link>
-          
-          <Link to="/services-membership" className="hover:text-blue-500 transition-colors">会员服务</Link>
-          <Link to="/help-center" className="hover:text-blue-500 transition-colors">帮助中心</Link>
-          
-          {/* <div 
-            className="relative group"
-            onMouseEnter={() => setIsMarketplaceOpen(true)}
-            onMouseLeave={() => setIsMarketplaceOpen(false)}
-          >
-            <button className="flex items-center gap-2 hover:text-blue-500 transition-colors">
-              全球网络 <ChevronDown className={`w-3 h-3 transition-transform ${isMarketplaceOpen ? 'rotate-180' : ''}`} />
-            </button>
-            <AnimatePresence>
-              {isMarketplaceOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 10 }}
-                  className="absolute top-full left-0 mt-4 w-64 bg-white dark:bg-black/90 backdrop-blur-xl border border-gray-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-2xl"
-                >
-                  <div className="px-6 py-4 border-b border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-white/5">
-                    <span className="text-[8px] font-bold uppercase tracking-[0.3em] text-blue-500">商城中心</span>
-                  </div>
-                  {marketplaceOptions.map((option) => (
-                    <Link
-                      key={option.label}
-                      to={option.path}
-                      className="flex items-center gap-4 px-6 py-4 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group/item"
-                    >
-                      <div className="w-8 h-8 bg-blue-600/20 rounded-lg flex items-center justify-center text-blue-500 group-hover/item:scale-110 transition-transform">
-                        <option.icon className="w-4 h-4" />
-                      </div>
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 group-hover/item:text-gray-900 dark:group-hover/item:text-white">
-                        {option.label}
-                      </span>
-                    </Link>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div> */}
+          <Link to="/" className={`hover:text-blue-500 transition-colors interactive ${location.pathname === '/' ? 'text-blue-500' : ''}`}>{t('home')}</Link>
+          <Link to="/ecommerce" className={`hover:text-blue-500 transition-colors interactive ${location.pathname === '/ecommerce' ? 'text-blue-500' : ''}`}>{t('marketplace')}</Link>
 
           {user ? (
-            <Link to="/dashboard" className="flex items-center gap-2 hover:text-blue-500 transition-colors">
+            <Link to="/dashboard" className="flex items-center gap-2 hover:text-blue-500 transition-colors interactive">
               <LayoutDashboard className="w-4 h-4" />
-              仪表盘
+              {t('dashboard')}
             </Link>
           ) : (
-            <Link to="/login" className="hover:text-blue-500 transition-colors">登录门户</Link>
+            <Link to="/login" className="hover:text-blue-500 transition-colors interactive">{t('portal_login')}</Link>
           )}
         </div>
 
         <div className="flex items-center gap-4 relative z-[110]">
-          {/* 主题切换 */}
+          {/* Theme Toggle */}
           <button 
             onClick={toggleTheme}
-            className="w-10 h-10 flex items-center justify-center bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 rounded-full border border-gray-200 dark:border-white/10 transition-all text-gray-600 dark:text-gray-400"
+            className="w-10 h-10 flex items-center justify-center bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 rounded-full border border-gray-200 dark:border-white/10 transition-all text-gray-600 dark:text-gray-400 interactive"
           >
             {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
 
-          {/* 语言切换器 */}
+          {/* Language Switcher */}
           <div className="relative group/lang hidden sm:block">
-            <button className="w-10 h-10 flex items-center justify-center bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 rounded-full border border-gray-200 dark:border-white/10 transition-all text-gray-600 dark:text-gray-400">
+            <button className="w-10 h-10 flex items-center justify-center bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 rounded-full border border-gray-200 dark:border-white/10 transition-all text-gray-600 dark:text-gray-400 interactive">
               <Globe className="w-4 h-4" />
             </button>
             <div className="absolute top-full right-0 mt-2 w-32 bg-white dark:bg-black/90 backdrop-blur-xl border border-gray-200 dark:border-white/10 rounded-2xl overflow-hidden opacity-0 invisible group-hover/lang:opacity-100 group-hover/lang:visible transition-all shadow-xl">
@@ -137,7 +96,7 @@ export default function GlobalNavbar() {
                 <button 
                   key={lang.code}
                   onClick={() => i18n.changeLanguage(lang.code)}
-                  className={`w-full px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-left hover:bg-gray-50 dark:hover:bg-white/5 transition-colors ${i18n.language === lang.code ? 'text-blue-500' : 'text-gray-500 dark:text-gray-400'}`}
+                  className={`w-full px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-left hover:bg-gray-50 dark:hover:bg-white/5 transition-colors interactive ${i18n.language === lang.code ? 'text-blue-500' : 'text-gray-500 dark:text-gray-400'}`}
                 >
                   {lang.label}
                 </button>
@@ -148,8 +107,8 @@ export default function GlobalNavbar() {
           {user && (
             <button 
               onClick={logout}
-              className="hidden sm:flex w-10 h-10 items-center justify-center bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-full border border-red-500/20 transition-all"
-              title="退出登录"
+              className="hidden sm:flex w-10 h-10 items-center justify-center bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-full border border-red-500/20 transition-all interactive"
+              title="Logout"
             >
               <LogOut className="w-4 h-4" />
             </button>
@@ -157,14 +116,14 @@ export default function GlobalNavbar() {
 
           <button 
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden w-10 h-10 flex items-center justify-center bg-gray-100 dark:bg-white/5 rounded-full border border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-400"
+            className="lg:hidden w-10 h-10 flex items-center justify-center bg-gray-100 dark:bg-white/5 rounded-full border border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-400 interactive"
           >
             {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </div>
 
-      {/* 移动端菜单覆盖层 */}
+      {/* Mobile Menu Overlay */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
@@ -174,28 +133,10 @@ export default function GlobalNavbar() {
             className="fixed inset-0 bg-white dark:bg-black/95 backdrop-blur-2xl z-[105] flex flex-col items-center justify-center p-8 lg:hidden"
           >
             <div className="flex flex-col items-center gap-8 text-center">
-              <Link to="/sourcing-solutions" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-display font-bold uppercase tracking-tighter text-gray-900 dark:text-white hover:text-blue-500 transition-colors">采购方案</Link>
-              <Link to="/services-membership" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-display font-bold uppercase tracking-tighter text-gray-900 dark:text-white hover:text-blue-500 transition-colors">会员服务</Link>
-              <Link to="/help-center" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-display font-bold uppercase tracking-tighter text-gray-900 dark:text-white hover:text-blue-500 transition-colors">帮助中心</Link>
-              
-              <div className="space-y-4">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">商城中心</p>
-                {marketplaceOptions.map(opt => (
-                  <Link 
-                    key={opt.label}
-                    to={opt.path} 
-                    onClick={() => setIsMobileMenuOpen(false)} 
-                    className="block text-xl font-display font-bold uppercase tracking-tighter text-gray-900 dark:text-white hover:text-blue-500 transition-colors"
-                  >
-                    {opt.label}
-                  </Link>
-                ))}
-              </div>
-
               {user ? (
-                <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-display font-bold uppercase tracking-tighter text-gray-900 dark:text-white hover:text-blue-500 transition-colors">仪表盘</Link>
+                <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-display font-bold uppercase tracking-tighter text-gray-900 dark:text-white hover:text-blue-500 transition-colors">{t('dashboard')}</Link>
               ) : (
-                <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-display font-bold uppercase tracking-tighter text-gray-900 dark:text-white hover:text-blue-500 transition-colors">登录门户</Link>
+                <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-display font-bold uppercase tracking-tighter text-gray-900 dark:text-white hover:text-blue-500 transition-colors">{t('portal_login')}</Link>
               )}
             </div>
           </motion.div>

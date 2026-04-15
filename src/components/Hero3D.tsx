@@ -1,6 +1,9 @@
 import React, { useRef, useEffect } from 'react';
 import * as THREE from 'three';
 import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function Hero3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -8,11 +11,14 @@ export default function Hero3D() {
   useEffect(() => {
     if (!containerRef.current) return;
 
+    const width = containerRef.current.clientWidth;
+    const height = containerRef.current.clientHeight;
+
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     containerRef.current.appendChild(renderer.domElement);
 
@@ -91,24 +97,59 @@ export default function Hero3D() {
 
     camera.position.z = 8;
 
-    // GSAP Animation
+    // Mouse Parallax
+    let mouseX = 0;
+    let mouseY = 0;
+    let targetX = 0;
+    let targetY = 0;
+
+    const handleMouseMove = (event: MouseEvent) => {
+      mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+      mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+
+    // GSAP ScrollTrigger Animation
     gsap.to(dnaGroup.rotation, {
-      y: Math.PI * 2,
-      duration: 15,
+      y: Math.PI * 4,
+      ease: "none",
+      scrollTrigger: {
+        trigger: document.body,
+        start: "top top",
+        end: "bottom bottom",
+        scrub: 1,
+      }
+    });
+
+    gsap.to(dnaGroup.position, {
+      y: -2,
+      ease: "none",
+      scrollTrigger: {
+        trigger: document.body,
+        start: "top top",
+        end: "bottom bottom",
+        scrub: 1,
+      }
+    });
+
+    // Base continuous rotation
+    const baseRotation = gsap.to(dnaGroup.rotation, {
+      x: Math.PI * 2,
+      duration: 30,
       repeat: -1,
       ease: "none"
     });
 
-    gsap.to(dnaGroup.position, {
-      y: 0.3,
-      duration: 4,
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut"
-    });
-
     const animate = () => {
       requestAnimationFrame(animate);
+      
+      // Parallax easing
+      targetX = mouseX * 1.5;
+      targetY = mouseY * 1.5;
+      camera.position.x += (targetX - camera.position.x) * 0.05;
+      camera.position.y += (targetY - camera.position.y) * 0.05;
+      camera.lookAt(scene.position);
+
       particlesMesh.rotation.y += 0.0005;
       particlesMesh.rotation.x += 0.0002;
       renderer.render(scene, camera);
@@ -117,15 +158,21 @@ export default function Hero3D() {
     animate();
 
     const handleResize = () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
+      if (!containerRef.current) return;
+      const newWidth = containerRef.current.clientWidth;
+      const newHeight = containerRef.current.clientHeight;
+      camera.aspect = newWidth / newHeight;
       camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setSize(newWidth, newHeight);
     };
 
     window.addEventListener('resize', handleResize);
 
     return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', handleResize);
+      baseRotation.kill();
+      ScrollTrigger.getAll().forEach(t => t.kill());
       if (containerRef.current) {
         containerRef.current.removeChild(renderer.domElement);
       }
@@ -133,5 +180,5 @@ export default function Hero3D() {
     };
   }, []);
 
-  return <div ref={containerRef} className="absolute inset-0 -z-10 pointer-events-none opacity-50 dark:opacity-30" />;
+  return <div ref={containerRef} className="absolute inset-0 -z-10 pointer-events-none opacity-50 dark:opacity-30 overflow-hidden" />;
 }

@@ -4,7 +4,7 @@ import { useAuth } from '../components/AuthContext';
 import { Calendar, Clock, Video, Users, CheckCircle, CreditCard, QrCode, Loader2, Brain, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { io } from 'socket.io-client';
-import { suggestDoctor } from '../lib/kimi';
+import { suggestDoctor } from '../services/aiService';
 
 export default function Appointments() {
   const { token, user } = useAuth();
@@ -320,11 +320,13 @@ export default function Appointments() {
                 </button>
               </div>
 
-              <div className="bg-white p-4 rounded-xl mb-6 inline-block">
-                {/* Mock QR Code */}
-                <div className="w-48 h-48 bg-black flex items-center justify-center">
-                  <span className="text-white text-xs">QR CODE</span>
-                </div>
+              <div className="bg-white p-4 rounded-xl mb-6 inline-block shadow-2xl shadow-white/10">
+                <img 
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=SynapseHealth_Payment_${paymentMethod}_${Date.now()}`}
+                  alt="Payment QR Code"
+                  className="w-48 h-48"
+                  referrerPolicy="no-referrer"
+                />
               </div>
 
               <button
@@ -387,7 +389,7 @@ export default function Appointments() {
                       </Link>
                     )}
                     {appt.type === 'In-Person' && user?.role === 'Patient' && (
-                      <button onClick={() => alert('Checked in successfully! Please wait in the lobby.')} className="px-4 py-2 bg-blue-600 text-white rounded-xl font-bold text-sm">
+                      <button className="px-4 py-2 bg-blue-600 text-white rounded-xl font-bold text-sm">
                         Self Check-in
                       </button>
                     )}
@@ -398,7 +400,7 @@ export default function Appointments() {
                       </button>
                     )}
                     {user?.role === 'Patient' && appt.status === 'Completed' && (
-                      <button onClick={() => alert('Feedback form opened. Thank you for your feedback!')} className="px-4 py-2 bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 rounded-xl font-bold text-sm hover:bg-indigo-600/30 transition-colors">
+                      <button className="px-4 py-2 bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 rounded-xl font-bold text-sm hover:bg-indigo-600/30 transition-colors">
                         Leave Feedback
                       </button>
                     )}

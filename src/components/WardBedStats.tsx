@@ -73,10 +73,10 @@ const WardBedStats: React.FC = () => {
             key={ward.wardId}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white/2 p-6 rounded-[2rem] border border-white/5 backdrop-blur-xl"
+            className="bg-gray-50 dark:bg-white/2 p-6 rounded-[2rem] border border-gray-200 dark:border-white/5 backdrop-blur-xl transition-colors duration-500"
           >
             <div className="mb-4">
-              <h3 className="text-lg font-display font-bold text-white">{ward.wardName}</h3>
+              <h3 className="text-lg font-display font-bold text-gray-900 dark:text-white">{ward.wardName}</h3>
               <p className="text-xs text-gray-500 font-bold uppercase tracking-widest">{ward.department} • {ward.wardType}</p>
             </div>
             
@@ -115,16 +115,16 @@ const WardBedStats: React.FC = () => {
 
             <div className="mt-6 grid grid-cols-3 gap-3 text-center">
               <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20">
-                <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-tighter">Available</p>
-                <p className="text-xl font-display font-bold text-emerald-400">{ward.counts.Available}</p>
+                <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-tighter">Available</p>
+                <p className="text-xl font-display font-bold text-emerald-600 dark:text-emerald-400">{ward.counts.Available}</p>
               </div>
               <div className="p-3 rounded-2xl bg-red-500/10 border border-red-500/20">
-                <p className="text-[10px] text-red-400 font-bold uppercase tracking-tighter">Occupied</p>
-                <p className="text-xl font-display font-bold text-red-400">{ward.counts.Occupied}</p>
+                <p className="text-[10px] text-red-600 dark:text-red-400 font-bold uppercase tracking-tighter">Occupied</p>
+                <p className="text-xl font-display font-bold text-red-600 dark:text-red-400">{ward.counts.Occupied}</p>
               </div>
               <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20">
-                <p className="text-[10px] text-amber-400 font-bold uppercase tracking-tighter">Maint.</p>
-                <p className="text-xl font-display font-bold text-amber-400">{ward.counts.Maintenance}</p>
+                <p className="text-[10px] text-amber-600 dark:text-amber-400 font-bold uppercase tracking-tighter">Maint.</p>
+                <p className="text-xl font-display font-bold text-amber-600 dark:text-amber-400">{ward.counts.Maintenance}</p>
               </div>
             </div>
           </motion.div>

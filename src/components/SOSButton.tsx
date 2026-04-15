@@ -3,8 +3,10 @@ import { motion, AnimatePresence } from 'motion/react';
 import { AlertTriangle, MapPin, Phone, Send, Loader2, CheckCircle2, X } from 'lucide-react';
 import { useAuth } from './AuthContext';
 import { io } from 'socket.io-client';
+import { useTranslation } from 'react-i18next';
 
 export default function SOSButton() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isSending, setIsSending] = useState(false);
@@ -46,8 +48,8 @@ export default function SOSButton() {
   const sendAlert = (loc: { lat: number; lng: number } | null) => {
     if (socketRef.current) {
       socketRef.current.emit('trigger_emergency', {
-        title: 'CRITICAL SOS ALERT',
-        message: `Emergency SOS triggered by ${user?.username}. Immediate assistance required.`,
+        title: t('sos_alert_title'),
+        message: t('sos_alert_message', { username: user?.username }),
         location: loc,
         time: new Date().toLocaleTimeString(),
         sender: user?.username,
@@ -73,12 +75,12 @@ export default function SOSButton() {
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-8 left-8 z-[60] w-20 h-20 bg-rose-600 rounded-full flex items-center justify-center text-white shadow-[0_0_30px_rgba(225,29,72,0.5)] border-4 border-white/20 group"
+        className="fixed bottom-8 left-8 z-[60] w-20 h-20 bg-rose-600 rounded-full flex items-center justify-center text-white shadow-[0_0_30px_rgba(225,29,72,0.5)] border-4 border-white/20 group interactive"
       >
         <div className="absolute inset-0 bg-rose-600 rounded-full animate-ping opacity-20" />
         <AlertTriangle className="w-10 h-10 relative z-10 group-hover:rotate-12 transition-transform" />
         <span className="absolute -top-12 left-0 bg-rose-600 text-white px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-          Emergency SOS
+          {t('emergency_sos')}
         </span>
       </motion.button>
 
@@ -110,25 +112,25 @@ export default function SOSButton() {
                 <AlertTriangle className="w-12 h-12 text-white animate-pulse" />
               </div>
 
-              <h2 className="text-4xl font-display font-black text-white uppercase tracking-tighter mb-4">Emergency SOS</h2>
+              <h2 className="text-4xl font-display font-black text-white uppercase tracking-tighter mb-4">{t('emergency_sos')}</h2>
               <p className="text-gray-400 text-sm font-medium leading-relaxed mb-10">
-                Triggering this will immediately alert the hospital emergency department and your pre-configured family contacts with your live GPS location.
+                {t('sos_description')}
               </p>
 
               <div className="space-y-4 mb-10">
                 <div className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl border border-white/10">
                   <MapPin className="w-5 h-5 text-rose-500" />
                   <div className="text-left">
-                    <p className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">Live Location</p>
-                    <p className="text-xs font-bold text-white uppercase">Transmitting GPS Data</p>
+                    <p className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">{t('live_location')}</p>
+                    <p className="text-xs font-bold text-white uppercase">{t('transmitting_gps')}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl border border-white/10">
                   <Phone className="w-5 h-5 text-rose-500" />
                   <div className="text-left">
-                    <p className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">Family Contacts</p>
+                    <p className="text-[8px] font-bold text-gray-500 uppercase tracking-widest">{t('family_contacts')}</p>
                     <p className="text-xs font-bold text-white uppercase">
-                      {user?.emergencyContacts?.length || 0} Contacts Notified
+                      {t('contacts_notified', { count: user?.emergencyContacts?.length || 0 })}
                     </p>
                   </div>
                 </div>
@@ -145,7 +147,7 @@ export default function SOSButton() {
                     <div className="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center text-white">
                       <CheckCircle2 className="w-10 h-10" />
                     </div>
-                    <p className="text-emerald-500 font-bold uppercase tracking-widest">Alerts Dispatched</p>
+                    <p className="text-emerald-500 font-bold uppercase tracking-widest">{t('alerts_dispatched')}</p>
                   </motion.div>
                 ) : (
                   <button
@@ -156,12 +158,12 @@ export default function SOSButton() {
                     {isSending ? (
                       <>
                         <Loader2 className="w-6 h-6 animate-spin" />
-                        Transmitting...
+                        {t('transmitting')}
                       </>
                     ) : (
                       <>
                         <Send className="w-6 h-6 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                        Confirm SOS
+                        {t('confirm_sos')}
                       </>
                     )}
                   </button>
@@ -169,7 +171,7 @@ export default function SOSButton() {
               </AnimatePresence>
 
               <p className="mt-8 text-[8px] font-bold text-gray-700 uppercase tracking-widest">
-                Misuse of emergency services may result in penalties
+                {t('misuse_warning')}
               </p>
             </motion.div>
           </div>

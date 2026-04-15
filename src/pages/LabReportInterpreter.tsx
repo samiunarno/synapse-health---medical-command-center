@@ -2,7 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { FileText, Upload, Brain, CheckCircle2, AlertCircle, ChevronRight, Info } from 'lucide-react';
 
-import { analyzeLabReport as analyzeLabReportAI } from '../services/geminiService';
+import { analyzeLabReport as analyzeLabReportAI } from '../services/aiService';
 
 export default function LabReportInterpreter() {
   const [file, setFile] = React.useState<File | null>(null);
@@ -20,7 +20,7 @@ export default function LabReportInterpreter() {
     setIsAnalyzing(true);
     try {
       // In a real app, we would extract text from the file (PDF/OCR)
-      // For this demo, we'll pass the filename and a simulated extraction to Gemini
+      // For this demo, we'll pass the filename and a simulated extraction to DeepSeek
       // to show real AI reasoning.
       const simulatedExtraction = `Lab Report for ${file.name}. 
       Parameters: Hemoglobin 10.5 (Normal: 13.5-17.5), Serum Iron 45 (Normal: 60-170), WBC 7.2 (Normal: 4.5-11.0).`;

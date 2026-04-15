@@ -61,91 +61,52 @@ export default function EcommerceSlider() {
   if (products.length === 0) return null;
 
   return (
-    <section className="py-24 sm:py-32 lg:py-48 px-4 sm:px-6 relative overflow-hidden bg-[#050505]">
-      <div className="max-w-[1400px] mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
-          <div className="max-w-xl">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 border border-blue-500/20 rounded-full text-[10px] font-bold uppercase tracking-widest text-blue-400 mb-6">
-              <ShoppingBag className="w-3 h-3" />
-              {t('synapse_marketplace')}
-            </div>
-            <h2 className="text-4xl sm:text-6xl font-display font-black uppercase tracking-tighter leading-none">
-              {t('global')} <br />
-              <span className="text-blue-500">{t('medical_sourcing')}</span>
-            </h2>
-          </div>
-          
-          <div className="flex items-center gap-4">
-            <div className="flex gap-2">
-              <button 
-                onClick={prev}
-                className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5 transition-all"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <button 
-                onClick={next}
-                className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5 transition-all"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            </div>
-            <Link 
-              to="/ecommerce"
-              className="px-8 py-4 bg-white text-black rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all flex items-center gap-3 group"
-            >
-              {t('view_all_products')}
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
-            </Link>
-          </div>
-        </div>
-
+    <section className="py-24 border-b border-black/10 dark:border-white/10 bg-white dark:bg-[#111111] overflow-hidden transition-colors duration-300">
+      <div className="px-12 mb-12 flex justify-between items-end">
+        <h2 className="text-2xl font-medium tracking-tight">{t('trusted_by_leaders')}</h2>
+        <span className="font-mono text-xs uppercase tracking-widest text-black/40 dark:text-white/40">{t('network_partners')}</span>
+      </div>
+      <div className="grayscale opacity-60 hover:grayscale-0 hover:opacity-100 dark:opacity-40 dark:hover:opacity-100 transition-all duration-500">
         <div className="relative overflow-hidden">
           <motion.div 
             animate={{ x: `-${currentIndex * 100}%` }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="flex gap-6"
+            className="flex gap-6 px-12"
           >
             {products.map((product) => (
               <div 
                 key={product._id}
-                className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] shrink-0 bg-white/2 border border-white/5 rounded-[2.5rem] p-6 group hover:bg-white/5 transition-all duration-500"
+                className="w-[300px] shrink-0 bg-[#F4F4F0] dark:bg-[#050505] border border-black/10 dark:border-white/10 p-6 group transition-colors duration-300"
               >
-                <div className="aspect-square rounded-3xl overflow-hidden mb-6 relative">
+                <div className="aspect-square overflow-hidden mb-6 relative border border-black/10 dark:border-white/10">
                   <img 
                     src={product.image_url || `https://picsum.photos/seed/${product.name}/400/400`}
                     alt={product.name}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     referrerPolicy="no-referrer"
                   />
                   <div className="absolute top-4 left-4">
-                    <div className="px-2 py-1 bg-blue-600 text-white text-[8px] font-bold uppercase tracking-widest rounded flex items-center gap-1">
+                    <div className="px-2 py-1 bg-[#0033A0] dark:bg-[#3b82f6] text-white text-[10px] font-mono uppercase tracking-widest flex items-center gap-1">
                       <ShieldCheck className="w-3 h-3" /> {t('verified')}
                     </div>
                   </div>
                 </div>
                 
                 <div className="space-y-4">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[8px] font-bold text-blue-500 uppercase tracking-widest">{product.category}</span>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-mono text-[#0033A0] dark:text-[#3b82f6] uppercase tracking-widest">{product.category}</span>
                     <div className="flex items-center gap-1">
-                      <Star className="w-2 h-2 text-amber-500 fill-current" />
-                      <span className="text-[8px] font-bold text-gray-500">4.9</span>
+                      <Star className="w-3 h-3 text-black dark:text-white fill-current" />
+                      <span className="text-[10px] font-mono text-black/60 dark:text-white/60">4.9</span>
                     </div>
                   </div>
-                  <h3 className="text-lg font-display font-bold text-white line-clamp-1 group-hover:text-blue-400 transition-colors">
+                  <h3 className="text-lg font-medium text-black dark:text-white line-clamp-1 group-hover:text-[#0033A0] dark:group-hover:text-[#3b82f6] transition-colors">
                     {product.name}
                   </h3>
                   <div className="flex items-baseline gap-2">
-                    <span className="text-2xl font-display font-black text-white">${product.price}</span>
-                    <span className="text-[8px] font-bold text-gray-600 uppercase tracking-widest">/ {t('unit')}</span>
+                    <span className="text-2xl font-medium text-black dark:text-white">${product.price}</span>
+                    <span className="text-[10px] font-mono text-black/60 dark:text-white/60 uppercase tracking-widest">/ {t('unit')}</span>
                   </div>
-                  <Link 
-                    to="/ecommerce"
-                    className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all flex items-center justify-center gap-2"
-                  >
-                    {t('source_now')}
-                  </Link>
                 </div>
               </div>
             ))}

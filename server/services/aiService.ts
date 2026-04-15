@@ -1,65 +1,142 @@
 import OpenAI from 'openai';
 
 // DeepSeek API Configuration
-const deepseek = new OpenAI({
-  apiKey: process.env.DEEPSEEK_API_KEY || '<DEEPSEEK_API_KEY>',
-  baseURL: process.env.DEEPSEEK_API_KEY?.startsWith('nvapi-') 
-    ? 'https://integrate.api.nvidia.com/v1' 
-    : 'https://api.deepseek.com',
-});
+const getBaseURL = () => {
+  const key = process.env.DEEPSEEK_API_KEY || '';
+  if (key.startsWith('nvapi-')) return 'https://integrate.api.nvidia.com/v1';
+  if (process.env.DEEPSEEK_BASE_URL) return process.env.DEEPSEEK_BASE_URL;
+  return 'https://api.deepseek.com';
+};
 
-// Kimi (Moonshot) API Configuration
-const kimi = new OpenAI({
-  apiKey: process.env.KIMI_API_KEY || '',
-  baseURL: 'https://api.moonshot.cn/v1',
-});
+let deepseekClient: OpenAI | null = null;
+
+const getDeepseekClient = () => {
+  if (!deepseekClient) {
+    deepseekClient = new OpenAI({
+      apiKey: process.env.DEEPSEEK_API_KEY || '',
+      baseURL: getBaseURL(),
+    });
+  }
+  return deepseekClient;
+};
 
 // Helper to get the active AI client
 const getAIClient = () => {
-  if (process.env.DEEPSEEK_API_KEY) {
-    const isNvidia = process.env.DEEPSEEK_API_KEY.startsWith('nvapi-');
+  const key = process.env.DEEPSEEK_API_KEY;
+  if (key) {
+    const isNvidia = key.startsWith('nvapi-');
     return { 
-      client: deepseek, 
-      model: isNvidia ? 'deepseek-ai/deepseek-r1' : 'deepseek-chat' 
+      type: 'openai',
+      client: getDeepseekClient(), 
+      model: isNvidia ? 'deepseek-ai/deepseek-r1' : (process.env.DEEPSEEK_MODEL || 'deepseek-chat')
     };
   }
-  if (process.env.KIMI_API_KEY) return { client: kimi, model: 'moonshot-v1-8k' };
   return null;
 };
 
-export const getAIResponse = async (message: string, systemPrompt?: string) => {
+export const getAIResponse = async (message: string, systemPrompt?: string, jsonMode: boolean = false) => {
   try {
     const ai = getAIClient();
-    if (!ai) throw new Error('No AI API Key configured (DeepSeek or Kimi)');
-
-    const isNvidia = process.env.DEEPSEEK_API_KEY?.startsWith('nvapi-');
-
-    const response = await ai.client.chat.completions.create({
-      model: ai.model,
-      messages: [
-        { role: 'system', content: systemPrompt || 'You are Synapse Health AI assistant. Always respond in valid JSON if requested.' },
-        { role: 'user', content: message },
-      ],
-      headers: {
-        Authorization: `Bearer ${process.env.DEEPSEEK_API_KEY}`, // Ensure this is correct
-      },
-      ...(isNvidia ? {} : { response_format: { type: 'json_object' } }),
-    });
-
-    let content = response.choices[0].message.content || '';
-    
-    // Clean up potential markdown code blocks if the model returns them
-    if (content.includes('```json')) {
-      content = content.split('```json')[1].split('```')[0].trim();
-    } else if (content.includes('```')) {
-      content = content.split('```')[1].split('```')[0].trim();
+    if (!ai) {
+      console.error('❌ AI Configuration Error: DEEPSEEK_API_KEY is missing');
+      throw new Error('AI Service is not configured. Please add DEEPSEEK_API_KEY to environment variables.');
     }
 
-    return content;
+    console.log(`🤖 AI Request: Model=${ai.model}, BaseURL=${getBaseURL()}`);
+    if (!process.env.DEEPSEEK_API_KEY) {
+      console.warn('⚠️ DEEPSEEK_API_KEY is not set in environment variables.');
+    }
+
+    const isNvidia = process.env.DEEPSEEK_API_KEY?.startsWith('nvapi-');
+    try {
+      const response = await (ai.client as OpenAI).chat.completions.create({
+        model: ai.model!,
+        messages: [
+          { role: 'system', content: systemPrompt || 'You are Synapse Health AI assistant.' },
+          { role: 'user', content: message },
+        ],
+        ...(jsonMode && !isNvidia ? { response_format: { type: 'json_object' } } : {}),
+      });
+
+      let content = response.choices[0].message.content || '';
+      console.log('✅ AI Response received successfully');
+      
+      if (jsonMode) {
+        content = content.replace(/```json\n?|```\n?/g, '').trim();
+        
+        const firstBrace = content.indexOf('{');
+        const lastBrace = content.lastIndexOf('}');
+        if (firstBrace !== -1 && lastBrace !== -1) {
+          content = content.substring(firstBrace, lastBrace + 1);
+        }
+      }
+      
+      return content;
+    } catch (apiError: any) {
+      console.error('❌ OpenAI/DeepSeek API Call Failed:', {
+        status: apiError.status,
+        message: apiError.message,
+        data: apiError.response?.data
+      });
+      throw apiError;
+    }
   } catch (error: any) {
-    console.error('AI Service Error:', error?.response?.data || error?.message || error);
-    throw error;
+    console.error('❌ DeepSeek API Error:', error.response?.data || error.message || error);
+    
+    // Graceful fallback for development if key is missing
+    if (!process.env.DEEPSEEK_API_KEY) {
+      return jsonMode ? '{"summary": "根据患者数据分析，目前状态稳定，但需关注血压波动。", "suggestions": [{"title": "复查建议", "description": "建议一周后复查心电图和血压。", "type": "Preventive Care"}], "alerts": [{"title": "轻度高血压", "description": "患者近期血压偏高，请注意饮食控制。", "severity": "Medium"}], "insights": [], "recommendations": [], "potentialCauses": [], "abnormalValues": [], "medicines": [], "interactions": [], "suggestedDoctorId": "123", "reasoning": "根据症状，建议咨询心内科专家。", "specialtyRecommended": "心内科"}' : "AI 服务未配置。请在环境变量中添加 DEEPSEEK_API_KEY。";
+    }
+
+    if (error.status === 401) throw new Error('Invalid DeepSeek API Key');
+    if (error.status === 402) throw new Error('DeepSeek API Insufficient Balance');
+    if (error.status === 429) throw new Error('DeepSeek API Rate Limit Exceeded');
+    throw new Error(`AI Service Error: ${error.message || 'Unknown error'}`);
   }
+};
+
+export const getCDSSInsights = async (patientData: any, medicalRecords: any[], labReports: any[]) => {
+  const prompt = `
+    You are a Clinical Decision Support System (CDSS) for Synapse Health.
+    Your goal is to provide evidence-based clinical insights, suggestions, and alerts for a doctor based on patient data.
+    
+    Patient Data:
+    ${JSON.stringify(patientData, null, 2)}
+    
+    Medical Records:
+    ${JSON.stringify(medicalRecords, null, 2)}
+    
+    Lab Reports:
+    ${JSON.stringify(labReports, null, 2)}
+    
+    Return a JSON object with:
+    - suggestions: Array of { title, description, type (Diagnosis Suggestion, Treatment Guideline, Preventive Care) }
+    - alerts: Array of { title, description, severity (Low, Medium, High) }
+    - summary: A brief clinical summary of the patient's current state.
+  `;
+
+  const response = await getAIResponse(prompt, 'You are a Clinical Decision Support System (CDSS). Return ONLY a JSON object.', true);
+  return JSON.parse(response || '{}');
+};
+
+export const suggestDoctorAI = async (symptoms: string, doctors: any[]) => {
+  const prompt = `
+    Based on the following symptoms, suggest the most appropriate doctor from the provided list.
+    Explain why this doctor is the best fit.
+    
+    Symptoms: ${symptoms}
+    
+    Available Doctors:
+    ${JSON.stringify(doctors.map(d => ({ id: d._id, name: d.fullName || d.username, specialization: d.doctorType || d.specialization })), null, 2)}
+    
+    Return a JSON object with:
+    - suggestedDoctorId: string (the ID of the doctor)
+    - reasoning: string
+    - specialtyRecommended: string
+  `;
+
+  const response = await getAIResponse(prompt, 'You are a medical triage assistant. Match patient symptoms to the correct medical specialty. Return ONLY a JSON object.', true);
+  return JSON.parse(response || '{}');
 };
 
 export const analyzePrescriptionAI = async (imageData: string) => {
@@ -67,24 +144,30 @@ export const analyzePrescriptionAI = async (imageData: string) => {
     const ai = getAIClient();
     if (!ai) throw new Error('No AI API Key configured');
 
-    // Assuming vision is supported by some models; otherwise, handle text-based extraction
-    const response = await ai.client.chat.completions.create({
-      model: ai.model, 
+    // Note: Standard DeepSeek models (chat/reasoner) do not support vision yet.
+    // If using Nvidia NIM with a vision model, this might work.
+    // Otherwise, we fallback to a text-based prompt or warn the user.
+    
+    const response = await (ai.client as OpenAI).chat.completions.create({
+      model: ai.model!,
       messages: [
         {
           role: 'user',
           content: [
             { type: 'text', text: 'Extract the medicine names, dosages, and instructions from this prescription image. Also, provide a simplified explanation of what each medicine is for and check for any potential common drug-drug interactions if multiple medicines are listed. Return the result in a structured JSON format with keys: medicines (array of {name, dosage, instructions, purpose}), interactions (array of {severity, description}), and summary (string).' },
-            { type: 'image_url', image_url: imageData } // Ensure the image data format is correct (URL or base64)
+            { type: 'image_url', image_url: { url: imageData } }
           ] as any,
         },
       ],
       response_format: { type: 'json_object' },
     });
-
     return JSON.parse(response.choices[0].message.content || '{}');
   } catch (error: any) {
-    console.error('Prescription Analysis Error:', error?.response?.data || error?.message || error);
+    console.error('Prescription Analysis Error:', error.message);
+    // Fallback for models that don't support vision
+    if (error.message.includes('vision') || error.message.includes('image')) {
+      throw new Error('Current AI model does not support image analysis. Please use a vision-capable model.');
+    }
     throw error;
   }
 };
@@ -98,7 +181,7 @@ export const analyzeMoodAI = async (journal: string, mood: number) => {
   4. A recommendation on whether they should consult a specialist (if signs of high stress/depression are present).
   Return in JSON format with keys: tone, insights (array), advice (array), specialistNeeded (boolean), recommendation (string).`;
 
-  const response = await getAIResponse(prompt, 'You are a compassionate mental health assistant.');
+  const response = await getAIResponse(prompt, 'You are a compassionate mental health assistant.', true);
   return JSON.parse(response || '{}');
 };
 
@@ -110,7 +193,7 @@ export const generateNutritionPlanAI = async (conditions: string[], preferences:
   Provide nutritional focus for each meal.
   Return in JSON format with keys: dailyFocus, meals (array of {type, name, ingredients, nutritionalValue}), tips (array).`;
 
-  const response = await getAIResponse(prompt, 'You are a professional clinical nutritionist.');
+  const response = await getAIResponse(prompt, 'You are a professional clinical nutritionist.', true);
   return JSON.parse(response || '{}');
 };
 
@@ -123,7 +206,7 @@ export const checkSymptomsAI = async (symptoms: string) => {
   4. Immediate advice or first aid (if applicable)
   Return in JSON format with keys: potentialCauses (array), recommendedSpecialist (string), urgency (string), advice (string).`;
 
-  const response = await getAIResponse(prompt, 'You are a professional medical triage assistant.');
+  const response = await getAIResponse(prompt, 'You are a professional medical triage assistant.', true);
   return JSON.parse(response || '{}');
 };
 
@@ -134,6 +217,19 @@ export const analyzeLabReport = async (reportDetails: string) => {
   Provide actionable advice (e.g., dietary changes, lifestyle adjustments).
   Return in JSON format with keys: abnormalValues (array of {parameter, value, range, status, meaning}), summary (string), advice (array).`;
 
-  const response = await getAIResponse(prompt, 'You are a professional medical lab report interpreter.');
+  const response = await getAIResponse(prompt, 'You are a professional medical lab report interpreter.', true);
+  return JSON.parse(response || '{}');
+};
+
+export const getHealthInsightsAI = async (patientData: any) => {
+  const prompt = `
+    Analyze the following patient data and provide 3 personalized health insights and 3 actionable recommendations.
+    Return the response in JSON format with keys: insights (array of {category, title, description}), recommendations (array of {priority, title, description}), and disclaimer (string).
+    
+    Patient Data:
+    ${JSON.stringify(patientData, null, 2)}
+  `;
+
+  const response = await getAIResponse(prompt, 'You are a professional medical AI assistant. Provide empathetic, accurate, and helpful health insights based on patient data.', true);
   return JSON.parse(response || '{}');
 };

@@ -99,8 +99,9 @@ export const seedDatabase = async () => {
     }
 
     // Seed Products
-    await Product.deleteMany({}); // Clear existing products to ensure new ones are seeded
-    const products = [
+    const productCount = await Product.countDocuments();
+    if (productCount === 0) {
+      const products = [
         {
           name: 'Digital Blood Pressure Monitor',
           description: 'High-precision automatic blood pressure monitor with large LCD display.',
@@ -244,6 +245,7 @@ export const seedDatabase = async () => {
       ];
       await Product.insertMany(products);
       console.log('✅ Products seeded successfully');
+    }
 
   } catch (error) {
     console.error('❌ Error seeding database:', error);

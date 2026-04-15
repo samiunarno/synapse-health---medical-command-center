@@ -39,7 +39,7 @@ export default function HelpCenter() {
     },
     {
       q: "How does the AI Prescription scan work?",
-      a: "Simply upload a clear photo of your physical prescription. Our Kimi-powered AI will analyze the text, verify dosage safety, and cross-reference it with your medical history for potential interactions."
+      a: "Simply upload a clear photo of your physical prescription. Our AI-powered system will analyze the text, verify dosage safety, and cross-reference it with your medical history for potential interactions."
     }
   ];
 

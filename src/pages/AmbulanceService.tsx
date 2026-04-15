@@ -703,12 +703,22 @@ export default function AmbulanceService() {
                     </button>
                   )}
                   {activeRequest.status === 'Dispatched' && (
-                    <button 
-                      onClick={() => updateRequestStatus(activeRequest._id, 'Arrived')}
-                      className="col-span-2 py-4 bg-emerald-600 text-white rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/20"
-                    >
-                      Mark as Arrived
-                    </button>
+                    <>
+                      <button 
+                        onClick={() => updateRequestStatus(activeRequest._id, 'Arrived')}
+                        className="py-4 bg-emerald-600 text-white rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/20"
+                      >
+                        Mark as Arrived
+                      </button>
+                      <button 
+                        onClick={simulateMovement}
+                        disabled={simulating}
+                        className="py-4 bg-blue-600 text-white rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2 disabled:opacity-50"
+                      >
+                        {simulating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Navigation className="w-4 h-4" />}
+                        Simulate Driving
+                      </button>
+                    </>
                   )}
                   {activeRequest.status === 'Arrived' && (
                     <button 
@@ -761,7 +771,7 @@ export default function AmbulanceService() {
         </div>
       )}
 
-      {user?.role !== 'Driver' && (
+      {user?.role === 'Patient' && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Map Section */}
           <div className="lg:col-span-2 space-y-6 relative h-[600px] md:h-[700px] lg:h-[800px]">
@@ -978,16 +988,6 @@ export default function AmbulanceService() {
                       </div>
                     </div>
                     <div className="flex items-center gap-6 w-full md:w-auto">
-                      {(activeRequest.status === 'Dispatched' || activeRequest.status === 'Accepted') && (
-                        <button 
-                          onClick={simulateMovement}
-                          disabled={simulating}
-                          className="flex-1 md:flex-none px-6 py-3 bg-white text-black text-[9px] font-black uppercase tracking-widest rounded-xl transition-all flex items-center justify-center gap-2 hover:bg-gray-200 shadow-xl"
-                        >
-                          {simulating ? <Loader2 className="w-3 h-3 animate-spin" /> : <Navigation className="w-3 h-3" />}
-                          Live Tracking
-                        </button>
-                      )}
                       {activeRequest.ambulance_id?.eta && (
                         <div className="text-right min-w-[60px]">
                           <p className="text-red-500 font-display font-black text-3xl tracking-tighter leading-none">{activeRequest.ambulance_id.eta}m</p>
@@ -1042,6 +1042,105 @@ export default function AmbulanceService() {
                     </span>
                   </div>
                 ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Admin Monitoring View */}
+      {(user?.role === 'Admin' || user?.role === 'Staff') && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Map Section */}
+          <div className="lg:col-span-2 space-y-6 relative h-[600px] md:h-[700px] lg:h-[800px]">
+            <div className="bg-[#0a0a0a] rounded-[3rem] border border-white/10 overflow-hidden h-full relative shadow-2xl group">
+              <div ref={mapRef} className="w-full h-full z-0" />
+              
+              {/* Map Controls Overlay */}
+              <div className="absolute top-8 right-8 flex flex-col gap-3 z-[100]">
+                <button 
+                  onClick={handleLocateMe}
+                  className="w-12 h-12 bg-black/80 backdrop-blur-2xl border border-white/10 rounded-2xl text-white hover:bg-white hover:text-black transition-all shadow-2xl flex items-center justify-center group/btn"
+                  title="Locate Me"
+                >
+                  <Navigation className={`w-5 h-5 ${locating ? 'animate-spin' : 'group-hover/btn:rotate-45 transition-transform'}`} />
+                </button>
+                <button 
+                  onClick={() => setShowNearbyHospitals(!showNearbyHospitals)}
+                  className={`w-12 h-12 bg-black/80 backdrop-blur-2xl border border-white/10 rounded-2xl transition-all shadow-2xl flex items-center justify-center ${showNearbyHospitals ? 'text-emerald-500' : 'text-white'}`}
+                  title="Toggle Hospitals"
+                >
+                  <MapIcon className="w-5 h-5" />
+                </button>
+                <button 
+                  onClick={() => setShowTraffic(!showTraffic)}
+                  className={`w-12 h-12 bg-black/80 backdrop-blur-2xl border border-white/10 rounded-2xl transition-all shadow-2xl flex items-center justify-center ${showTraffic ? 'text-blue-500' : 'text-white'}`}
+                  title="Toggle Traffic"
+                >
+                  <Activity className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Status Indicator Overlay */}
+              <div className="absolute bottom-8 left-8 z-[100] flex flex-col gap-3">
+                <div className="bg-black/80 backdrop-blur-2xl border border-white/10 rounded-2xl p-5 flex items-center gap-5 shadow-2xl">
+                  <div className="flex items-center gap-3">
+                    <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse" />
+                    <span className="text-[10px] font-bold text-white uppercase tracking-widest">System Live</span>
+                  </div>
+                  <div className="w-px h-5 bg-white/10" />
+                  <div className="flex items-center gap-3">
+                    <Truck className="w-5 h-5 text-blue-500" />
+                    <span className="text-[10px] font-bold text-white uppercase tracking-widest">{ambulances.filter(a => a.status === 'Available').length} Ready</span>
+                  </div>
+                </div>
+              </div>
+
+              {!(import.meta as any).env.VITE_AMAP_KEY && (
+                <div className="absolute inset-0 bg-[#050505] backdrop-blur-sm flex items-center justify-center p-8 overflow-y-auto z-[100]">
+                  <AMapSetupGuide />
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Sidebar Section */}
+          <div className="space-y-6">
+            <div className="bg-white/5 rounded-[2rem] border border-white/10 p-8">
+              <h3 className="text-xl font-bold text-white mb-6">All Requests</h3>
+              <div className="space-y-4 max-h-[700px] overflow-y-auto custom-scrollbar">
+                {requests.length === 0 ? (
+                  <p className="text-gray-500 text-center py-8">No requests found</p>
+                ) : (
+                  requests.map((req) => (
+                    <div key={req._id} className="bg-white/5 p-4 rounded-xl border border-white/5 flex flex-col gap-3">
+                      <div className="flex items-center justify-between">
+                        <span className={`px-2 py-1 rounded-full text-[8px] font-bold uppercase tracking-widest ${getStatusColor(req.status)}`}>
+                          {req.status}
+                        </span>
+                        <p className="text-[10px] text-gray-500 font-mono">{req._id.slice(-6)}</p>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex items-start gap-2">
+                          <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-1.5 shrink-0" />
+                          <p className="text-xs text-white font-medium">{req.pickup_location.address}</p>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <div className="w-1.5 h-1.5 bg-red-500 mt-1.5 shrink-0" />
+                          <p className="text-xs text-gray-400">{req.destination_location?.address}</p>
+                        </div>
+                      </div>
+                      {req.ambulance_id && (
+                        <div className="pt-2 border-t border-white/5 flex items-center gap-2">
+                          <Truck className="w-3 h-3 text-gray-500" />
+                          <p className="text-[10px] text-gray-400">
+                            {req.ambulance_id.vehicle_number} • {req.ambulance_id.driver_name}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </div>

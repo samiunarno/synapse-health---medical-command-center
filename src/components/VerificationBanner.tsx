@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { AlertTriangle, Clock, ShieldCheck, Upload, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useTranslation } from 'react-i18next';
 
 export default function VerificationBanner() {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [status, setStatus] = useState<any>(null);
   const [isVisible, setIsVisible] = useState(true);
 
@@ -57,13 +59,13 @@ export default function VerificationBanner() {
             )}
             <div className="text-xs font-bold uppercase tracking-widest">
               {isBanned ? (
-                <span>Account Restricted: {status.banReason}</span>
+                <span>{t('account_restricted')} {status.banReason}</span>
               ) : hasDocuments ? (
-                <span>Verification in Progress: AI is currently analyzing your documents.</span>
+                <span>{t('verification_in_progress')}</span>
               ) : (
                 <span>
-                  Action Required: Please upload your verification documents within {hoursLeft}h {minutesLeft}m. 
-                  Failure to do so will result in account restriction.
+                  {t('action_required_upload', { hours: hoursLeft, minutes: minutesLeft })} 
+                  {t('failure_restriction')}
                 </span>
               )}
             </div>
@@ -74,7 +76,7 @@ export default function VerificationBanner() {
                 onClick={() => window.location.href = '/profile'}
                 className="bg-white text-black px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-all"
               >
-                Upload Now
+                {t('upload_now')}
               </button>
             )}
             <button onClick={() => setIsVisible(false)} className="hover:rotate-90 transition-transform">

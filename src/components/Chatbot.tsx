@@ -1,7 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageSquare, X, Send, Loader2, Bot, AlertCircle } from 'lucide-react';
+import { MessageSquare, X, Send, Loader2, Sparkles, Bot, User, Calendar, MapPin, Phone, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
+import { useTranslation } from 'react-i18next';
+
+import { getAIResponse } from '../services/aiService';
 
 interface ChatMessage {
   role: 'user' | 'model';
@@ -9,13 +12,13 @@ interface ChatMessage {
 }
 
 export default function Chatbot() {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([
-    { role: 'model', text: 'Hello! I am Synapse Health, your virtual assistant powered by DeepSeek AI. How can I assist you today?' }
+    { role: 'model', text: t('chatbot_greeting') }
   ]);
   const [loading, setLoading] = useState(false);
-  const [quickRepliesLoading, setQuickRepliesLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -32,34 +35,28 @@ export default function Chatbot() {
     setChatHistory(prev => [...prev, userMessage]);
     setMessage('');
     setLoading(true);
-    setQuickRepliesLoading(true);
 
     try {
-      const response = await axios.post('/api/chatbot/chat', {
-        message: messageToSend,
-        systemPrompt: "You are a helpful and professional healthcare assistant for Synapse Health. You can answer general health questions, explain medical terms, and provide wellness tips. Always state that you are an AI and not a doctor. If a user describes an emergency, tell them to call emergency services immediately."
-      }, { timeout: 5000 });
-
-      const modelMessage: ChatMessage = { role: 'model', text: response.data.response };
+      const responseText = await getAIResponse(
+        messageToSend,
+        "You are a helpful and professional healthcare assistant for Synapse Health. You can answer general health questions, explain medical terms, and provide wellness tips. Always state that you are an AI and not a doctor. If a user describes an emergency, tell them to call emergency services immediately."
+      );
+      
+      const modelMessage: ChatMessage = { role: 'model', text: responseText };
       setChatHistory(prev => [...prev, modelMessage]);
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error('Axios Error:', error.response?.data || error.message);
-      } else {
-        console.error('Unexpected Error:', error);
-      }
-      setChatHistory(prev => [...prev, { role: 'model', text: "I'm sorry, I'm having trouble connecting to my neural network. Please try again later." }]);
+      console.error('Chat Error:', error);
+      setChatHistory(prev => [...prev, { role: 'model', text: t('chatbot_error') }]);
     } finally {
       setLoading(false);
-      setQuickRepliesLoading(false);
     }
   };
 
   const quickReplies = [
-    "Book an appointment",
-    "Visiting hours",
-    "Emergency ambulance",
-    "Track my order"
+    t('book_appointment'),
+    t('visiting_hours'),
+    t('emergency_ambulance'),
+    t('track_order')
   ];
 
   return (
@@ -82,26 +79,25 @@ export default function Chatbot() {
                   <h3 className="text-sm font-display font-bold text-white">Synapse Health</h3>
                   <p className="text-[10px] text-blue-200 font-bold uppercase tracking-widest flex items-center gap-1">
                     <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
-                    AI Assistant Online
+                    {t('ai_assistant_online')}
                   </p>
                 </div>
               </div>
-              <button
+              <button 
                 onClick={() => setIsOpen(false)}
                 className="p-2 hover:bg-white/10 rounded-xl transition-colors text-white/70 hover:text-white"
-                aria-label="Close chatbot"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Chat Area */}
-            <div
+            <div 
               ref={scrollRef}
               className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar bg-[#050505]"
             >
               {chatHistory.map((chat, i) => (
-                <div
+                <div 
                   key={i}
                   className={`flex ${chat.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
@@ -125,14 +121,13 @@ export default function Chatbot() {
             </div>
 
             {/* Quick Replies */}
-            {!loading && !quickRepliesLoading && chatHistory[chatHistory.length - 1]?.role === 'model' && (
+            {!loading && chatHistory[chatHistory.length - 1]?.role === 'model' && (
               <div className="px-6 py-3 bg-[#050505] border-t border-white/5 flex gap-2 overflow-x-auto custom-scrollbar no-scrollbar">
                 {quickReplies.map((reply, idx) => (
                   <button
                     key={idx}
                     onClick={() => handleSend(reply)}
                     className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-[10px] font-bold text-gray-400 whitespace-nowrap transition-colors"
-                    aria-label={`Quick reply: ${reply}`}
                   >
                     {reply}
                   </button>
@@ -144,7 +139,7 @@ export default function Chatbot() {
             <div className="px-6 py-2 bg-black border-t border-white/5 flex items-center gap-2">
               <AlertCircle className="w-3 h-3 text-gray-600" />
               <p className="text-[8px] text-gray-600 font-medium italic">
-                AI Assistant: Not a substitute for professional medical advice.
+                {t('ai_disclaimer')}
               </p>
             </div>
 
@@ -156,14 +151,13 @@ export default function Chatbot() {
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                  placeholder="Type your message..."
+                  placeholder={t('type_message')}
                   className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-4 pr-12 text-xs text-white outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
                 />
-                <button
+                <button 
                   onClick={() => handleSend()}
                   disabled={!message.trim() || loading}
                   className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-blue-500/20"
-                  aria-label="Send message"
                 >
                   <Send className="w-4 h-4" />
                 </button>
@@ -177,8 +171,7 @@ export default function Chatbot() {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-blue-500/40 relative group"
-        aria-label="Open chatbot"
+        className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-blue-500/40 relative group interactive"
       >
         <MessageSquare className="w-8 h-8 text-white group-hover:rotate-12 transition-transform" />
         <div className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-[#0a0a0a]" />

@@ -17,7 +17,8 @@ const medicineOrderSchema = new mongoose.Schema({
     lat: { type: Number },
     lng: { type: Number }
   },
-  payment_status: { type: String, enum: ['Unpaid', 'Paid'], default: 'Unpaid' }
+  payment_status: { type: String, enum: ['Unpaid', 'Paid'], default: 'Unpaid' },
+  payment_method: { type: String, enum: ['Cash', 'WeChat', 'Alipay'], default: 'Cash' }
 }, { timestamps: true });
 
 export default mongoose.model('MedicineOrder', medicineOrderSchema);

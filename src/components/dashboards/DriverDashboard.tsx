@@ -14,8 +14,10 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../AuthContext';
 import { io } from 'socket.io-client';
+import { useTranslation } from 'react-i18next';
 
 export default function DriverDashboard() {
+  const { t } = useTranslation();
   const { user, token } = useAuth();
   const [requests, setRequests] = useState<any[]>([]);
   const [activeRequest, setActiveRequest] = useState<any>(null);
@@ -122,12 +124,12 @@ export default function DriverDashboard() {
     <div className="space-y-8 p-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-4xl font-display font-bold text-white uppercase tracking-tighter">Driver Dashboard</h1>
-          <p className="text-gray-500 font-bold uppercase tracking-widest text-xs mt-2">Ambulance & Emergency Response</p>
+          <h1 className="text-4xl font-display font-bold text-gray-900 dark:text-white uppercase tracking-tighter">{t('driver_dashboard')}</h1>
+          <p className="text-gray-500 font-bold uppercase tracking-widest text-xs mt-2">{t('ambulance_emergency_response')}</p>
         </div>
         <div className="flex items-center gap-4">
           <div className={`px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest border ${activeRequest ? 'bg-amber-500/10 border-amber-500/20 text-amber-500' : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500'}`}>
-            {activeRequest ? 'On Active Mission' : 'Available for Dispatch'}
+            {activeRequest ? t('on_active_mission') : t('available_for_dispatch')}
           </div>
         </div>
       </div>
@@ -146,9 +148,9 @@ export default function DriverDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Active Mission */}
         <div className="lg:col-span-2 space-y-6">
-          <h2 className="text-xl font-display font-bold text-white uppercase tracking-tight flex items-center gap-3">
-            <Zap className="w-5 h-5 text-blue-500" />
-            Active Mission
+          <h2 className="text-xl font-display font-bold text-gray-900 dark:text-white uppercase tracking-tight flex items-center gap-3">
+            <Zap className="w-5 h-5 text-blue-600 dark:text-blue-500" />
+            {t('active_mission')}
           </h2>
           
           <AnimatePresence mode="wait">
@@ -158,7 +160,7 @@ export default function DriverDashboard() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 space-y-8"
+                className="bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-[2.5rem] p-8 space-y-8 transition-colors duration-500"
               >
                 <div className="flex justify-between items-start">
                   <div className="flex items-center gap-4">
@@ -166,12 +168,12 @@ export default function DriverDashboard() {
                       <Activity className="w-8 h-8" />
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold text-white uppercase tracking-tighter">Emergency Call</h3>
-                      <p className="text-blue-500 font-bold uppercase tracking-widest text-[10px]">{activeRequest.service_type} Service</p>
+                      <h3 className="text-2xl font-bold text-gray-900 dark:text-white uppercase tracking-tighter">{t('emergency_call')}</h3>
+                      <p className="text-blue-600 dark:text-blue-500 font-bold uppercase tracking-widest text-[10px]">{activeRequest.service_type} {t('service')}</p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <span className="px-4 py-2 bg-blue-600/20 border border-blue-500/30 text-blue-400 rounded-full text-[10px] font-bold uppercase tracking-widest">
+                    <span className="px-4 py-2 bg-blue-600/10 dark:bg-blue-600/20 border border-blue-500/20 dark:border-blue-500/30 text-blue-600 dark:text-blue-400 rounded-full text-[10px] font-bold uppercase tracking-widest">
                       {activeRequest.status}
                     </span>
                   </div>
@@ -179,28 +181,28 @@ export default function DriverDashboard() {
 
                 <div className="grid grid-cols-2 gap-8">
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3 text-gray-400">
+                    <div className="flex items-center gap-3 text-gray-500 dark:text-gray-400">
                       <MapPin className="w-5 h-5 text-red-500" />
-                      <div className="text-xs font-bold uppercase tracking-widest">Pickup</div>
+                      <div className="text-xs font-bold uppercase tracking-widest">{t('pickup')}</div>
                     </div>
-                    <p className="text-white font-medium pl-8">{activeRequest.pickup_location.address || 'Coordinates Provided'}</p>
+                    <p className="text-gray-900 dark:text-white font-medium pl-8">{activeRequest.pickup_location.address || 'Coordinates Provided'}</p>
                   </div>
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3 text-gray-400">
+                    <div className="flex items-center gap-3 text-gray-500 dark:text-gray-400">
                       <Navigation className="w-5 h-5 text-emerald-500" />
-                      <div className="text-xs font-bold uppercase tracking-widest">Destination</div>
+                      <div className="text-xs font-bold uppercase tracking-widest">{t('destination')}</div>
                     </div>
-                    <p className="text-white font-medium pl-8">{activeRequest.destination_location?.address || 'Hospital Emergency'}</p>
+                    <p className="text-gray-900 dark:text-white font-medium pl-8">{activeRequest.destination_location?.address || 'Hospital Emergency'}</p>
                   </div>
                 </div>
 
-                <div className="p-6 bg-white/2 rounded-3xl border border-white/5 flex items-center justify-between">
+                <div className="p-6 bg-white dark:bg-white/2 rounded-3xl border border-gray-200 dark:border-white/5 flex items-center justify-between shadow-sm dark:shadow-none">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center text-gray-400">
+                    <div className="w-12 h-12 bg-gray-100 dark:bg-white/5 rounded-full flex items-center justify-center text-gray-500 dark:text-gray-400">
                       <User className="w-6 h-6" />
                     </div>
                     <div>
-                      <p className="text-white font-bold uppercase tracking-tight">{activeRequest.patient_id?.name || 'Emergency Patient'}</p>
+                      <p className="text-gray-900 dark:text-white font-bold uppercase tracking-tight">{activeRequest.patient_id?.name || t('emergency_patient')}</p>
                       <div className="flex items-center gap-2 text-gray-500 text-[10px] font-bold uppercase tracking-widest">
                         <Phone className="w-3 h-3" /> {activeRequest.patient_id?.contact || 'N/A'}
                       </div>
@@ -217,7 +219,7 @@ export default function DriverDashboard() {
                       onClick={() => updateStatus('Dispatched')}
                       className="flex-1 py-5 bg-blue-600 text-white rounded-2xl font-bold uppercase tracking-widest text-xs hover:bg-blue-700 transition-all"
                     >
-                      Dispatch Vehicle
+                      {t('dispatch_vehicle')}
                     </button>
                   )}
                   {activeRequest.status === 'Dispatched' && (
@@ -225,7 +227,7 @@ export default function DriverDashboard() {
                       onClick={() => updateStatus('Arrived')}
                       className="flex-1 py-5 bg-amber-600 text-white rounded-2xl font-bold uppercase tracking-widest text-xs hover:bg-amber-700 transition-all"
                     >
-                      Mark as Arrived
+                      {t('mark_as_arrived')}
                     </button>
                   )}
                   {activeRequest.status === 'Arrived' && (
@@ -233,14 +235,14 @@ export default function DriverDashboard() {
                       onClick={() => updateStatus('Completed')}
                       className="flex-1 py-5 bg-emerald-600 text-white rounded-2xl font-bold uppercase tracking-widest text-xs hover:bg-emerald-700 transition-all"
                     >
-                      Complete Mission
+                      {t('complete_mission')}
                     </button>
                   )}
                   <button 
                     onClick={() => updateStatus('Cancelled')}
                     className="px-8 py-5 bg-red-600/20 border border-red-500/30 text-red-500 rounded-2xl font-bold uppercase tracking-widest text-xs hover:bg-red-600 hover:text-white transition-all"
                   >
-                    Cancel
+                    {t('cancel')}
                   </button>
                 </div>
               </motion.div>
@@ -249,13 +251,13 @@ export default function DriverDashboard() {
                 key="idle"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="bg-white/2 border border-dashed border-white/10 rounded-[2.5rem] p-20 text-center space-y-4"
+                className="bg-gray-50 dark:bg-white/2 border border-dashed border-gray-200 dark:border-white/10 rounded-[2.5rem] p-20 text-center space-y-4 transition-colors duration-500"
               >
-                <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center text-gray-600 mx-auto">
+                <div className="w-20 h-20 bg-gray-100 dark:bg-white/5 rounded-full flex items-center justify-center text-gray-400 dark:text-gray-600 mx-auto">
                   <Clock className="w-10 h-10" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-500 uppercase tracking-tight">No Active Mission</h3>
-                <p className="text-gray-600 text-xs font-bold uppercase tracking-widest">Waiting for emergency dispatch...</p>
+                <h3 className="text-xl font-bold text-gray-500 uppercase tracking-tight">{t('no_active_mission')}</h3>
+                <p className="text-gray-400 dark:text-gray-600 text-xs font-bold uppercase tracking-widest">{t('waiting_for_dispatch')}</p>
               </motion.div>
             )}
           </AnimatePresence>
@@ -263,9 +265,9 @@ export default function DriverDashboard() {
 
         {/* Nearby Requests */}
         <div className="space-y-6">
-          <h2 className="text-xl font-display font-bold text-white uppercase tracking-tight flex items-center gap-3">
+          <h2 className="text-xl font-display font-bold text-gray-900 dark:text-white uppercase tracking-tight flex items-center gap-3">
             <Activity className="w-5 h-5 text-red-500" />
-            Incoming Requests
+            {t('incoming_requests')}
           </h2>
           <div className="space-y-4">
             {requests.filter(r => r.status === 'Pending').length > 0 ? (
@@ -275,19 +277,19 @@ export default function DriverDashboard() {
                   layout
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="p-6 bg-white/5 border border-white/10 rounded-3xl space-y-4 hover:bg-white/10 transition-all group"
+                  className="p-6 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-3xl space-y-4 hover:bg-gray-100 dark:hover:bg-white/10 transition-all group"
                 >
                   <div className="flex justify-between items-start">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-red-500/20 rounded-xl flex items-center justify-center text-red-500">
+                      <div className="w-10 h-10 bg-red-500/10 dark:bg-red-500/20 rounded-xl flex items-center justify-center text-red-600 dark:text-red-500">
                         <AlertCircle className="w-5 h-5" />
                       </div>
                       <div>
-                        <h4 className="text-white font-bold uppercase tracking-tight text-sm">Emergency</h4>
+                        <h4 className="text-gray-900 dark:text-white font-bold uppercase tracking-tight text-sm">Emergency</h4>
                         <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">{new Date(request.createdAt).toLocaleTimeString()}</p>
                       </div>
                     </div>
-                    <span className="px-3 py-1 bg-white/5 rounded-full text-[8px] font-bold uppercase tracking-widest text-gray-400">
+                    <span className="px-3 py-1 bg-gray-200 dark:bg-white/5 rounded-full text-[8px] font-bold uppercase tracking-widest text-gray-600 dark:text-gray-400">
                       {request.service_type}
                     </span>
                   </div>
@@ -299,15 +301,15 @@ export default function DriverDashboard() {
                   <button 
                     onClick={() => handleAccept(request._id)}
                     disabled={!!activeRequest}
-                    className="w-full py-3 bg-white text-black rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all disabled:opacity-20 flex items-center justify-center gap-2"
+                    className="w-full py-3 bg-gray-900 dark:bg-white text-white dark:text-black rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-blue-600 dark:hover:bg-blue-600 hover:text-white transition-all disabled:opacity-20 flex items-center justify-center gap-2"
                   >
-                    Accept Request <ChevronRight className="w-3 h-3" />
+                    {t('accept_request')} <ChevronRight className="w-3 h-3" />
                   </button>
                 </motion.div>
               ))
             ) : (
-              <div className="p-12 text-center bg-white/2 border border-white/5 rounded-3xl">
-                <p className="text-gray-600 text-[10px] font-bold uppercase tracking-widest">No pending requests</p>
+              <div className="p-12 text-center bg-gray-50 dark:bg-white/2 border border-gray-200 dark:border-white/5 rounded-3xl transition-colors duration-500">
+                <p className="text-gray-500 dark:text-gray-600 text-[10px] font-bold uppercase tracking-widest">{t('no_pending_requests')}</p>
               </div>
             )}
           </div>

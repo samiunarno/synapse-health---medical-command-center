@@ -7,7 +7,7 @@ import Patient from '../models/Patient';
 export const createMedicineOrder = async (req: Request, res: Response) => {
   try {
     const user = (req as any).user;
-    const { medicines, total_price, delivery_address, delivery_location, service_type } = req.body;
+    const { medicines, total_price, delivery_address, delivery_location, service_type, payment_method } = req.body;
     
     const patient = await Patient.findOne({ patient_id: user.reference_id });
     
@@ -22,6 +22,8 @@ export const createMedicineOrder = async (req: Request, res: Response) => {
       total_price,
       delivery_address,
       service_type: service_type || 'Standard',
+      payment_method: payment_method || 'Cash',
+      payment_status: (payment_method === 'WeChat' || payment_method === 'Alipay') ? 'Paid' : 'Unpaid',
       rider_location: delivery_location // Initial rider location (at pharmacy)
     });
 

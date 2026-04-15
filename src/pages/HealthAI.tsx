@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
-import { analyzeMood as analyzeMoodAI, generateNutritionPlan as generateNutritionPlanAI } from '../services/geminiService';
+import { analyzeMood as analyzeMoodAI, generateNutritionPlan as generateNutritionPlanAI } from '../services/aiService';
 
 export default function HealthAI() {
   const { user, token } = useAuth();

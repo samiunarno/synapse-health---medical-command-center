@@ -1,7 +1,4 @@
-import { GoogleGenAI, Type } from "@google/genai";
-
-// Initialize the Gemini AI
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+import { getAIResponse } from './aiService';
 
 export interface ConsultationSummary {
   summary: string;
@@ -33,39 +30,11 @@ export const generateConsultationSummary = async (notes: string, chatHistory: an
       2. A probable diagnosis based on the information.
       3. A list of prescribed medications with dosage, frequency, and duration.
       
-      If information is missing, use your medical knowledge to suggest the most likely diagnosis and standard medications for the symptoms described, but mark them as "Suggested".
+      Return a JSON object with keys: summary, diagnosis, prescribedMedications (array of {name, dosage, frequency, duration}).
     `;
 
-    const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            summary: { type: Type.STRING },
-            diagnosis: { type: Type.STRING },
-            prescribedMedications: {
-              type: Type.ARRAY,
-              items: {
-                type: Type.OBJECT,
-                properties: {
-                  name: { type: Type.STRING },
-                  dosage: { type: Type.STRING },
-                  frequency: { type: Type.STRING },
-                  duration: { type: Type.STRING }
-                },
-                required: ["name", "dosage", "frequency", "duration"]
-              }
-            }
-          },
-          required: ["summary", "diagnosis", "prescribedMedications"]
-        }
-      }
-    });
-
-    return JSON.parse(response.text);
+    const response = await getAIResponse(prompt, "You are a professional medical scribe. Return ONLY a JSON object.");
+    return JSON.parse(response);
   } catch (error) {
     console.error("Error generating consultation summary:", error);
     throw error;

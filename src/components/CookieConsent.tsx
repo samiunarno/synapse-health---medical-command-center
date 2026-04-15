@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Shield, X, Cookie } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export default function CookieConsent() {
+  const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -37,10 +39,10 @@ export default function CookieConsent() {
               <Cookie className="w-6 h-6 text-blue-400" />
             </div>
             <div className="flex-1">
-              <h3 className="text-white font-bold text-lg mb-1">We value your privacy</h3>
+              <h3 className="text-white font-bold text-lg mb-1">{t('privacy_title')}</h3>
               <p className="text-gray-400 text-sm leading-relaxed">
-                We use cookies to enhance your browsing experience, serve personalized content, and analyze our traffic. By clicking "Accept All", you consent to our use of cookies. 
-                <Link to="/privacy" className="text-blue-400 hover:underline ml-1">Read our Cookie Policy</Link>.
+                {t('privacy_desc')} 
+                <Link to="/privacy" className="text-blue-400 hover:underline ml-1">{t('cookie_policy')}</Link>.
               </p>
             </div>
             <div className="flex items-center gap-3 shrink-0 w-full md:w-auto">
@@ -48,13 +50,13 @@ export default function CookieConsent() {
                 onClick={handleDecline}
                 className="flex-1 md:flex-none px-6 py-3 rounded-xl border border-white/10 text-white font-bold text-sm hover:bg-white/5 transition-colors"
               >
-                Decline
+                {t('decline')}
               </button>
               <button
                 onClick={handleAccept}
                 className="flex-1 md:flex-none px-6 py-3 rounded-xl bg-blue-600 text-white font-bold text-sm hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/20"
               >
-                Accept All
+                {t('accept_all')}
               </button>
             </div>
           </div>

@@ -122,17 +122,22 @@ async function startServer() {
 
   // MongoDB Connection
   const MONGODB_URI = process.env.MONGODB_URI;
-  if (MONGODB_URI) {
-    mongoose.connect(MONGODB_URI)
+  mongoose.set('bufferCommands', false);
+  
+  if (MONGODB_URI && MONGODB_URI !== "mongodb+srv://<username>:<password>@cluster.mongodb.net/hospital") {
+    mongoose.connect(MONGODB_URI, {
+      serverSelectionTimeoutMS: 5000,
+    })
       .then(() => {
         console.log('✅ Connected to MongoDB');
         initVerificationCron();
+        seedDatabase();
       })
       .catch(err => {
-        console.error('❌ MongoDB connection error:', err);
+        console.error('❌ MongoDB connection error. Please check your MONGODB_URI environment variable:', err.message);
       });
   } else {
-    console.warn('MONGODB_URI not found in environment. Backend will not function correctly without a database connection.');
+    console.error('❌ MONGODB_URI is missing or invalid in environment variables. The backend requires a valid MongoDB connection string to function.');
   }
 
   // API Routes
@@ -157,15 +162,6 @@ async function startServer() {
   app.use('/api/chatbot', chatbotRoutes);
   app.use('/api/products', productRoutes);
   app.use('/api/verification', verificationRoutes);
-
-  // Seed Database if needed
-  if (mongoose.connection.readyState === 1) {
-    seedDatabase();
-  } else {
-    mongoose.connection.once('open', () => {
-      seedDatabase();
-    });
-  }
 
   // Health Check
   app.get('/api/health', (req, res) => {

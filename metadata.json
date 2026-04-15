@@ -1,5 +1,5 @@
 {
   "name": "Synapse Health - Medical Command Center",
   "description": "A high-tech hospital management system featuring predictive analytics, advanced diagnostics, and global command protocols.",
-  "requestFramePermissions": []
+  "requestFramePermissions": ["camera"]
 }

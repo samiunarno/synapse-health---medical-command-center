@@ -320,7 +320,7 @@ export const getPatientAIInsights = async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'Patient not found' });
     }
 
-    // In a real app, we'd use Kimi AI here to analyze patient data.
+    // In a real app, we'd use DeepSeek AI here to analyze patient data.
     // For now, we'll derive it from their vitals and reports.
     const riskAssessment = [
       { label: 'Cardiovascular Risk', value: patient.vitals?.heartRate === '72 bpm' ? 15 : 45, color: 'red', desc: 'Based on heart rate trends.' },

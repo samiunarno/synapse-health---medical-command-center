@@ -13,8 +13,8 @@ import {
   Share2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import axios from 'axios';
 import { useAuth } from '../components/AuthContext';
+import { getAIResponse } from '../services/aiService';
 
 interface ChatMessage {
   role: 'user' | 'model';
@@ -54,14 +54,14 @@ export default function AIChatbot() {
     setLoading(true);
 
     try {
-      const response = await axios.post('/api/chatbot/chat', {
-        message: message,
-        systemPrompt: "You are Synapse Health AI, a professional and empathetic healthcare assistant. Provide accurate medical information while always including a disclaimer that you are an AI and the user should consult a doctor for serious concerns. Use a clean, structured tone."
-      });
+      const responseText = await getAIResponse(
+        message,
+        "You are Synapse Health AI, a professional and empathetic healthcare assistant. Provide accurate medical information while always including a disclaimer that you are an AI and the user should consult a doctor for serious concerns. Use a clean, structured tone."
+      );
       
       const modelMessage: ChatMessage = { 
         role: 'model', 
-        text: response.data.response,
+        text: responseText,
         timestamp: new Date().toLocaleTimeString()
       };
       setChatHistory(prev => [...prev, modelMessage]);

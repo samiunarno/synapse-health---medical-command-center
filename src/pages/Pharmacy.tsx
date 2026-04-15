@@ -54,6 +54,9 @@ export default function Pharmacy() {
   const [deliveryAddress, setDeliveryAddress] = useState('');
   const [addressSuggestions, setAddressSuggestions] = useState<any[]>([]);
   const [serviceType, setServiceType] = useState<'Standard' | 'Fast' | 'Express'>('Standard');
+  const [paymentMethod, setPaymentMethod] = useState<'Cash' | 'WeChat' | 'Alipay'>('Cash');
+  const [showQR, setShowQR] = useState(false);
+  const [qrType, setQrType] = useState<'WeChat' | 'Alipay' | null>(null);
   const [isSubmittingOrder, setIsSubmittingOrder] = useState(false);
   const [trackingOrder, setTrackingOrder] = useState<any>(null);
   const [assignedOrderId, setAssignedOrderId] = useState<string | null>(null);
@@ -335,7 +338,19 @@ export default function Pharmacy() {
   };
 
   const handlePlaceOrder = async () => {
+    if (!user) {
+      alert('Please log in to place an order.');
+      window.location.href = '/login';
+      return;
+    }
     if (!deliveryAddress) return alert('Please provide a delivery address');
+    
+    if ((paymentMethod === 'WeChat' || paymentMethod === 'Alipay') && !showQR) {
+      setQrType(paymentMethod);
+      setShowQR(true);
+      return;
+    }
+
     setIsSubmittingOrder(true);
     try {
       const totalPrice = cart.reduce((sum, item) => sum + (item.medicine.price * item.quantity), 0);
@@ -349,13 +364,16 @@ export default function Pharmacy() {
           medicines: cart.map(item => ({ medicine_id: item.medicine._id, quantity: item.quantity })),
           total_price: totalPrice,
           delivery_address: deliveryAddress,
-          service_type: serviceType
+          service_type: serviceType,
+          payment_method: paymentMethod
         })
       });
       if (res.ok) {
         setCart([]);
         setIsCartOpen(false);
         setDeliveryAddress('');
+        setShowQR(false);
+        setQrType(null);
         fetchMyOrders();
         alert('Order placed successfully!');
       }
@@ -926,6 +944,29 @@ export default function Pharmacy() {
                         ))}
                       </div>
                     </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-2 flex items-center gap-2">
+                        <DollarSign className="w-3 h-3" />
+                        Payment Method
+                      </label>
+                      <div className="grid grid-cols-3 gap-2">
+                        {(['Cash', 'WeChat', 'Alipay'] as const).map((method) => (
+                          <button
+                            key={method}
+                            type="button"
+                            onClick={() => setPaymentMethod(method)}
+                            className={`flex flex-col items-center gap-1 p-3 rounded-xl border transition-all ${
+                              paymentMethod === method 
+                                ? 'bg-indigo-600/10 border-indigo-500 text-indigo-500' 
+                                : 'bg-white/5 border-white/10 text-gray-500 hover:bg-white/10'
+                            }`}
+                          >
+                            <div className="text-[10px] font-bold">{method === 'Cash' ? '💵' : method === 'WeChat' ? '💬' : '💳'}</div>
+                            <span className="text-[8px] font-bold uppercase tracking-widest">{method}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                   <button 
                     onClick={handlePlaceOrder}
@@ -937,6 +978,62 @@ export default function Pharmacy() {
                   </button>
                 </div>
               )}
+
+              <AnimatePresence>
+                {showQR && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    className="absolute inset-0 z-[100] bg-black/95 flex flex-col items-center justify-center p-8 text-center"
+                  >
+                    <button 
+                      onClick={() => setShowQR(false)}
+                      className="absolute top-6 right-6 p-2 bg-white/5 rounded-full text-gray-400 hover:text-white transition-colors"
+                    >
+                      <X className="w-6 h-6" />
+                    </button>
+                    
+                    <div className="w-20 h-20 bg-white/10 rounded-3xl flex items-center justify-center mb-6">
+                      {qrType === 'WeChat' ? (
+                        <div className="text-4xl">💬</div>
+                      ) : (
+                        <div className="text-4xl">💳</div>
+                      )}
+                    </div>
+                    
+                    <h3 className="text-2xl font-display font-bold text-white mb-2">
+                      Scan with {qrType}
+                    </h3>
+                    <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mb-8">
+                      Total: ${cart.reduce((sum, item) => sum + (item.medicine.price * item.quantity), 0).toFixed(2)}
+                    </p>
+                    
+                    <div className="bg-white p-4 rounded-3xl mb-8 shadow-2xl shadow-white/10">
+                      <img 
+                        src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=SynapseHealth_Payment_${qrType}_${Date.now()}`}
+                        alt="Payment QR Code"
+                        className="w-48 h-48"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                    
+                    <div className="space-y-4 w-full">
+                      <button 
+                        onClick={handlePlaceOrder}
+                        disabled={isSubmittingOrder}
+                        className="w-full py-4 bg-emerald-600 text-white rounded-2xl font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-3"
+                      >
+                        {isSubmittingOrder ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle className="w-5 h-5" />}
+                        Confirm Payment Complete
+                      </button>
+                      <p className="text-[10px] text-gray-600 font-bold uppercase tracking-widest">
+                        Scan the QR code above to complete your transaction
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </motion.div>
           </div>
         )}
@@ -978,6 +1075,12 @@ export default function Pharmacy() {
                           'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'
                         }`}>
                           {order.status}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-widest">
+                        <span className="text-gray-500">Payment: {order.payment_method}</span>
+                        <span className={order.payment_status === 'Paid' ? 'text-green-500' : 'text-red-500'}>
+                          {order.payment_status}
                         </span>
                       </div>
                       <div className="space-y-2">

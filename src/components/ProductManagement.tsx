@@ -313,12 +313,12 @@ export default function ProductManagement() {
                       className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white focus:ring-2 focus:ring-blue-500/20 transition-all"
                     >
                       <option value="">{t('select_category')}</option>
-                      <option value="Diagnostics">Diagnostics</option>
-                      <option value="Surgical">Surgical</option>
-                      <option value="Monitoring">Monitoring</option>
-                      <option value="Emergency">Emergency</option>
-                      <option value="Personal Care">Personal Care</option>
-                      <option value="Supplies">Supplies</option>
+                      <option value="Diagnostics">{t('category_diagnostics')}</option>
+                      <option value="Surgical">{t('category_surgical')}</option>
+                      <option value="Monitoring">{t('category_monitoring')}</option>
+                      <option value="Emergency">{t('category_emergency')}</option>
+                      <option value="Personal Care">{t('category_personal_care')}</option>
+                      <option value="Supplies">{t('category_supplies')}</option>
                     </select>
                   </div>
                 </div>

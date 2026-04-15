@@ -15,8 +15,10 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../AuthContext';
 import { io } from 'socket.io-client';
+import { useTranslation } from 'react-i18next';
 
 export default function RiderDashboard() {
+  const { t } = useTranslation();
   const { user, token } = useAuth();
   const [orders, setOrders] = useState<any[]>([]);
   const [activeOrder, setActiveOrder] = useState<any>(null);
@@ -124,12 +126,12 @@ export default function RiderDashboard() {
     <div className="space-y-8 p-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-4xl font-display font-bold text-white uppercase tracking-tighter">Rider Dashboard</h1>
-          <p className="text-gray-500 font-bold uppercase tracking-widest text-xs mt-2">Medical Delivery Network</p>
+          <h1 className="text-4xl font-display font-bold text-gray-900 dark:text-white uppercase tracking-tighter">{t('rider_dashboard')}</h1>
+          <p className="text-gray-500 font-bold uppercase tracking-widest text-xs mt-2">{t('medical_delivery_network')}</p>
         </div>
         <div className="flex items-center gap-4">
           <div className={`px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest border ${activeOrder ? 'bg-blue-500/10 border-blue-500/20 text-blue-500' : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500'}`}>
-            {activeOrder ? 'Delivery in Progress' : 'Ready for Pickup'}
+            {activeOrder ? t('delivery_in_progress') : t('ready_for_pickup')}
           </div>
         </div>
       </div>
@@ -148,9 +150,9 @@ export default function RiderDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Active Delivery */}
         <div className="lg:col-span-2 space-y-6">
-          <h2 className="text-xl font-display font-bold text-white uppercase tracking-tight flex items-center gap-3">
-            <Package className="w-5 h-5 text-blue-500" />
-            Active Delivery
+          <h2 className="text-xl font-display font-bold text-gray-900 dark:text-white uppercase tracking-tight flex items-center gap-3">
+            <Package className="w-5 h-5 text-blue-600 dark:text-blue-500" />
+            {t('active_delivery')}
           </h2>
           
           <AnimatePresence mode="wait">
@@ -160,7 +162,7 @@ export default function RiderDashboard() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 space-y-8"
+                className="bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-[2.5rem] p-8 space-y-8 transition-colors duration-500"
               >
                 <div className="flex justify-between items-start">
                   <div className="flex items-center gap-4">
@@ -168,12 +170,12 @@ export default function RiderDashboard() {
                       <ShoppingBag className="w-8 h-8" />
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold text-white uppercase tracking-tighter">Order #{activeOrder._id.slice(-6)}</h3>
-                      <p className="text-blue-500 font-bold uppercase tracking-widest text-[10px]">{activeOrder.medicines.length} Items • ${activeOrder.total_price}</p>
+                      <h3 className="text-2xl font-bold text-gray-900 dark:text-white uppercase tracking-tighter">{t('order_hash')}{activeOrder._id.slice(-6)}</h3>
+                      <p className="text-blue-600 dark:text-blue-500 font-bold uppercase tracking-widest text-[10px]">{activeOrder.medicines.length} {t('items')} • ${activeOrder.total_price}</p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <span className="px-4 py-2 bg-blue-600/20 border border-blue-500/30 text-blue-400 rounded-full text-[10px] font-bold uppercase tracking-widest">
+                    <span className="px-4 py-2 bg-blue-600/10 dark:bg-blue-600/20 border border-blue-500/20 dark:border-blue-500/30 text-blue-600 dark:text-blue-400 rounded-full text-[10px] font-bold uppercase tracking-widest">
                       {activeOrder.rider_status}
                     </span>
                   </div>
@@ -181,28 +183,28 @@ export default function RiderDashboard() {
 
                 <div className="grid grid-cols-2 gap-8">
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3 text-gray-400">
-                      <Store className="w-5 h-5 text-blue-500" />
-                      <div className="text-xs font-bold uppercase tracking-widest">Pickup From</div>
+                    <div className="flex items-center gap-3 text-gray-500 dark:text-gray-400">
+                      <Store className="w-5 h-5 text-blue-600 dark:text-blue-500" />
+                      <div className="text-xs font-bold uppercase tracking-widest">{t('pickup_from')}</div>
                     </div>
-                    <p className="text-white font-medium pl-8">Central Pharmacy Hub</p>
+                    <p className="text-gray-900 dark:text-white font-medium pl-8">{t('central_pharmacy_hub')}</p>
                   </div>
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3 text-gray-400">
+                    <div className="flex items-center gap-3 text-gray-500 dark:text-gray-400">
                       <MapPin className="w-5 h-5 text-emerald-500" />
-                      <div className="text-xs font-bold uppercase tracking-widest">Deliver To</div>
+                      <div className="text-xs font-bold uppercase tracking-widest">{t('deliver_to')}</div>
                     </div>
-                    <p className="text-white font-medium pl-8">{activeOrder.delivery_address}</p>
+                    <p className="text-gray-900 dark:text-white font-medium pl-8">{activeOrder.delivery_address}</p>
                   </div>
                 </div>
 
-                <div className="p-6 bg-white/2 rounded-3xl border border-white/5 flex items-center justify-between">
+                <div className="p-6 bg-white dark:bg-white/2 rounded-3xl border border-gray-200 dark:border-white/5 flex items-center justify-between shadow-sm dark:shadow-none">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center text-gray-400">
+                    <div className="w-12 h-12 bg-gray-100 dark:bg-white/5 rounded-full flex items-center justify-center text-gray-500 dark:text-gray-400">
                       <User className="w-6 h-6" />
                     </div>
                     <div>
-                      <p className="text-white font-bold uppercase tracking-tight">{activeOrder.patient_id?.name || 'Customer'}</p>
+                      <p className="text-gray-900 dark:text-white font-bold uppercase tracking-tight">{activeOrder.patient_id?.name || t('customer')}</p>
                       <div className="flex items-center gap-2 text-gray-500 text-[10px] font-bold uppercase tracking-widest">
                         <Phone className="w-3 h-3" /> {activeOrder.patient_id?.contact || 'N/A'}
                       </div>
@@ -219,7 +221,7 @@ export default function RiderDashboard() {
                       onClick={() => updateStatus('Processing', 'AtPharmacy')}
                       className="flex-1 py-5 bg-blue-600 text-white rounded-2xl font-bold uppercase tracking-widest text-xs hover:bg-blue-700 transition-all"
                     >
-                      Arrived at Pharmacy
+                      {t('arrived_at_pharmacy')}
                     </button>
                   )}
                   {activeOrder.rider_status === 'AtPharmacy' && (
@@ -227,7 +229,7 @@ export default function RiderDashboard() {
                       onClick={() => updateStatus('Shipped', 'PickedUp')}
                       className="flex-1 py-5 bg-amber-600 text-white rounded-2xl font-bold uppercase tracking-widest text-xs hover:bg-amber-700 transition-all"
                     >
-                      Items Picked Up
+                      {t('items_picked_up')}
                     </button>
                   )}
                   {activeOrder.rider_status === 'PickedUp' && (
@@ -235,7 +237,7 @@ export default function RiderDashboard() {
                       onClick={() => updateStatus('Shipped', 'Delivering')}
                       className="flex-1 py-5 bg-blue-600 text-white rounded-2xl font-bold uppercase tracking-widest text-xs hover:bg-blue-700 transition-all"
                     >
-                      Start Delivery
+                      {t('start_delivery')}
                     </button>
                   )}
                   {activeOrder.rider_status === 'Delivering' && (
@@ -243,14 +245,14 @@ export default function RiderDashboard() {
                       onClick={() => updateStatus('Delivered', 'Arrived')}
                       className="flex-1 py-5 bg-emerald-600 text-white rounded-2xl font-bold uppercase tracking-widest text-xs hover:bg-emerald-700 transition-all"
                     >
-                      Confirm Delivery
+                      {t('confirm_delivery')}
                     </button>
                   )}
                   <button 
                     onClick={() => updateStatus('Cancelled', 'Idle')}
                     className="px-8 py-5 bg-red-600/20 border border-red-500/30 text-red-500 rounded-2xl font-bold uppercase tracking-widest text-xs hover:bg-red-600 hover:text-white transition-all"
                   >
-                    Cancel
+                    {t('cancel')}
                   </button>
                 </div>
               </motion.div>
@@ -259,13 +261,13 @@ export default function RiderDashboard() {
                 key="idle"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="bg-white/2 border border-dashed border-white/10 rounded-[2.5rem] p-20 text-center space-y-4"
+                className="bg-gray-50 dark:bg-white/2 border border-dashed border-gray-200 dark:border-white/10 rounded-[2.5rem] p-20 text-center space-y-4 transition-colors duration-500"
               >
-                <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center text-gray-600 mx-auto">
+                <div className="w-20 h-20 bg-gray-100 dark:bg-white/5 rounded-full flex items-center justify-center text-gray-400 dark:text-gray-600 mx-auto">
                   <Clock className="w-10 h-10" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-500 uppercase tracking-tight">No Active Delivery</h3>
-                <p className="text-gray-600 text-xs font-bold uppercase tracking-widest">Waiting for new orders...</p>
+                <h3 className="text-xl font-bold text-gray-500 uppercase tracking-tight">{t('no_active_delivery')}</h3>
+                <p className="text-gray-400 dark:text-gray-600 text-xs font-bold uppercase tracking-widest">{t('waiting_for_orders')}</p>
               </motion.div>
             )}
           </AnimatePresence>
@@ -273,9 +275,9 @@ export default function RiderDashboard() {
 
         {/* Available Orders */}
         <div className="space-y-6">
-          <h2 className="text-xl font-display font-bold text-white uppercase tracking-tight flex items-center gap-3">
-            <ShoppingBag className="w-5 h-5 text-blue-500" />
-            New Orders
+          <h2 className="text-xl font-display font-bold text-gray-900 dark:text-white uppercase tracking-tight flex items-center gap-3">
+            <ShoppingBag className="w-5 h-5 text-blue-600 dark:text-blue-500" />
+            {t('new_orders')}
           </h2>
           <div className="space-y-4">
             {orders.filter(o => o.status === 'Pending').length > 0 ? (
@@ -285,19 +287,19 @@ export default function RiderDashboard() {
                   layout
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="p-6 bg-white/5 border border-white/10 rounded-3xl space-y-4 hover:bg-white/10 transition-all group"
+                  className="p-6 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-3xl space-y-4 hover:bg-gray-100 dark:hover:bg-white/10 transition-all group"
                 >
                   <div className="flex justify-between items-start">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center text-blue-500">
+                      <div className="w-10 h-10 bg-blue-500/10 dark:bg-blue-500/20 rounded-xl flex items-center justify-center text-blue-600 dark:text-blue-500">
                         <Package className="w-5 h-5" />
                       </div>
                       <div>
-                        <h4 className="text-white font-bold uppercase tracking-tight text-sm">Order #{order._id.slice(-6)}</h4>
+                        <h4 className="text-gray-900 dark:text-white font-bold uppercase tracking-tight text-sm">{t('order_hash')}{order._id.slice(-6)}</h4>
                         <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">{new Date(order.createdAt).toLocaleTimeString()}</p>
                       </div>
                     </div>
-                    <span className="text-blue-500 font-bold text-sm">${order.total_price}</span>
+                    <span className="text-blue-600 dark:text-blue-500 font-bold text-sm">${order.total_price}</span>
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-gray-500 text-[10px] font-bold uppercase tracking-widest">
@@ -307,15 +309,15 @@ export default function RiderDashboard() {
                   <button 
                     onClick={() => handleAccept(order._id)}
                     disabled={!!activeOrder}
-                    className="w-full py-3 bg-white text-black rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all disabled:opacity-20 flex items-center justify-center gap-2"
+                    className="w-full py-3 bg-gray-900 dark:bg-white text-white dark:text-black rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-blue-600 dark:hover:bg-blue-600 hover:text-white transition-all disabled:opacity-20 flex items-center justify-center gap-2"
                   >
-                    Accept Delivery <ChevronRight className="w-3 h-3" />
+                    {t('accept_delivery')} <ChevronRight className="w-3 h-3" />
                   </button>
                 </motion.div>
               ))
             ) : (
-              <div className="p-12 text-center bg-white/2 border border-white/5 rounded-3xl">
-                <p className="text-gray-600 text-[10px] font-bold uppercase tracking-widest">No pending orders</p>
+              <div className="p-12 text-center bg-gray-50 dark:bg-white/2 border border-gray-200 dark:border-white/5 rounded-3xl transition-colors duration-500">
+                <p className="text-gray-500 dark:text-gray-600 text-[10px] font-bold uppercase tracking-widest">{t('no_pending_orders')}</p>
               </div>
             )}
           </div>

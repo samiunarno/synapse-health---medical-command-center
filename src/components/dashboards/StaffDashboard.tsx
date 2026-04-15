@@ -20,8 +20,10 @@ import {
 import { motion, Variants } from 'motion/react';
 import { Link } from 'react-router-dom';
 import WardBedStats from '../WardBedStats';
+import { useTranslation } from 'react-i18next';
 
 export default function StaffDashboard({ user, stats, activityStream }: any) {
+  const { t } = useTranslation();
   const iconMap: any = {
     Plus,
     Package,
@@ -75,24 +77,24 @@ export default function StaffDashboard({ user, stats, activityStream }: any) {
           >
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 text-emerald-200 rounded-full text-[10px] font-bold uppercase tracking-widest mb-6 border border-white/10 backdrop-blur-sm">
               <ShieldCheck className="w-3 h-3" />
-              System Status • Operational
+              {t('system_status_operational')}
             </div>
             <h2 className="text-2xl sm:text-4xl lg:text-6xl font-display font-bold mb-6 tracking-tight leading-tight break-words">
-              Welcome back, <br />
+              {t('welcome_back')}, <br />
               <span className="text-emerald-400">{user?.username}</span>
             </h2>
             <p className="text-emerald-100/70 text-lg font-medium mb-10 leading-relaxed">
-              Hospital operations are running <span className="text-white font-bold">smoothly</span>. 
-              There are <span className="text-emerald-300 font-bold underline underline-offset-4">new registrations</span> pending and active alerts.
+              {t('hospital_ops_smooth')} 
+              {t('new_registrations_pending')}
             </p>
             <div className="flex flex-wrap gap-4">
               <Link to="/patients" className="bg-white text-gray-900 px-8 py-4 rounded-2xl font-bold flex items-center gap-3 hover:bg-emerald-600 hover:text-white transition-all shadow-xl shadow-black/20">
                 <Plus className="w-5 h-5" />
-                Register Patient
+                {t('register_patient')}
               </Link>
               <Link to="/wards" className="bg-emerald-800 text-white px-8 py-4 rounded-2xl font-bold flex items-center gap-3 hover:bg-emerald-700 transition-all border border-emerald-700">
                 <Bed className="w-5 h-5 text-emerald-400" />
-                Manage Beds
+                {t('manage_beds')}
               </Link>
             </div>
           </motion.div>
@@ -115,10 +117,10 @@ export default function StaffDashboard({ user, stats, activityStream }: any) {
               <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center">
                 <Users className="w-5 h-5 text-white" />
               </div>
-              <span className="text-[10px] font-bold text-emerald-300">Active</span>
+              <span className="text-[10px] font-bold text-emerald-300">{t('active')}</span>
             </div>
             <p className="text-2xl font-display font-bold text-white mb-1">{stats?.totalStaff || 0}</p>
-            <p className="text-[10px] font-bold text-emerald-200 uppercase tracking-widest">Total Staff</p>
+            <p className="text-[10px] font-bold text-emerald-200 uppercase tracking-widest">{t('total_staff')}</p>
           </motion.div>
         </div>
       </motion.div>
@@ -127,11 +129,11 @@ export default function StaffDashboard({ user, stats, activityStream }: any) {
         {/* Bed Status Summary */}
         <motion.div 
           variants={itemVariants}
-          className="bg-white/2 p-10 rounded-[2.5rem] border border-white/5 flex flex-col group"
+          className="bg-gray-50 dark:bg-white/2 p-10 rounded-[2.5rem] border border-gray-200 dark:border-white/5 flex flex-col group transition-colors duration-500"
         >
           <div className="flex items-center justify-between mb-10">
-            <h3 className="text-2xl font-display font-bold text-white">Bed Status</h3>
-            <div className="w-10 h-10 bg-emerald-600/10 border border-emerald-500/20 rounded-xl flex items-center justify-center text-emerald-400">
+            <h3 className="text-2xl font-display font-bold text-gray-900 dark:text-white">{t('bed_status')}</h3>
+            <div className="w-10 h-10 bg-emerald-600/10 border border-emerald-500/20 rounded-xl flex items-center justify-center text-emerald-600 dark:text-emerald-400">
               <Bed className="w-5 h-5" />
             </div>
           </div>
@@ -146,7 +148,7 @@ export default function StaffDashboard({ user, stats, activityStream }: any) {
             >
               <div className="flex items-center gap-4">
                 <div className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
-                <span className="text-sm font-bold text-emerald-400 uppercase tracking-tight">Available</span>
+                <span className="text-sm font-bold text-emerald-400 uppercase tracking-tight">{t('available')}</span>
               </div>
               <span className="text-2xl font-display font-bold text-emerald-400">{(stats?.totalBeds || 0) - (stats?.occupiedBeds || 0)}</span>
             </motion.div>
@@ -157,7 +159,7 @@ export default function StaffDashboard({ user, stats, activityStream }: any) {
             >
               <div className="flex items-center gap-4">
                 <div className="w-3 h-3 rounded-full bg-blue-500" />
-                <span className="text-sm font-bold text-blue-400 uppercase tracking-tight">Occupied</span>
+                <span className="text-sm font-bold text-blue-400 uppercase tracking-tight">{t('occupied')}</span>
               </div>
               <span className="text-2xl font-display font-bold text-blue-400">{stats?.occupiedBeds || 0}</span>
             </motion.div>
@@ -168,13 +170,13 @@ export default function StaffDashboard({ user, stats, activityStream }: any) {
             >
               <div className="flex items-center gap-4">
                 <div className="w-3 h-3 rounded-full bg-orange-500" />
-                <span className="text-sm font-bold text-orange-400 uppercase tracking-tight">Maintenance</span>
+                <span className="text-sm font-bold text-orange-400 uppercase tracking-tight">{t('maintenance')}</span>
               </div>
               <span className="text-2xl font-display font-bold text-orange-400">{stats?.maintenanceBeds || 0}</span>
             </motion.div>
           </motion.div>
-          <Link to="/wards" className="mt-10 w-full py-4 bg-white text-gray-900 rounded-2xl font-bold text-sm flex items-center justify-center gap-3 hover:bg-emerald-600 hover:text-white transition-all shadow-xl shadow-black/20">
-            View All Wards
+          <Link to="/wards" className="mt-10 w-full py-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-2xl font-bold text-sm flex items-center justify-center gap-3 hover:bg-emerald-600 dark:hover:bg-emerald-600 hover:text-white transition-all shadow-xl shadow-black/20">
+            {t('view_all_wards')}
             <ArrowRight className="w-4 h-4" />
           </Link>
         </motion.div>
@@ -182,21 +184,21 @@ export default function StaffDashboard({ user, stats, activityStream }: any) {
         {/* Recent Activity */}
         <motion.div 
           variants={itemVariants}
-          className="lg:col-span-2 bg-white/2 rounded-[2.5rem] border border-white/5 overflow-hidden flex flex-col group"
+          className="lg:col-span-2 bg-gray-50 dark:bg-white/2 rounded-[2.5rem] border border-gray-200 dark:border-white/5 overflow-hidden flex flex-col group transition-colors duration-500"
         >
-          <div className="p-10 border-b border-white/5 flex items-center justify-between">
+          <div className="p-10 border-b border-gray-200 dark:border-white/5 flex items-center justify-between">
             <div>
-              <h3 className="text-2xl font-display font-bold text-white mb-1 flex items-center gap-3">
+              <h3 className="text-2xl font-display font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-3">
                 <Activity className="w-6 h-6 text-emerald-600" />
-                Recent Activity
+                {t('recent_activity')}
               </h3>
-              <p className="text-sm text-gray-500 font-medium">Real-time log of hospital operations.</p>
+              <p className="text-sm text-gray-500 font-medium">{t('real_time_log')}</p>
             </div>
-            <button className="text-xs font-bold text-emerald-600 hover:underline underline-offset-4">View Full Log</button>
+            <button className="text-xs font-bold text-emerald-600 hover:underline underline-offset-4">{t('view_full_log')}</button>
           </div>
           <motion.div 
             variants={containerVariants}
-            className="divide-y divide-white/5"
+            className="divide-y divide-gray-200 dark:divide-white/5"
           >
             {activityStream?.map((item: any, i: number) => (
               <ActivityItem 
@@ -210,12 +212,12 @@ export default function StaffDashboard({ user, stats, activityStream }: any) {
               />
             ))}
             {(!activityStream || activityStream.length === 0) && (
-              <div className="p-12 text-center text-gray-500 font-bold uppercase tracking-widest text-xs">No recent activity</div>
+              <div className="p-12 text-center text-gray-500 font-bold uppercase tracking-widest text-xs">{t('no_recent_activity')}</div>
             )}
           </motion.div>
-          <div className="p-8 mt-auto bg-white/2 text-center">
-            <button className="text-sm font-bold text-gray-500 hover:text-white transition-colors flex items-center gap-2 mx-auto">
-              Load More Activity
+          <div className="p-8 mt-auto bg-gray-100/50 dark:bg-white/2 text-center">
+            <button className="text-sm font-bold text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors flex items-center gap-2 mx-auto">
+              {t('load_more_activity')}
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
@@ -226,8 +228,8 @@ export default function StaffDashboard({ user, stats, activityStream }: any) {
       <motion.div variants={itemVariants} className="space-y-8">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-2xl lg:text-3xl font-display font-bold text-white uppercase tracking-tighter">Ward Bed Distribution</h3>
-            <p className="text-xs text-gray-500 font-bold uppercase tracking-widest">Real-time Status by Ward</p>
+            <h3 className="text-2xl lg:text-3xl font-display font-bold text-gray-900 dark:text-white uppercase tracking-tighter">{t('ward_bed_distribution')}</h3>
+            <p className="text-xs text-gray-500 font-bold uppercase tracking-widest">{t('real_time_status_by_ward')}</p>
           </div>
         </div>
         <WardBedStats />
@@ -247,15 +249,15 @@ function ActivityItem({ icon: Icon, title, desc, time, color, variants }: any) {
   return (
     <motion.div 
       variants={variants}
-      whileHover={{ x: 10, backgroundColor: 'rgba(255,255,255,0.05)' }}
-      className="p-6 lg:p-8 flex flex-col sm:flex-row sm:items-center justify-between transition-all group cursor-pointer border-l-4 border-l-transparent hover:border-l-emerald-600 gap-6"
+      whileHover={{ x: 10, backgroundColor: 'rgba(0,0,0,0.02)' }}
+      className="p-6 lg:p-8 flex flex-col sm:flex-row sm:items-center justify-between transition-all group cursor-pointer border-l-4 border-l-transparent hover:border-l-emerald-600 gap-6 dark:hover:bg-white/5"
     >
       <div className="flex flex-col sm:flex-row sm:items-center gap-6 lg:gap-8">
         <div className={`p-4 rounded-2xl ${colors[color]} border group-hover:scale-110 transition-transform duration-300 w-fit`}>
           <Icon className="w-6 h-6" />
         </div>
         <div className="min-w-0">
-          <p className="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors truncate">{title}</p>
+          <p className="text-lg font-bold text-gray-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors truncate">{title}</p>
           <p className="text-xs text-gray-500 font-bold uppercase tracking-tight truncate">{desc}</p>
         </div>
       </div>
@@ -263,7 +265,7 @@ function ActivityItem({ icon: Icon, title, desc, time, color, variants }: any) {
         <div className="sm:block">
           <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{time}</p>
         </div>
-        <div className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-xl text-gray-500 group-hover:bg-emerald-600 group-hover:text-white transition-all border border-white/5">
+        <div className="w-10 h-10 flex items-center justify-center bg-gray-100 dark:bg-white/5 rounded-xl text-gray-500 group-hover:bg-emerald-600 group-hover:text-white transition-all border border-gray-200 dark:border-white/5">
           <ChevronRight className="w-5 h-5" />
         </div>
       </div>
