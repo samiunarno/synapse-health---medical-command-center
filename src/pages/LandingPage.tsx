@@ -128,8 +128,8 @@ export default function LandingPage() {
                </p>
              </div>
              <div className="relative z-10 mt-24">
-               <div className="text-8xl font-medium tracking-tighter text-[#0033A0] dark:text-[#3b82f6]">99.99%</div>
-               <div className="font-mono text-sm uppercase tracking-widest text-white/40 mt-4">{t('uptime_sla')}</div>
+               <div className="text-8xl font-medium tracking-tighter text-[#0033A0] dark:text-[#3b82f6]"></div>
+               <div className="font-mono text-sm uppercase tracking-widest text-white/40 mt-4"></div>
              </div>
           </div>
         </section>
