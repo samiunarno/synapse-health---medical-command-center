@@ -7,6 +7,7 @@ export interface AuthRequest extends Request {
     id: string;
     role: string;
     email?: string;
+    reference_id?: string;
   };
 }
 
@@ -15,7 +16,11 @@ export const authenticate = async (req: AuthRequest, res: Response, next: NextFu
   if (!token) return res.status(401).json({ error: 'No token provided' });
 
   try {
-    const decoded: any = jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret');
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      console.warn('⚠️ WARNING: JWT_SECRET is not set. Using default insecure secret.');
+    }
+    const decoded: any = jwt.verify(token, secret || 'your_jwt_secret');
     
     const user = await User.findById(decoded.id);
     if (!user) return res.status(401).json({ error: 'User not found' });
@@ -28,7 +33,8 @@ export const authenticate = async (req: AuthRequest, res: Response, next: NextFu
     req.user = {
       id: user._id.toString(),
       role: user.role,
-      email: user.email
+      email: user.email,
+      reference_id: user.reference_id
     };
     
     next();

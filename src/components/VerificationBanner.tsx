@@ -35,7 +35,7 @@ export default function VerificationBanner() {
 
   const isBanned = status.status === 'Banned';
   const hasDocuments = status.documents && status.documents.length > 0;
-  const deadline = new Date(status.deadline);
+  const deadline = status.deadline ? new Date(status.deadline) : new Date();
   const timeLeft = Math.max(0, deadline.getTime() - Date.now());
   const hoursLeft = Math.floor(timeLeft / (1000 * 60 * 60));
   const minutesLeft = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));

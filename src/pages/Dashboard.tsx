@@ -57,25 +57,53 @@ export default function Dashboard() {
 
       if (user?.role === 'Admin') {
         promises.push(fetch('/api/admin/pending-users', { headers: { Authorization: `Bearer ${token}` } }));
-        promises.push(fetch('/api/verification/pending', { headers: { Authorization: `Bearer ${token}` } }));
+        promises.push(fetch('/api/verification/admin/pending', { headers: { Authorization: `Bearer ${token}` } }));
       }
 
       const results = await Promise.all(promises);
       
-      if (results[0].ok) setStats(await results[0].json());
-      if (results[1].ok) setTrends(await results[1].json());
-      if (results[2].ok) setPredictiveData(await results[2].json());
-      if (results[3].ok) setSystemMonitor(await results[3].json());
-      if (results[4].ok) setActivityStream(await results[4].json());
-      if (results[5].ok) setSystemInsights(await results[5].json());
-      if (results[6].ok) setIotDevices(await results[6].json());
+      const safeJson = async (res: Response) => {
+        if (!res.ok) {
+          const text = await res.text();
+          console.error(`API Error (${res.status}):`, text.substring(0, 200));
+          return null;
+        }
+        try {
+          return await res.json();
+        } catch (e) {
+          const text = await res.text();
+          console.error('Failed to parse JSON. Response was:', text.substring(0, 200));
+          return null;
+        }
+      };
+
+      const statsData = await safeJson(results[0]);
+      if (statsData) setStats(statsData);
+
+      const trendsData = await safeJson(results[1]);
+      if (trendsData) setTrends(trendsData);
+
+      const predictiveData = await safeJson(results[2]);
+      if (predictiveData) setPredictiveData(predictiveData);
+
+      const systemMonitorData = await safeJson(results[3]);
+      if (systemMonitorData) setSystemMonitor(systemMonitorData);
+
+      const activityStreamData = await safeJson(results[4]);
+      if (activityStreamData) setActivityStream(activityStreamData);
+
+      const systemInsightsData = await safeJson(results[5]);
+      if (systemInsightsData) setSystemInsights(systemInsightsData);
+
+      const iotDevicesData = await safeJson(results[6]);
+      if (iotDevicesData) setIotDevices(iotDevicesData);
       
-      if (user?.role === 'Admin' && results[7]?.ok) {
-        const pendingData = await results[7].json();
+      if (user?.role === 'Admin' && results[7]) {
+        const pendingData = await safeJson(results[7]);
         setPendingUsers(Array.isArray(pendingData) ? pendingData : []);
       }
-      if (user?.role === 'Admin' && results[8]?.ok) {
-        const verificationData = await results[8].json();
+      if (user?.role === 'Admin' && results[8]) {
+        const verificationData = await safeJson(results[8]);
         setPendingVerifications(Array.isArray(verificationData) ? verificationData : []);
       }
     } catch (error) {
@@ -156,6 +184,7 @@ export default function Dashboard() {
     case 'Pharmacist':
       return <StaffDashboard user={user} stats={stats} activityStream={activityStream} />;
     case 'Lab':
+    case 'LabTechnician':
       return <LabDashboard />;
     default:
       return (

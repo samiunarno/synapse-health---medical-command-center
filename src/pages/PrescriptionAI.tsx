@@ -124,7 +124,7 @@ export default function PrescriptionAI() {
                 {isAnalyzing ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    Analyzing with DeepSeek AI...
+                    Analyzing with Zhipu AI...
                   </>
                 ) : (
                   <>
@@ -173,7 +173,7 @@ export default function PrescriptionAI() {
                     <Brain className="w-12 h-12 text-white" />
                   </div>
                 </div>
-                <h3 className="text-2xl font-display font-bold text-white mb-4">DeepSeek AI is Thinking...</h3>
+                <h3 className="text-2xl font-display font-bold text-white mb-4">Zhipu AI is Thinking...</h3>
                 <p className="text-gray-500 text-sm max-w-xs leading-relaxed">
                   Extracting medical data and cross-referencing for safety interactions.
                 </p>

@@ -20,7 +20,7 @@ export const getPatientInsights = async (req: Request, res: Response) => {
     // Fetch lab reports
     const labReports = await LabReport.find({ patient_id: patientId }).sort({ createdAt: -1 }).limit(5);
 
-    // Get insights from DeepSeek AI
+    // Get insights from Zhipu AI
     const insights = await getCDSSInsights(patient, medicalRecords, labReports);
 
     res.json(insights);

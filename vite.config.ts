@@ -13,20 +13,24 @@ export default defineConfig(({mode}) => {
       nodePolyfills({
         globals: {
           Buffer: true,
-          global: true,
+          global: false,
           process: true,
         },
         protocolImports: true,
       }),
     ],
     define: {
-      'process.env.DEEPSEEK_API_KEY': JSON.stringify(env.DEEPSEEK_API_KEY),
+      'process.env.ZHIPU_API_KEY': JSON.stringify(env.ZHIPU_API_KEY),
+      'process.env.ZHIPU_BASE_URL': JSON.stringify(env.ZHIPU_BASE_URL),
+      'process.env.ZHIPU_MODEL': JSON.stringify(env.ZHIPU_MODEL),
+      global: 'globalThis',
     },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
         'formdata-polyfill/esm.min.js': path.resolve(__dirname, 'src/lib/formdata-dummy.ts'),
         'formdata-polyfill': path.resolve(__dirname, 'src/lib/formdata-dummy.ts'),
+        'node-fetch': path.resolve(__dirname, 'src/lib/fetch-dummy.ts'),
       },
     },
     server: {

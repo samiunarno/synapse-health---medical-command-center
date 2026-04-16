@@ -15,7 +15,8 @@ import {
   rateDoctor,
   updateProfile,
   getQrToken,
-  qrLogin
+  qrLogin,
+  getProfile
 } from '../controllers/authController';
 import { authenticate, authorize } from '../middleware/auth';
 
@@ -26,6 +27,7 @@ router.post('/login', login);
 router.post('/qr-login', qrLogin);
 
 // User Routes
+router.get('/profile', authenticate, getProfile);
 router.get('/qr-token', authenticate, getQrToken);
 router.post('/upload-id', authenticate, uploadIdCard);
 router.post('/request-account-action', authenticate, requestAccountAction);

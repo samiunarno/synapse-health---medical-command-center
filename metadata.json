@@ -1,5 +1,5 @@
 {
-  "name": "Synapse Health - Medical Command Center",
+  "name": "智医云 - 医疗指挥中心",
   "description": "A high-tech hospital management system featuring predictive analytics, advanced diagnostics, and global command protocols.",
-  "requestFramePermissions": ["camera"]
+  "requestFramePermissions": ["camera", "microphone", "geolocation"]
 }

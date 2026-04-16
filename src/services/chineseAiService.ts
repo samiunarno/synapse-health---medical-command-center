@@ -5,15 +5,15 @@ export interface AIAnalysisResult {
 }
 
 /**
- * Service to connect to Chinese AI providers (DeepSeek, Qwen, Kimi, etc.)
+ * Service to connect to Chinese AI providers (Zhipu, Qwen, Kimi, etc.)
  * These providers use an OpenAI-compatible API format.
  */
 export async function analyzeMedicalData(patientData: any, language: string = 'zh'): Promise<AIAnalysisResult> {
   // Read from environment variables
-  const apiKey = (import.meta as any).env.VITE_CHINESE_AI_API_KEY;
-  // Default to DeepSeek's endpoint, but can be changed to Qwen or Kimi
-  const endpoint = (import.meta as any).env.VITE_CHINESE_AI_ENDPOINT || 'https://api.deepseek.com/v1/chat/completions';
-  const model = (import.meta as any).env.VITE_CHINESE_AI_MODEL || 'deepseek-chat';
+  const apiKey = process.env.ZHIPU_API_KEY;
+  // Default to Zhipu's endpoint
+  const endpoint = process.env.ZHIPU_BASE_URL ? `${process.env.ZHIPU_BASE_URL}chat/completions` : 'https://open.bigmodel.cn/api/paas/v4/chat/completions';
+  const model = process.env.ZHIPU_MODEL || 'glm-4.7-flash';
 
   // ==========================================
   // COMPETITION SAFETY FALLBACK (Mock Mode)
@@ -22,7 +22,7 @@ export async function analyzeMedicalData(patientData: any, language: string = 'z
   // This ensures your app NEVER breaks during a live pitch or competition demo
   // even if the Wi-Fi drops or the API rate limits.
   if (!apiKey) {
-    console.warn("No VITE_CHINESE_AI_API_KEY found. Running in Competition Demo Mode (Mocked).");
+    console.warn("No ZHIPU_API_KEY found. Running in Competition Demo Mode (Mocked).");
     return new Promise((resolve) => {
       setTimeout(() => {
         if (language === 'en') {
@@ -51,7 +51,7 @@ export async function analyzeMedicalData(patientData: any, language: string = 'z
   }
 
   // ==========================================
-  // REAL API CALL (DeepSeek / Qwen / Kimi)
+  // REAL API CALL (Zhipu / Qwen / Kimi)
   // ==========================================
   try {
     const systemPrompt = language === 'en' 

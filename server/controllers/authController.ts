@@ -372,6 +372,33 @@ export const getQrToken = async (req: any, res: Response) => {
   }
 };
 
+export const getProfile = async (req: any, res: Response) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    
+    res.json({
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        status: user.status,
+        fullName: user.fullName,
+        reference_id: user.reference_id,
+        gender: user.gender,
+        age: user.age,
+        address: user.address,
+        phone: user.phone,
+        patientType: user.patientType,
+        doctorType: user.doctorType
+      }
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 export const qrLogin = async (req: Request, res: Response) => {
   try {
     const { qrLoginToken } = req.body;

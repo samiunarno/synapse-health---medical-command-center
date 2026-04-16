@@ -47,6 +47,7 @@ import verificationRoutes from './server/routes/verificationRoutes';
 import commissionRoutes from './server/routes/commissionRoutes';
 import { seedDatabase } from './server/seed';
 import { initVerificationCron } from './server/services/verificationService';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 
 async function startServer() {
   const app = express();
@@ -127,8 +128,10 @@ async function startServer() {
   const MONGODB_URI = process.env.MONGODB_URI;
   mongoose.set('bufferCommands', false);
   
-  if (MONGODB_URI && MONGODB_URI !== "mongodb+srv://<username>:<password>@cluster.mongodb.net/hospital") {
-    mongoose.connect(MONGODB_URI, {
+  const isPlaceholderUri = !MONGODB_URI || MONGODB_URI === "mongodb+srv://<username>:<password>@cluster.mongodb.net/hospital";
+
+  if (!isPlaceholderUri) {
+    mongoose.connect(MONGODB_URI!, {
       serverSelectionTimeoutMS: 5000,
     })
       .then(() => {
@@ -140,7 +143,17 @@ async function startServer() {
         console.error('❌ MongoDB connection error. Please check your MONGODB_URI environment variable:', err.message);
       });
   } else {
-    console.error('❌ MONGODB_URI is missing or invalid in environment variables. The backend requires a valid MongoDB connection string to function.');
+    console.warn('⚠️ MONGODB_URI is missing or invalid. Starting MongoMemoryServer for demonstration...');
+    try {
+      const mongoServer = await MongoMemoryServer.create();
+      const uri = mongoServer.getUri();
+      await mongoose.connect(uri);
+      console.log('✅ Connected to MongoMemoryServer at:', uri);
+      initVerificationCron();
+      seedDatabase();
+    } catch (err: any) {
+      console.error('❌ Failed to start MongoMemoryServer:', err.message);
+    }
   }
 
   // API Routes

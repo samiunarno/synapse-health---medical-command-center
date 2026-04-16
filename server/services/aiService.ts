@@ -1,34 +1,34 @@
 import OpenAI from 'openai';
 
-// DeepSeek API Configuration
+// Zhipu AI API Configuration
 const getBaseURL = () => {
-  const key = process.env.DEEPSEEK_API_KEY || '';
-  if (key.startsWith('nvapi-')) return 'https://integrate.api.nvidia.com/v1';
-  if (process.env.DEEPSEEK_BASE_URL) return process.env.DEEPSEEK_BASE_URL;
-  return 'https://api.deepseek.com';
+  if (process.env.ZHIPU_BASE_URL) return process.env.ZHIPU_BASE_URL;
+  return 'https://open.bigmodel.cn/api/paas/v4/';
 };
 
-let deepseekClient: OpenAI | null = null;
+let zhipuClient: OpenAI | null = null;
+let lastApiKey: string | null = null;
 
-const getDeepseekClient = () => {
-  if (!deepseekClient) {
-    deepseekClient = new OpenAI({
-      apiKey: process.env.DEEPSEEK_API_KEY || '',
+const getZhipuClient = () => {
+  const currentKey = process.env.ZHIPU_API_KEY || '';
+  if (!zhipuClient || lastApiKey !== currentKey) {
+    zhipuClient = new OpenAI({
+      apiKey: currentKey,
       baseURL: getBaseURL(),
     });
+    lastApiKey = currentKey;
   }
-  return deepseekClient;
+  return zhipuClient;
 };
 
 // Helper to get the active AI client
 const getAIClient = () => {
-  const key = process.env.DEEPSEEK_API_KEY;
+  const key = process.env.ZHIPU_API_KEY;
   if (key) {
-    const isNvidia = key.startsWith('nvapi-');
     return { 
       type: 'openai',
-      client: getDeepseekClient(), 
-      model: isNvidia ? 'deepseek-ai/deepseek-r1' : (process.env.DEEPSEEK_MODEL || 'deepseek-chat')
+      client: getZhipuClient(), 
+      model: process.env.ZHIPU_MODEL || 'glm-4.7-flash'
     };
   }
   return null;
@@ -38,16 +38,15 @@ export const getAIResponse = async (message: string, systemPrompt?: string, json
   try {
     const ai = getAIClient();
     if (!ai) {
-      console.error('❌ AI Configuration Error: DEEPSEEK_API_KEY is missing');
-      throw new Error('AI Service is not configured. Please add DEEPSEEK_API_KEY to environment variables.');
+      console.error('❌ AI Configuration Error: ZHIPU_API_KEY is missing');
+      throw new Error('AI Service is not configured. Please add ZHIPU_API_KEY to environment variables.');
     }
 
     console.log(`🤖 AI Request: Model=${ai.model}, BaseURL=${getBaseURL()}`);
-    if (!process.env.DEEPSEEK_API_KEY) {
-      console.warn('⚠️ DEEPSEEK_API_KEY is not set in environment variables.');
+    if (!process.env.ZHIPU_API_KEY) {
+      console.warn('⚠️ ZHIPU_API_KEY is not set in environment variables.');
     }
 
-    const isNvidia = process.env.DEEPSEEK_API_KEY?.startsWith('nvapi-');
     try {
       const response = await (ai.client as OpenAI).chat.completions.create({
         model: ai.model!,
@@ -55,13 +54,15 @@ export const getAIResponse = async (message: string, systemPrompt?: string, json
           { role: 'system', content: systemPrompt || 'You are Synapse Health AI assistant.' },
           { role: 'user', content: message },
         ],
-        ...(jsonMode && !isNvidia ? { response_format: { type: 'json_object' } } : {}),
+        ...(jsonMode ? { response_format: { type: 'json_object' } } : {}),
       });
 
       let content = response.choices[0].message.content || '';
       console.log('✅ AI Response received successfully');
       
+      // Robust JSON extraction
       if (jsonMode) {
+        // Remove markdown code blocks
         content = content.replace(/```json\n?|```\n?/g, '').trim();
         
         const firstBrace = content.indexOf('{');
@@ -73,7 +74,7 @@ export const getAIResponse = async (message: string, systemPrompt?: string, json
       
       return content;
     } catch (apiError: any) {
-      console.error('❌ OpenAI/DeepSeek API Call Failed:', {
+      console.error('❌ OpenAI/Zhipu API Call Failed:', {
         status: apiError.status,
         message: apiError.message,
         data: apiError.response?.data
@@ -81,16 +82,16 @@ export const getAIResponse = async (message: string, systemPrompt?: string, json
       throw apiError;
     }
   } catch (error: any) {
-    console.error('❌ DeepSeek API Error:', error.response?.data || error.message || error);
+    console.error('❌ Zhipu API Error:', error.response?.data || error.message || error);
     
     // Graceful fallback for development if key is missing
-    if (!process.env.DEEPSEEK_API_KEY) {
-      return jsonMode ? '{"summary": "根据患者数据分析，目前状态稳定，但需关注血压波动。", "suggestions": [{"title": "复查建议", "description": "建议一周后复查心电图和血压。", "type": "Preventive Care"}], "alerts": [{"title": "轻度高血压", "description": "患者近期血压偏高，请注意饮食控制。", "severity": "Medium"}], "insights": [], "recommendations": [], "potentialCauses": [], "abnormalValues": [], "medicines": [], "interactions": [], "suggestedDoctorId": "123", "reasoning": "根据症状，建议咨询心内科专家。", "specialtyRecommended": "心内科"}' : "AI 服务未配置。请在环境变量中添加 DEEPSEEK_API_KEY。";
+    if (!process.env.ZHIPU_API_KEY) {
+      return jsonMode ? '{"summary": "根据患者数据分析，目前状态稳定，但需关注血压波动。", "suggestions": [{"title": "复查建议", "description": "建议一周后复查心电图和血压。", "type": "Preventive Care"}], "alerts": [{"title": "轻度高血压", "description": "患者近期血压偏高，请注意饮食控制。", "severity": "Medium"}], "insights": [], "recommendations": [], "potentialCauses": [], "abnormalValues": [], "medicines": [], "interactions": [], "suggestedDoctorId": "123", "reasoning": "根据症状，建议咨询心内科专家。", "specialtyRecommended": "心内科"}' : "AI 服务未配置。请在环境变量中添加 ZHIPU_API_KEY。";
     }
 
-    if (error.status === 401) throw new Error('Invalid DeepSeek API Key');
-    if (error.status === 402) throw new Error('DeepSeek API Insufficient Balance');
-    if (error.status === 429) throw new Error('DeepSeek API Rate Limit Exceeded');
+    if (error.status === 401) throw new Error('Invalid Zhipu API Key');
+    if (error.status === 402) throw new Error('Zhipu API Insufficient Balance');
+    if (error.status === 429) throw new Error('Zhipu API Rate Limit Exceeded');
     throw new Error(`AI Service Error: ${error.message || 'Unknown error'}`);
   }
 };
@@ -144,7 +145,7 @@ export const analyzePrescriptionAI = async (imageData: string) => {
     const ai = getAIClient();
     if (!ai) throw new Error('No AI API Key configured');
 
-    // Note: Standard DeepSeek models (chat/reasoner) do not support vision yet.
+    // Note: Standard GLM models might have different vision capabilities.
     // If using Nvidia NIM with a vision model, this might work.
     // Otherwise, we fallback to a text-based prompt or warn the user.
     

@@ -70,7 +70,7 @@ export default function HealthAI() {
           <h1 className="text-4xl md:text-6xl font-display font-bold text-white tracking-tighter uppercase">
             Health <span className="text-blue-500">AI Hub</span>
           </h1>
-          <p className="text-gray-500 font-medium mt-2">Personalized mental health tracking and nutrition planning powered by DeepSeek AI.</p>
+          <p className="text-gray-500 font-medium mt-2">Personalized mental health tracking and nutrition planning powered by Zhipu AI.</p>
         </div>
         
         <div className="flex bg-white/5 p-1.5 rounded-2xl border border-white/5">
@@ -196,7 +196,7 @@ export default function HealthAI() {
                       <Brain className="w-10 h-10" />
                     </div>
                     <h3 className="text-xl font-display font-bold text-white mb-2">Analyzing Sentiment</h3>
-                    <p className="text-gray-500 text-xs">DeepSeek AI is processing your journal entry...</p>
+                    <p className="text-gray-500 text-xs">Zhipu AI is processing your journal entry...</p>
                   </motion.div>
                 ) : moodAnalysis ? (
                   <motion.div
@@ -353,7 +353,7 @@ export default function HealthAI() {
                     </div>
                     <h3 className="text-2xl font-display font-bold text-white mb-4">Crafting Your Plan</h3>
                     <p className="text-gray-500 text-sm max-w-xs leading-relaxed">
-                      DeepSeek AI is optimizing nutrients based on your health profile.
+                      Zhipu AI is optimizing nutrients based on your health profile.
                     </p>
                   </motion.div>
                 ) : nutritionPlan ? (

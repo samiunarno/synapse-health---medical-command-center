@@ -108,8 +108,10 @@ export default function Login() {
               {t('secure_authentication')}
             </div>
             <h1 className="text-4xl sm:text-6xl lg:text-8xl font-display font-black uppercase tracking-tighter mb-4 leading-none break-words">
-              {t('system_access').split(' ')[0]} <br />
-              <span className="text-[#0033A0] dark:text-blue-500">{t('system_access').split(' ')[1]}</span>
+              {t('system_access').includes(' ') ? t('system_access').split(' ')[0] : t('system_access')} <br />
+              <span className="text-[#0033A0] dark:text-blue-500">
+                {t('system_access').includes(' ') ? t('system_access').split(' ')[1] : ''}
+              </span>
             </h1>
             <p className="text-black/50 dark:text-gray-500 font-bold text-sm uppercase tracking-widest mb-12">{t('authorized_personnel_only')}</p>
             
@@ -253,8 +255,10 @@ export default function Login() {
             </div>
           </motion.div>
           <h2 className="text-5xl font-display font-black uppercase tracking-tighter mb-8 leading-none">
-            {t('precision_diagnostics').split(' ')[0]} <br />
-            <span className="text-transparent stroke-text">{t('precision_diagnostics').split(' ')[1]}</span>
+            {t('precision_diagnostics').includes(' ') ? t('precision_diagnostics').split(' ')[0] : t('precision_diagnostics')} <br />
+            <span className="text-transparent stroke-text">
+              {t('precision_diagnostics').includes(' ') ? t('precision_diagnostics').split(' ')[1] : ''}
+            </span>
           </h2>
           <p className="text-black/50 dark:text-gray-500 text-sm max-w-sm mx-auto leading-relaxed uppercase tracking-widest">
             "{t('infrastructure_desc')}"

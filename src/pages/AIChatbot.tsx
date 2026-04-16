@@ -28,7 +28,7 @@ export default function AIChatbot() {
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([
     { 
       role: 'model', 
-      text: `Hello ${user?.username || 'there'}! I am Synapse Health AI, powered by DeepSeek. I can help you with medical queries, wellness tips, or navigating our platform. How can I assist you today?`,
+      text: `Hello ${user?.username || 'there'}! I am Synapse Health AI, powered by Zhipu AI. I can help you with medical queries, wellness tips, or navigating our platform. How can I assist you today?`,
       timestamp: new Date().toLocaleTimeString()
     }
   ]);
@@ -94,7 +94,7 @@ export default function AIChatbot() {
           <h1 className="text-4xl md:text-6xl font-display font-bold text-white tracking-tighter uppercase">
             Synapse <span className="text-blue-500">AI Chat</span>
           </h1>
-          <p className="text-gray-500 font-medium mt-2">Advanced healthcare assistance powered by DeepSeek-R1.</p>
+          <p className="text-gray-500 font-medium mt-2">Advanced healthcare assistance powered by Zhipu AI.</p>
         </div>
         
         <div className="flex items-center gap-3">
@@ -200,7 +200,7 @@ export default function AIChatbot() {
             <div className="w-1 h-1 bg-gray-800 rounded-full" />
             <div className="flex items-center gap-2">
               <Sparkles className="w-3 h-3 text-blue-500/50" />
-              <p className="text-[10px] text-gray-600 font-medium">Powered by DeepSeek-R1</p>
+              <p className="text-[10px] text-gray-600 font-medium">Powered by Zhipu AI</p>
             </div>
           </div>
         </div>

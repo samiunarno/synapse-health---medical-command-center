@@ -20,7 +20,7 @@ export default function LabReportInterpreter() {
     setIsAnalyzing(true);
     try {
       // In a real app, we would extract text from the file (PDF/OCR)
-      // For this demo, we'll pass the filename and a simulated extraction to DeepSeek
+      // For this demo, we'll pass the filename and a simulated extraction to Zhipu AI
       // to show real AI reasoning.
       const simulatedExtraction = `Lab Report for ${file.name}. 
       Parameters: Hemoglobin 10.5 (Normal: 13.5-17.5), Serum Iron 45 (Normal: 60-170), WBC 7.2 (Normal: 4.5-11.0).`;
@@ -38,7 +38,7 @@ export default function LabReportInterpreter() {
     <div className="space-y-12">
       <div className="flex flex-col gap-4">
         <h1 className="text-6xl font-display font-black tracking-tighter uppercase italic">AI Lab Interpreter</h1>
-        <p className="text-gray-500 font-bold tracking-widest uppercase text-sm">Decode your medical reports with DeepSeek AI</p>
+        <p className="text-gray-500 font-bold tracking-widest uppercase text-sm">Decode your medical reports with Zhipu AI</p>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-12">
@@ -78,7 +78,7 @@ export default function LabReportInterpreter() {
                 {isAnalyzing ? (
                   <>
                     <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
-                    Analyzing with DeepSeek...
+                    Analyzing with Zhipu AI...
                   </>
                 ) : (
                   <>

@@ -56,7 +56,7 @@ export default function SymptomChecker() {
           <h1 className="text-4xl md:text-6xl font-display font-bold text-white tracking-tighter uppercase">
             AI Symptom <span className="text-emerald-500">Checker</span>
           </h1>
-          <p className="text-gray-500 font-medium mt-2">Intelligent triage and preliminary analysis powered by DeepSeek AI.</p>
+          <p className="text-gray-500 font-medium mt-2">Intelligent triage and preliminary analysis powered by Zhipu AI.</p>
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
@@ -94,7 +94,7 @@ export default function SymptomChecker() {
                   {isAnalyzing ? (
                     <>
                       <Loader2 className="w-5 h-5 animate-spin" />
-                      Analyzing with DeepSeek...
+                      Analyzing with Zhipu AI...
                     </>
                   ) : (
                     <>
@@ -136,7 +136,7 @@ export default function SymptomChecker() {
                     <Brain className="w-12 h-12 text-white" />
                   </div>
                 </div>
-                <h3 className="text-2xl font-display font-bold text-white mb-4">DeepSeek is Thinking...</h3>
+                <h3 className="text-2xl font-display font-bold text-white mb-4">Zhipu AI is Thinking...</h3>
                 <p className="text-gray-500 text-sm max-w-xs leading-relaxed">
                   Analyzing symptoms and cross-referencing medical knowledge for triage.
                 </p>

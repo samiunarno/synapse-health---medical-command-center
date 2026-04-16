@@ -217,7 +217,7 @@ export default function LandingPage() {
               <p className="text-white/60 font-light">{t('faster_emergency_desc')}</p>
             </div>
             <div>
-              <div className="text-6xl font-medium tracking-tighter text-[#0033A0] dark:text-[#3b82f6] mb-4">Zero</div>
+              <div className="text-6xl font-medium tracking-tighter text-[#0033A0] dark:text-[#3b82f6] mb-4">{t('zero_count')}</div>
               <h3 className="text-xl font-medium mb-2">{t('zero_data_breaches')}</h3>
               <p className="text-white/60 font-light">{t('zero_data_breaches_desc')}</p>
             </div>
@@ -298,7 +298,7 @@ export default function LandingPage() {
               </button>
             </div>
             <div className="bg-[#F4F4F0] dark:bg-[#050505] border border-black/10 dark:border-white/10 p-12">
-              <div className="text-4xl font-medium tracking-tighter mb-4">$99<span className="text-lg text-black/40 dark:text-white/40">/mo</span></div>
+              <div className="text-4xl font-medium tracking-tighter mb-4">$99<span className="text-lg text-black/40 dark:text-white/40">/{t('month')}</span></div>
               <ul className="space-y-4 font-mono text-sm tracking-widest uppercase text-black/80 dark:text-white/80">
                 <li className="flex items-center gap-4 border-b border-black/10 dark:border-white/10 pb-4"><CheckSquare className="w-4 h-4 text-[#0033A0] dark:text-[#3b82f6]" /> {t('ai_diagnostics_landing')}</li>
                 <li className="flex items-center gap-4 border-b border-black/10 dark:border-white/10 pb-4"><CheckSquare className="w-4 h-4 text-[#0033A0] dark:text-[#3b82f6]" /> {t('telehealth_monitoring')}</li>

@@ -146,6 +146,7 @@ export default function Register() {
                   { id: 'Patient', label: t('patient'), icon: User },
                   { id: 'Doctor', label: t('doctor'), icon: Stethoscope },
                   { id: 'Lab', label: t('lab'), icon: Activity },
+                  { id: 'LabTechnician', label: 'LAB TECH', icon: Activity },
                   { id: 'Pharmacist', label: t('pharmacist'), icon: Pill },
                   { id: 'Driver', label: t('driver'), icon: Truck },
                   { id: 'Rider', label: t('rider'), icon: ShoppingBag },

@@ -6,7 +6,7 @@ interface User {
   _id?: string;
   username: string;
   email: string;
-  role: 'Admin' | 'Doctor' | 'Patient' | 'Staff' | 'Lab' | 'Pharmacist' | 'Driver' | 'Rider' | 'Hospital' | 'Pharmacy';
+  role: 'Admin' | 'Doctor' | 'Patient' | 'Staff' | 'Lab' | 'Pharmacist' | 'Driver' | 'Rider' | 'Hospital' | 'Pharmacy' | 'LabTechnician';
   fullName?: string;
   gender?: string;
   age?: number;

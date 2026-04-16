@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { 
   Search, 
   ShoppingCart, 
@@ -42,6 +42,7 @@ export default function Ecommerce() {
   const { t } = useTranslation();
   const { token, user } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);
   const initialCategory = queryParams.get('category') || 'All';
 
@@ -99,8 +100,7 @@ export default function Ecommerce() {
 
   const handleCheckout = async () => {
     if (!user) {
-      alert('Please log in to proceed to checkout.');
-      window.location.href = '/login';
+      navigate('/login');
       return;
     }
     if (cart.length === 0) return;

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useTranslation } from 'react-i18next';
 import { X, CheckCircle2, QrCode, Smartphone } from 'lucide-react';
 
 interface QRCodePaymentModalProps {
@@ -10,6 +11,7 @@ interface QRCodePaymentModalProps {
 }
 
 export default function QRCodePaymentModal({ isOpen, onClose, amount = 99, planName = 'Premium' }: QRCodePaymentModalProps) {
+  const { t } = useTranslation();
   const [paymentStatus, setPaymentStatus] = useState<'pending' | 'success'>('pending');
 
   useEffect(() => {
@@ -46,12 +48,12 @@ export default function QRCodePaymentModal({ isOpen, onClose, amount = 99, planN
 
           <div className="p-8 text-center">
             <h3 className="text-2xl font-medium tracking-tighter mb-2">
-              {paymentStatus === 'success' ? 'Payment Successful' : 'Scan to Pay'}
+              {paymentStatus === 'success' ? t('payment_successful') : t('scan_to_pay')}
             </h3>
             <p className="text-black/60 dark:text-white/60 text-sm mb-8">
               {paymentStatus === 'success' 
-                ? `Your ${planName} membership is now active.`
-                : `Use Alipay or WeChat Pay to upgrade to ${planName}.`}
+                ? t('membership_active', { plan: planName })
+                : t('upgrade_membership', { plan: planName })}
             </p>
 
             <div className="relative flex justify-center mb-8">
