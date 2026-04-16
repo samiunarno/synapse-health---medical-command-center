@@ -13,6 +13,8 @@ import Doctors from './pages/Doctors';
 import Pharmacy from './pages/Pharmacy';
 import Wards from './pages/Wards';
 import Analytics from './pages/Analytics';
+import DeliveryRider from './pages/DeliveryRider';
+import SendNotification from './pages/SendNotification';
 import MedicalRecords from './pages/MedicalRecords';
 import UserManagement from './pages/UserManagement';
 import Settings from './pages/Settings';
@@ -32,7 +34,9 @@ import SymptomChecker from './pages/SymptomChecker';
 import VaccinationTracker from './pages/VaccinationTracker';
 import TeleHealth from './pages/TeleHealth';
 import Prescriptions from './pages/Prescriptions';
+import LabDashboard from './pages/LabDashboard';
 import LabReportInterpreter from './pages/LabReportInterpreter';
+import LabAppointments from './pages/LabAppointments';
 import DigitalHealthID from './pages/DigitalHealthID';
 import MedicineInventory from './pages/MedicineInventory';
 import AppointmentOptimizer from './pages/AppointmentOptimizer';
@@ -87,6 +91,8 @@ export default function App() {
                   <Route path="/pharmacy" element={<PrivateRoute roles={['Admin', 'Staff', 'Doctor', 'Pharmacist', 'Patient']}><Pharmacy /></PrivateRoute>} />
                   <Route path="/records" element={<PrivateRoute roles={['Admin', 'Doctor', 'Patient', 'Pharmacist']}><MedicalRecords /></PrivateRoute>} />
                   <Route path="/analytics" element={<PrivateRoute roles={['Admin']}><Analytics /></PrivateRoute>} />
+                  <Route path="/delivery-rider" element={<PrivateRoute roles={['Rider', 'Admin']}><DeliveryRider /></PrivateRoute>} />
+                  <Route path="/notifications" element={<PrivateRoute roles={['Admin']}><SendNotification /></PrivateRoute>} />
                   <Route path="/users" element={<PrivateRoute roles={['Admin']}><UserManagement /></PrivateRoute>} />
                   <Route path="/appointments" element={<PrivateRoute><Appointments /></PrivateRoute>} />
                   <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
@@ -105,6 +111,8 @@ export default function App() {
                   <Route path="/vaccinations" element={<PrivateRoute><VaccinationTracker /></PrivateRoute>} />
                   <Route path="/tele-health" element={<PrivateRoute><TeleHealth /></PrivateRoute>} />
                   <Route path="/prescriptions" element={<PrivateRoute><Prescriptions /></PrivateRoute>} />
+                  <Route path="/lab" element={<PrivateRoute roles={['Admin', 'LabTechnician', 'Lab']}><LabDashboard /></PrivateRoute>} />
+                  <Route path="/lab-appointments" element={<PrivateRoute roles={['Patient', 'Admin']}><LabAppointments /></PrivateRoute>} />
                   <Route path="/lab-interpreter" element={<PrivateRoute><LabReportInterpreter /></PrivateRoute>} />
                   <Route path="/health-id" element={<PrivateRoute><DigitalHealthID /></PrivateRoute>} />
                   <Route path="/medicine-inventory" element={<PrivateRoute><MedicineInventory /></PrivateRoute>} />

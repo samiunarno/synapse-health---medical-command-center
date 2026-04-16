@@ -158,8 +158,32 @@ const MarketingVideo = ({ onComplete }: { onComplete: () => void }) => {
 // --- Pitch Deck Component (Professional Slides) ---
 const PitchDeck = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [showPresenterNotes, setShowPresenterNotes] = useState(false);
   const navigate = useNavigate();
   const { t } = useTranslation();
+
+  const script = [
+    "Good morning everyone. My name is Samiun Arnouk, Lead Architect of Synapse Health. Today, I am defending the architecture of our Unified Medical Operating System.",
+    "Synapse Health is not just a dashboard; it is the infrastructure for zero-latency care. We are building the foundational layer for modern medicine.",
+    "Our mission is to eliminate medical latency and democratize precision healthcare globally through a unified neural infrastructure.",
+    "We face a systemic crisis with legacy websites: fragmented data, slow response times, and a total lack of real-time integration. In healthcare, this latency costs lives.",
+    "Synapse OS is the definitive solution. We've built a unified, AI-first platform that connects every node in the healthcare value chain in real-time, eliminating silos forever.",
+    "Our ecosystem creates a unified network between patients, doctors, hospitals, and pharmacies, ensuring a continuous feedback loop of care.",
+    "The workflow is seamless: from IoT telemetry to AI-driven diagnostics and automated prescription fulfillment. End-to-end precision.",
+    "At our core is the Neural Engine—an advanced Clinical Decision Support System that augments medical expertise with deep learning insights.",
+    "We integrate real-time IoT telemetry directly into clinical charts, shifting healthcare from reactive treatment to proactive monitoring.",
+    "Our global sourcing marketplace eliminates middlemen, connecting institutions to manufacturers and reducing costs by up to 40%.",
+    "Security is our priority. We use Zero Trust Architecture and military-grade encryption to ensure total data sovereignty and compliance.",
+    "We are targeting a $10 trillion global market. Synapse is built to scale as the primary infrastructure for digital-first healthcare.",
+    "Our business model combines sustainable SaaS subscriptions with transactional marketplace commissions for diversified growth.",
+    "Our core innovation is the Neural Infrastructure. Unlike legacy EHRs, we don't just store data; we predict needs, automate logistics, and secure sovereignty.",
+    "The impact is clear: 30% faster diagnostics and 50% faster emergency response. We are setting a new standard for clinical excellence.",
+    "Our roadmap takes us from Core Beta to global launch by Q4, establishing Synapse as the global standard for medical OS.",
+    "We are implementing Blockchain for decentralized health records, giving patients absolute control over their medical data sovereignty.",
+    "Future updates include AI-driven autonomous ambulance routing and real-time emergency resource allocation to save more lives.",
+    "Synapse is built for the next billion users. We are committed to green infrastructure and healthcare equity in emerging markets.",
+    "In conclusion, Synapse Health is the future of medicine. Join us in building a world where precision care is a global right. Thank you."
+  ];
 
   const impactData = [
     { name: 'Diagnostic Time', current: 100, synapse: 70 },
@@ -397,14 +421,13 @@ const PitchDeck = () => {
             </div>
             <h3 className="text-4xl font-display font-black uppercase mb-2">{t('presenter_name')}</h3>
             <p className="text-blue-500 font-bold uppercase tracking-widest mb-6">{t('presenter_title')}</p>
-            <div className="flex flex-wrap justify-center gap-4 mb-8">
+            <div className="flex flex-wrap justify-center gap-4">
               {t('presenter_skills_list').split(' • ').map((skill: string, i: number) => (
                 <span key={i} className="px-4 py-2 bg-white/5 border border-white/10 rounded-full text-[10px] font-bold uppercase tracking-widest">
                   {skill}
                 </span>
               ))}
             </div>
-            <p className="text-gray-400 max-w-lg leading-relaxed">{slide.content}</p>
           </div>
         );
       case 'chart':
@@ -505,14 +528,33 @@ const PitchDeck = () => {
 
   return (
     <div className="min-h-screen bg-[#050505] text-white flex flex-col">
-      <header className="p-8 lg:p-12 flex items-center justify-between border-b border-white/5">
-        <div className="flex items-center gap-4">
-          <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-black">
-            <Brain className="w-6 h-6" />
+      <header className="p-8 lg:p-12 flex items-center justify-between border-b border-white/5 bg-black/50 backdrop-blur-md sticky top-0 z-50">
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-black">
+              <Brain className="w-6 h-6" />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-xl font-display font-bold tracking-tighter uppercase">{t('synapse_pitch')}</span>
+              <span className="text-[8px] font-mono text-blue-500 uppercase tracking-[0.3em]">Doc ID: SYN-2026-ALPHA // CLASSIFIED</span>
+            </div>
           </div>
-          <span className="text-xl font-display font-bold tracking-tighter uppercase">{t('synapse_pitch')}</span>
+          <div className="h-8 w-px bg-white/10 hidden md:block" />
+          <button 
+            onClick={() => setShowPresenterNotes(!showPresenterNotes)}
+            className={`hidden md:flex items-center gap-2 px-4 py-2 rounded-xl border text-[10px] font-bold uppercase tracking-widest transition-all ${
+              showPresenterNotes ? 'bg-blue-600 border-blue-500 text-white' : 'bg-white/5 border-white/10 text-gray-400 hover:text-white'
+            }`}
+          >
+            <Terminal className="w-4 h-4" />
+            {showPresenterNotes ? 'Hide Script' : 'Show Script'}
+          </button>
         </div>
         <div className="flex items-center gap-6 text-[10px] font-bold uppercase tracking-widest text-gray-500">
+          <div className="hidden xl:flex items-center gap-3 px-4 py-2 bg-white/5 rounded-full border border-white/10">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+            <span>Secure Link Active</span>
+          </div>
           <span>{t('slide')} {currentSlide + 1} / {slides.length}</span>
           <div className="w-32 h-1 bg-white/5 rounded-full overflow-hidden">
             <motion.div 
@@ -524,6 +566,33 @@ const PitchDeck = () => {
       </header>
 
       <main className="flex-1 flex items-center justify-center p-8 lg:p-24 relative overflow-hidden">
+        <AnimatePresence mode="wait">
+          {showPresenterNotes && (
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="fixed left-8 top-32 bottom-32 w-80 bg-black/80 backdrop-blur-2xl border border-blue-500/30 rounded-[2rem] p-8 z-40 hidden xl:flex flex-col shadow-[0_0_50px_rgba(59,130,246,0.1)]"
+            >
+              <div className="flex items-center gap-3 mb-6 text-blue-500">
+                <MessageSquare className="w-5 h-5" />
+                <span className="text-xs font-bold uppercase tracking-widest">Presenter Script</span>
+              </div>
+              <div className="flex-1 overflow-y-auto custom-scrollbar pr-4">
+                <p className="text-sm text-gray-300 leading-relaxed font-medium italic">
+                  "{script[currentSlide]}"
+                </p>
+              </div>
+              <div className="mt-8 pt-6 border-t border-white/10">
+                <div className="flex items-center justify-between text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                  <span>Tone: Professional</span>
+                  <span>Pace: Moderate</span>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <AnimatePresence mode="wait">
           <motion.div
             key={currentSlide}
@@ -537,29 +606,20 @@ const PitchDeck = () => {
               <div className={`w-16 h-16 rounded-2xl ${colors[slides[currentSlide].color]} border flex items-center justify-center mb-8`}>
                 {React.createElement(slides[currentSlide].icon, { className: "w-8 h-8" })}
               </div>
-              <h2 className="text-5xl lg:text-7xl font-display font-black uppercase tracking-tighter mb-4 leading-none">
+              <h2 className="text-6xl lg:text-8xl font-display font-black uppercase tracking-tighter mb-6 leading-none">
                 {slides[currentSlide].title}
               </h2>
-              <p className="text-xl lg:text-2xl text-blue-500 font-bold uppercase tracking-widest mb-8">
+              <p className="text-2xl lg:text-3xl text-blue-500 font-bold uppercase tracking-widest mb-12">
                 {slides[currentSlide].subtitle}
               </p>
               
-              {slides[currentSlide].type !== 'profile' && slides[currentSlide].type !== 'chart' && (
+              {slides[currentSlide].type === 'profile' && (
                 <p className="text-lg lg:text-xl text-gray-400 leading-relaxed mb-12">
                   {slides[currentSlide].content}
                 </p>
               )}
 
-              {slides[currentSlide].type === 'hero' && (
-                <div className="flex gap-4">
-                  <div className="px-6 py-3 bg-blue-600 rounded-xl text-xs font-bold uppercase tracking-widest">
-                    v4.2.0 Stable
-                  </div>
-                  <div className="px-6 py-3 bg-white/5 border border-white/10 rounded-xl text-xs font-bold uppercase tracking-widest">
-                    Global Core
-                  </div>
-                </div>
-              )}
+              {/* Hero tags removed for minimalist look */}
             </div>
 
             <div className="relative aspect-square lg:aspect-video rounded-[3rem] bg-white/5 border border-white/10 overflow-hidden group p-8 flex items-center justify-center">

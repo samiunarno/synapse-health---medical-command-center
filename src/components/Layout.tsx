@@ -4,6 +4,7 @@ import { useAuth } from './AuthContext';
 import VerificationBanner from './VerificationBanner';
 import { useTranslation } from 'react-i18next';
 import GlobalNavbar from './GlobalNavbar';
+import SOSButton from './SOSButton';
 import { io } from 'socket.io-client';
 import { 
   Sun,
@@ -51,7 +52,8 @@ import {
   Watch,
   Trophy,
   Sparkles,
-  Play
+  Play,
+  FlaskConical
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -186,12 +188,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     {label: t('doctors'), icon: UserRound, path: '/doctors', roles: ['Admin', 'Staff'] },
     {label: t('wards'), icon: Bed, path: '/wards', roles: ['Admin', 'Staff'] },
     {label: t('pharmacy'), icon: Pill, path: '/pharmacy', roles: ['Admin', 'Staff', 'Doctor', 'Pharmacist', 'Patient'] },
+    {label: t('lab_reports'), icon: FlaskConical, path: '/lab', roles: ['Admin', 'LabTechnician', 'Lab'] },
+    {label: t('lab_appointments'), icon: FlaskConical, path: '/lab-appointments', roles: ['Patient', 'Admin'] },
     {label: t('records'), icon: FileText, path: '/records', roles: ['Admin', 'Doctor', 'Patient', 'Pharmacist'] },
     {label: t('video_call'), icon: Video, path: '/video-conference', roles: ['Admin', 'Doctor', 'Patient'] },
     {label: t('health_ai'), icon: Brain, path: '/health-ai', roles: ['Admin', 'Patient', 'Doctor'] },
     {label: t('ai_chatbot'), icon: MessageSquare, path: '/ai-chatbot', roles: ['Admin', 'Patient', 'Doctor', 'Pharmacist'] },
     {label: t('billing'), icon: CreditCard, path: '/billing', roles: ['Admin', 'Patient'] },
     {label: t('analytics'), icon: BarChart3, path: '/analytics', roles: ['Admin'] },
+    {label: t('delivery_rider'), icon: Truck, path: '/delivery-rider', roles: ['Rider', 'Admin'] },
+    {label: t('notifications'), icon: Bell, path: '/notifications', roles: ['Admin'] },
     {label: t('users'), icon: Users, path: '/users', roles: ['Admin'] },
     {label: t('settings'), icon: Settings, path: '/settings', roles: ['Admin', 'Doctor', 'Patient', 'Staff', 'Pharmacist'] },
   ];
@@ -441,6 +447,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       {/* Main Content */}
       <main className={`relative flex-1 flex flex-col min-w-0 overflow-hidden ${user?.role === 'Admin' ? 'pt-10' : ''}`}>
+        {user?.role === 'Patient' && <SOSButton />}
         <header className="h-20 lg:h-28 bg-white/40 dark:bg-black/20 backdrop-blur-xl border-b border-gray-200 dark:border-white/5 flex items-center justify-between px-4 sm:px-6 lg:px-12 flex-shrink-0 relative z-20">
           <div className="flex items-center gap-4 lg:gap-10">
             <button

@@ -287,33 +287,64 @@ export default function Pharmacy() {
     }
   };
 
+  const checkInteractions = (newCart: any[]) => {
+    // Simulated interaction rules
+    const interactionRules = [
+      { drugs: ['Aspirin', 'Warfarin'], message: 'High risk of bleeding. Consult your doctor.', severity: 'danger' as const },
+      { drugs: ['Ibuprofen', 'Aspirin'], message: 'May reduce effectiveness of Aspirin.', severity: 'warning' as const },
+      { drugs: ['Amoxicillin', 'Birth Control'], message: 'May reduce effectiveness of oral contraceptives.', severity: 'warning' as const }
+    ];
+
+    const drugNames = newCart.map(item => item.medicine.brand_name);
+    
+    for (const rule of interactionRules) {
+      if (rule.drugs.every(drug => drugNames.some(name => name.toLowerCase().includes(drug.toLowerCase())))) {
+        setInteractionAlert(rule);
+        return;
+      }
+    }
+    setInteractionAlert(null);
+  };
+
   const addToCart = (medicine: any, openCart = true) => {
     setCart(prev => {
       const existing = prev.find(item => item.medicine._id === medicine._id);
+      let newCart;
       if (existing) {
-        return prev.map(item => 
+        newCart = prev.map(item => 
           item.medicine._id === medicine._id 
             ? { ...item, quantity: item.quantity + 1 } 
             : item
         );
+      } else {
+        newCart = [...prev, { medicine, quantity: 1 }];
       }
-      return [...prev, { medicine, quantity: 1 }];
+      checkInteractions(newCart);
+      return newCart;
     });
     if (openCart) setIsCartOpen(true);
   };
 
   const removeFromCart = (medicineId: string) => {
-    setCart(prev => prev.filter(item => item.medicine._id !== medicineId));
+    setCart(prev => {
+      const newCart = prev.filter(item => item.medicine._id !== medicineId);
+      checkInteractions(newCart);
+      return newCart;
+    });
   };
 
   const updateCartQuantity = (medicineId: string, delta: number) => {
-    setCart(prev => prev.map(item => {
-      if (item.medicine._id === medicineId) {
-        const newQty = Math.max(1, item.quantity + delta);
-        return { ...item, quantity: newQty };
-      }
-      return item;
-    }));
+    setCart(prev => {
+      const newCart = prev.map(item => {
+        if (item.medicine._id === medicineId) {
+          const newQty = Math.max(1, item.quantity + delta);
+          return { ...item, quantity: newQty };
+        }
+        return item;
+      });
+      checkInteractions(newCart);
+      return newCart;
+    });
   };
 
   const handleAddressSearch = (query: string) => {
@@ -834,6 +865,23 @@ export default function Pharmacy() {
               </div>
 
               <div className="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar">
+                {interactionAlert && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className={`p-4 rounded-2xl border flex items-start gap-4 ${
+                      interactionAlert.severity === 'danger' 
+                        ? 'bg-red-500/10 border-red-500/20 text-red-500' 
+                        : 'bg-yellow-500/10 border-yellow-500/20 text-yellow-500'
+                    }`}
+                  >
+                    <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest mb-1">Drug Interaction Alert</p>
+                      <p className="text-xs font-medium">{interactionAlert.message}</p>
+                    </div>
+                  </motion.div>
+                )}
                 {cart.length === 0 ? (
                   <div className="h-full flex flex-col items-center justify-center text-center space-y-4">
                     <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center">

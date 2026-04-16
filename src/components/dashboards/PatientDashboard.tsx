@@ -25,12 +25,15 @@ import {
   Stethoscope,
   Shield,
   BookOpen,
+  AlertTriangle,
 } from 'lucide-react';
 import { motion, AnimatePresence, Variants } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 import { io } from 'socket.io-client';
 import HealthInsights from '../HealthInsights';
+import HealthTips from '../HealthTips';
+import SOSButton from '../SOSButton';
 
 export default function PatientDashboard({ user }: any) {
   const { t } = useTranslation();
@@ -289,6 +292,39 @@ export default function PatientDashboard({ user }: any) {
       <motion.div variants={itemVariants}>
         <HealthInsights patientData={patientData} />
       </motion.div>
+
+      {/* Health Tips & Emergency */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <motion.div variants={itemVariants} className="lg:col-span-2">
+          <HealthTips />
+        </motion.div>
+        <motion.div variants={itemVariants}>
+          <div className="bg-rose-600/5 border border-rose-500/20 rounded-[2.5rem] p-8 h-full flex flex-col justify-between relative overflow-hidden group">
+            <div className="relative z-10">
+              <div className="w-14 h-14 bg-rose-600 rounded-2xl flex items-center justify-center text-white mb-6 shadow-xl shadow-rose-600/20 group-hover:rotate-12 transition-transform">
+                <AlertTriangle className="w-8 h-8" />
+              </div>
+              <h3 className="text-2xl font-display font-bold text-white uppercase tracking-tight mb-2">{t('emergency_help')}</h3>
+              <p className="text-rose-200/60 text-sm font-medium leading-relaxed mb-8">
+                {t('emergency_desc_short')}
+              </p>
+            </div>
+            <button 
+              onClick={() => {
+                // Trigger the SOS modal from the floating button if possible, 
+                // but since SOSButton is a sibling in Layout, we might need a different approach.
+                // For now, we'll just show a button that encourages using the floating SOS.
+                const sosBtn = document.querySelector('.fixed.bottom-8.left-8') as HTMLButtonElement;
+                if (sosBtn) sosBtn.click();
+              }}
+              className="w-full py-4 bg-rose-600 text-white rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-rose-700 transition-all shadow-xl shadow-rose-600/20 relative z-10"
+            >
+              {t('request_emergency_help')}
+            </button>
+            <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-rose-600/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000" />
+          </div>
+        </motion.div>
+      </div>
 
       {/* Health Vitals */}
       <motion.div 
