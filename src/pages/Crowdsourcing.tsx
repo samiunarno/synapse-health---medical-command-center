@@ -29,7 +29,7 @@ export default function Crowdsourcing() {
   };
 
   const handleDonate = async (id: string) => {
-    const amount = prompt('Enter donation amount ($):');
+    const amount = prompt('Enter donation amount (¥):');
     if (!amount || isNaN(Number(amount))) return;
 
     try {
@@ -90,8 +90,8 @@ export default function Crowdsourcing() {
             <div className="p-6 space-y-6">
               <div>
                 <div className="flex justify-between text-sm font-bold mb-2">
-                  <span className="text-red-500">${(campaign.raised / 1000).toFixed(0)}k raised</span>
-                  <span className="text-gray-500">Goal: ${(campaign.goal / 1000).toFixed(0)}k</span>
+                  <span className="text-red-500">¥{(campaign.raised / 1000).toFixed(0)}k raised</span>
+                  <span className="text-gray-500">Goal: ¥{(campaign.goal / 1000).toFixed(0)}k</span>
                 </div>
                 <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
                   <div 

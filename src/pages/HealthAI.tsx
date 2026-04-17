@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../components/AuthContext';
+import { useTranslation } from 'react-i18next';
 import { 
   Brain, 
   Heart, 
@@ -23,6 +24,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { analyzeMood as analyzeMoodAI, generateNutritionPlan as generateNutritionPlanAI } from '../services/aiService';
 
 export default function HealthAI() {
+  const { t, i18n } = useTranslation();
   const { user, token } = useAuth();
   const [activeTab, setActiveTab] = useState<'mood' | 'nutrition'>('mood');
   
@@ -42,7 +44,7 @@ export default function HealthAI() {
     if (!journal || mood === null) return;
     setIsAnalyzingMood(true);
     try {
-      const data = await analyzeMoodAI(journal, mood);
+      const data = await analyzeMoodAI(journal, mood, i18n.language);
       setMoodAnalysis(data);
     } catch (err) {
       console.error('Mood analysis failed:', err);
@@ -54,7 +56,7 @@ export default function HealthAI() {
   const generateNutritionPlan = async () => {
     setIsGeneratingPlan(true);
     try {
-      const data = await generateNutritionPlanAI(conditions, [preferences]);
+      const data = await generateNutritionPlanAI(conditions, [preferences], i18n.language);
       setNutritionPlan(data);
     } catch (err) {
       console.error('Nutrition plan generation failed:', err);
@@ -68,9 +70,9 @@ export default function HealthAI() {
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <h1 className="text-4xl md:text-6xl font-display font-bold text-white tracking-tighter uppercase">
-            Health <span className="text-blue-500">AI Hub</span>
+            {t('health')} <span className="text-blue-500">{t('ai_hub')}</span>
           </h1>
-          <p className="text-gray-500 font-medium mt-2">Personalized mental health tracking and nutrition planning powered by Zhipu AI.</p>
+          <p className="text-gray-500 font-medium mt-2">{t('health_hub_desc')}</p>
         </div>
         
         <div className="flex bg-white/5 p-1.5 rounded-2xl border border-white/5">
@@ -80,7 +82,7 @@ export default function HealthAI() {
               activeTab === 'mood' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-500 hover:text-white'
             }`}
           >
-            Mood Tracker
+            {t('mood_tracker')}
           </button>
           <button
             onClick={() => setActiveTab('nutrition')}
@@ -88,7 +90,7 @@ export default function HealthAI() {
               activeTab === 'nutrition' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-500 hover:text-white'
             }`}
           >
-            Nutrition AI
+            {t('nutrition_ai')}
           </button>
         </div>
       </header>
@@ -105,13 +107,13 @@ export default function HealthAI() {
             {/* Mood Input */}
             <div className="space-y-6">
               <div className="bg-white/2 border border-white/5 rounded-[2.5rem] p-8 lg:p-12">
-                <h3 className="text-2xl font-display font-bold text-white mb-8">How are you feeling today?</h3>
+                <h3 className="text-2xl font-display font-bold text-white mb-8">{t('feeling_today')}</h3>
                 
                 <div className="flex justify-between gap-4 mb-10">
                   {[
-                    { val: 1, icon: Frown, label: 'Stressed', color: 'text-rose-500', bg: 'bg-rose-500/10' },
-                    { val: 2, icon: Meh, label: 'Neutral', color: 'text-amber-500', bg: 'bg-amber-500/10' },
-                    { val: 3, icon: Smile, label: 'Great', color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+                    { val: 1, icon: Frown, label: t('stressed'), color: 'text-rose-500', bg: 'bg-rose-500/10' },
+                    { val: 2, icon: Meh, label: t('neutral'), color: 'text-amber-500', bg: 'bg-amber-500/10' },
+                    { val: 3, icon: Smile, label: t('great'), color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
                   ].map((m) => (
                     <button
                       key={m.val}
@@ -131,11 +133,11 @@ export default function HealthAI() {
                 </div>
 
                 <div className="space-y-4">
-                  <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-2">Daily Journal (Optional)</label>
+                  <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-2">{t('daily_journal')}</label>
                   <textarea
                     value={journal}
                     onChange={(e) => setJournal(e.target.value)}
-                    placeholder="Write about your day, thoughts, or feelings..."
+                    placeholder={t('journal_placeholder')}
                     className="w-full h-40 bg-black/40 border border-white/10 rounded-2xl p-6 text-sm text-white placeholder:text-gray-700 focus:ring-2 focus:ring-blue-500 outline-none transition-all resize-none"
                   />
                 </div>
@@ -146,7 +148,7 @@ export default function HealthAI() {
                   className="w-full mt-8 bg-blue-600 text-white py-5 rounded-2xl font-bold text-sm uppercase tracking-widest hover:bg-blue-700 transition-all disabled:opacity-50 flex items-center justify-center gap-3"
                 >
                   {isAnalyzingMood ? <Loader2 className="w-5 h-5 animate-spin" /> : <Sparkles className="w-5 h-5" />}
-                  Analyze Mood with AI
+                  {t('analyze_mood_ai')}
                 </button>
               </div>
 
@@ -155,7 +157,7 @@ export default function HealthAI() {
                   <div className="w-10 h-10 bg-purple-500/20 rounded-xl flex items-center justify-center text-purple-500">
                     <TrendingUp className="w-5 h-5" />
                   </div>
-                  <h4 className="text-lg font-display font-bold text-white">Mood Trends</h4>
+                  <h4 className="text-lg font-display font-bold text-white">{t('mood_trends')}</h4>
                 </div>
                 <div className="h-32 flex items-end gap-2 px-2">
                   {[40, 70, 45, 90, 65, 80, 55].map((h, i) => (
@@ -195,8 +197,8 @@ export default function HealthAI() {
                     <div className="w-20 h-20 bg-blue-600/20 rounded-3xl flex items-center justify-center text-blue-500 mb-6 animate-pulse">
                       <Brain className="w-10 h-10" />
                     </div>
-                    <h3 className="text-xl font-display font-bold text-white mb-2">Analyzing Sentiment</h3>
-                    <p className="text-gray-500 text-xs">Zhipu AI is processing your journal entry...</p>
+                    <h3 className="text-xl font-display font-bold text-white mb-2">{t('analyzing_sentiment')}</h3>
+                    <p className="text-gray-500 text-xs">{t('analyzing_mood_placeholder')}</p>
                   </motion.div>
                 ) : moodAnalysis ? (
                   <motion.div
@@ -211,7 +213,7 @@ export default function HealthAI() {
                           <Smile className="w-6 h-6" />
                         </div>
                         <div>
-                          <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-[0.2em]">Emotional Tone</p>
+                          <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-[0.2em]">{t('emotional_tone')}</p>
                           <h3 className="text-2xl font-display font-bold text-white">{moodAnalysis.tone}</h3>
                         </div>
                       </div>
@@ -223,14 +225,14 @@ export default function HealthAI() {
                         {moodAnalysis.specialistNeeded && (
                           <div className="flex items-center gap-3 p-4 bg-rose-500/20 border border-rose-500/20 rounded-2xl">
                             <AlertCircle className="w-5 h-5 text-rose-500" />
-                            <span className="text-xs font-bold text-rose-200">Recommendation: Consult a mental health specialist.</span>
+                            <span className="text-xs font-bold text-rose-200">{t('consult_specialist_desc')}</span>
                           </div>
                         )}
                       </div>
                     </div>
 
                     <div className="bg-white/2 border border-white/5 rounded-[2.5rem] p-8">
-                      <h4 className="text-xs font-bold text-gray-500 uppercase tracking-[0.3em] mb-6">Key Insights</h4>
+                      <h4 className="text-xs font-bold text-gray-500 uppercase tracking-[0.3em] mb-6">{t('key_insights')}</h4>
                       <div className="space-y-3">
                         {moodAnalysis.insights.map((insight: string, i: number) => (
                           <div key={i} className="flex items-start gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
@@ -244,7 +246,7 @@ export default function HealthAI() {
                     </div>
 
                     <div className="bg-white/2 border border-white/5 rounded-[2.5rem] p-8">
-                      <h4 className="text-xs font-bold text-gray-500 uppercase tracking-[0.3em] mb-6">AI Wellness Advice</h4>
+                      <h4 className="text-xs font-bold text-gray-500 uppercase tracking-[0.3em] mb-6">{t('ai_wellness_advice')}</h4>
                       <div className="grid grid-cols-1 gap-3">
                         {moodAnalysis.advice.map((item: string, i: number) => (
                           <div key={i} className="flex items-center gap-4 p-4 bg-emerald-500/5 border border-emerald-500/10 rounded-2xl">
@@ -256,13 +258,13 @@ export default function HealthAI() {
                     </div>
                   </motion.div>
                 ) : (
-                  <div className="h-full min-h-[400px] bg-white/2 border border-white/5 rounded-[2.5rem] flex flex-col items-center justify-center p-12 text-center border-dashed">
+                  <motion.div key="empty" className="h-full min-h-[400px] bg-white/2 border border-white/5 rounded-[2.5rem] flex flex-col items-center justify-center p-12 text-center border-dashed">
                     <div className="w-20 h-20 bg-white/5 rounded-3xl flex items-center justify-center text-gray-700 mb-6">
                       <MessageSquare className="w-10 h-10" />
                     </div>
-                    <h3 className="text-xl font-display font-bold text-gray-700 mb-2">No Analysis Yet</h3>
-                    <p className="text-gray-600 text-xs">Complete your daily check-in to see AI insights.</p>
-                  </div>
+                    <h3 className="text-xl font-display font-bold text-gray-700 mb-2">{t('no_analysis_yet')}</h3>
+                    <p className="text-gray-600 text-xs">{t('complete_checkin_desc')}</p>
+                  </motion.div>
                 )}
               </AnimatePresence>
             </div>
@@ -278,11 +280,11 @@ export default function HealthAI() {
             {/* Nutrition Input */}
             <div className="space-y-6">
               <div className="bg-white/2 border border-white/5 rounded-[2.5rem] p-8 lg:p-12">
-                <h3 className="text-2xl font-display font-bold text-white mb-8">Personalized Nutrition</h3>
+                <h3 className="text-2xl font-display font-bold text-white mb-8">{t('personalized_nutrition')}</h3>
                 
                 <div className="space-y-8">
                   <div>
-                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-2 mb-4 block">Medical Conditions</label>
+                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-2 mb-4 block">{t('medical_conditions')}</label>
                     <div className="flex flex-wrap gap-2">
                       {['Hypertension', 'Diabetes', 'Obesity', 'Anemia', 'PCOS', 'Heart Disease'].map((c) => (
                         <button
@@ -294,18 +296,18 @@ export default function HealthAI() {
                               : 'bg-white/5 border-white/10 text-gray-500 hover:text-white'
                           }`}
                         >
-                          {c}
+                          {t(c.toLowerCase().replace(' ', '_'))}
                         </button>
                       ))}
                     </div>
                   </div>
 
                   <div>
-                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-2 mb-4 block">Dietary Preferences</label>
+                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-2 mb-4 block">{t('dietary_preferences')}</label>
                     <textarea
                       value={preferences}
                       onChange={(e) => setPreferences(e.target.value)}
-                      placeholder="e.g. Vegetarian, High protein, No seafood, Local Bangladeshi food..."
+                      placeholder={t('nutrition_preferences_placeholder')}
                       className="w-full h-32 bg-black/40 border border-white/10 rounded-2xl p-6 text-sm text-white placeholder:text-gray-700 focus:ring-2 focus:ring-blue-500 outline-none transition-all resize-none"
                     />
                   </div>
@@ -317,13 +319,13 @@ export default function HealthAI() {
                   className="w-full mt-10 bg-emerald-600 text-white py-5 rounded-2xl font-bold text-sm uppercase tracking-widest hover:bg-emerald-700 transition-all disabled:opacity-50 flex items-center justify-center gap-3 shadow-xl shadow-emerald-600/20"
                 >
                   {isGeneratingPlan ? <Loader2 className="w-5 h-5 animate-spin" /> : <Utensils className="w-5 h-5" />}
-                  Generate Meal Plan
+                  {t('generate_meal_plan')}
                 </button>
               </div>
 
               <div className="bg-white/2 border border-white/5 rounded-[2.5rem] p-8">
                 <div className="flex items-center justify-between mb-8">
-                  <h4 className="text-lg font-display font-bold text-white">Hydration Tracker</h4>
+                  <h4 className="text-lg font-display font-bold text-white">{t('hydration_tracker')}</h4>
                   <span className="text-[10px] font-bold text-blue-500 uppercase tracking-widest">1.2L / 2.5L</span>
                 </div>
                 <div className="flex gap-3">
@@ -332,7 +334,7 @@ export default function HealthAI() {
                   ))}
                 </div>
                 <button className="w-full mt-6 py-3 bg-white/5 border border-white/10 rounded-xl text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-all flex items-center justify-center gap-2">
-                  <Plus className="w-4 h-4" /> Add Glass
+                  <Plus className="w-4 h-4" /> {t('add_glass')}
                 </button>
               </div>
             </div>
@@ -351,9 +353,9 @@ export default function HealthAI() {
                       <div className="absolute inset-0 bg-emerald-600/20 rounded-full animate-ping" />
                       <Utensils className="w-10 h-10 relative z-10" />
                     </div>
-                    <h3 className="text-2xl font-display font-bold text-white mb-4">Crafting Your Plan</h3>
+                    <h3 className="text-2xl font-display font-bold text-white mb-4">{t('crafting_plan')}</h3>
                     <p className="text-gray-500 text-sm max-w-xs leading-relaxed">
-                      Zhipu AI is optimizing nutrients based on your health profile.
+                      {t('nutrition_crafting_desc')}
                     </p>
                   </motion.div>
                 ) : nutritionPlan ? (
@@ -369,7 +371,7 @@ export default function HealthAI() {
                           <Heart className="w-6 h-6" />
                         </div>
                         <div>
-                          <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-[0.2em]">Daily Focus</p>
+                          <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-[0.2em]">{t('daily_focus')}</p>
                           <h3 className="text-xl font-display font-bold text-white">{nutritionPlan.dailyFocus}</h3>
                         </div>
                       </div>
@@ -402,7 +404,7 @@ export default function HealthAI() {
                     </div>
 
                     <div className="bg-white/2 border border-white/5 rounded-[2.5rem] p-8">
-                      <h4 className="text-xs font-bold text-gray-500 uppercase tracking-[0.3em] mb-6">Nutritionist Tips</h4>
+                      <h4 className="text-xs font-bold text-gray-500 uppercase tracking-[0.3em] mb-6">{t('nutritionist_tips')}</h4>
                       <div className="space-y-3">
                         {nutritionPlan.tips.map((tip: string, i: number) => (
                           <div key={i} className="flex items-start gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
@@ -416,13 +418,13 @@ export default function HealthAI() {
                     </div>
                   </motion.div>
                 ) : (
-                  <div className="h-full min-h-[500px] bg-white/2 border border-white/5 rounded-[2.5rem] flex flex-col items-center justify-center p-12 text-center border-dashed">
+                  <motion.div key="empty" className="h-full min-h-[500px] bg-white/2 border border-white/5 rounded-[2.5rem] flex flex-col items-center justify-center p-12 text-center border-dashed">
                     <div className="w-20 h-20 bg-white/5 rounded-3xl flex items-center justify-center text-gray-700 mb-6">
                       <Utensils className="w-10 h-10" />
                     </div>
-                    <h3 className="text-xl font-display font-bold text-gray-700 mb-2">No Plan Generated</h3>
-                    <p className="text-gray-600 text-xs">Select your conditions and preferences to get a personalized plan.</p>
-                  </div>
+                    <h3 className="text-xl font-display font-bold text-gray-700 mb-2">{t('no_plan_generated')}</h3>
+                    <p className="text-gray-600 text-xs">{t('nutrition_no_plan_desc')}</p>
+                  </motion.div>
                 )}
               </AnimatePresence>
             </div>

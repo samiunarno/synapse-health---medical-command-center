@@ -30,8 +30,8 @@ const router = express.Router();
 // AI Features
 router.post('/ai/analyze-prescription', authenticate, async (req, res) => {
   try {
-    const { image } = req.body;
-    const result = await analyzePrescriptionAI(image);
+    const { image, lang } = req.body;
+    const result = await analyzePrescriptionAI(image, lang);
     res.json(result);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -40,8 +40,8 @@ router.post('/ai/analyze-prescription', authenticate, async (req, res) => {
 
 router.post('/ai/analyze-mood', authenticate, async (req, res) => {
   try {
-    const { journal, mood } = req.body;
-    const result = await analyzeMoodAI(journal, mood);
+    const { journal, mood, lang } = req.body;
+    const result = await analyzeMoodAI(journal, mood, lang);
     res.json(result);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -50,8 +50,8 @@ router.post('/ai/analyze-mood', authenticate, async (req, res) => {
 
 router.post('/ai/generate-nutrition', authenticate, async (req, res) => {
   try {
-    const { conditions, preferences } = req.body;
-    const result = await generateNutritionPlanAI(conditions, preferences);
+    const { conditions, preferences, lang } = req.body;
+    const result = await generateNutritionPlanAI(conditions, preferences, lang);
     res.json(result);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -60,8 +60,8 @@ router.post('/ai/generate-nutrition', authenticate, async (req, res) => {
 
 router.post('/ai/check-symptoms', authenticate, async (req, res) => {
   try {
-    const { symptoms } = req.body;
-    const result = await checkSymptomsAI(symptoms);
+    const { symptoms, lang } = req.body;
+    const result = await checkSymptomsAI(symptoms, lang);
     res.json(result);
   } catch (error: any) {
     res.status(500).json({ error: error.message });

@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../components/AuthContext';
 import QRCodePaymentModal from '../components/QRCodePaymentModal';
 import { 
   Shield, 
@@ -15,44 +18,69 @@ import {
 } from 'lucide-react';
 
 export default function ServicesMembership() {
+  const { t } = useTranslation();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<{name: string, price: number} | null>(null);
 
   const handleSubscribe = (planName: string, priceString: string) => {
-    if (priceString === '$0' || priceString === 'Custom') {
+    if (!user) {
+      navigate('/login?redirect=/services/membership');
       return;
     }
-    const price = parseInt(priceString.replace(/[^0-9]/g, ''));
+    const price = priceString === t('free') || priceString === '¥0' || priceString === t('custom') || priceString === '定制报价' ? 0 : parseInt(priceString.replace(/[^0-9]/g, ''));
     setSelectedPlan({ name: planName, price });
     setIsPaymentModalOpen(true);
   };
   const plans = [
     {
-      name: "Standard",
-      price: "$0",
-      period: "/month",
-      desc: "Essential features for individual practitioners and small clinics.",
+      id: "standard",
+      name: t("standard"),
+      price: t("free"),
+      period: "",
+      desc: t("standard_desc"),
       icon: Users,
-      features: ["Basic EHR Access", "TeleHealth (Limited)", "Public Marketplace", "Email Support"],
+      features: [
+        t("feature_basic_ehr"),
+        t("feature_telehealth_limited"),
+        t("feature_public_marketplace"),
+        t("feature_email_support")
+      ],
       color: "blue"
     },
     {
-      name: "Professional",
-      price: "$199",
-      period: "/month",
-      desc: "Advanced tools for growing medical practices and specialized centers.",
+      id: "professional",
+      name: t("professional"),
+      price: t("free"),
+      period: ``,
+      desc: t("professional_desc"),
       icon: Zap,
-      features: ["Full EHR Suite", "Unlimited TeleHealth", "Priority Sourcing", "AI Diagnostics (Basic)", "24/7 Support"],
+      features: [
+        t("feature_full_ehr"),
+        t("feature_unlimited_telehealth"),
+        t("feature_priority_sourcing"),
+        t("feature_unlimited_ai"),
+        t("feature_free_doctor_checkup"),
+        t("feature_24_7_support")
+      ],
       color: "purple",
       popular: true
     },
     {
-      name: "Enterprise",
-      price: "Custom",
+      id: "enterprise",
+      name: t("enterprise"),
+      price: t("custom"),
       period: "",
-      desc: "Full-scale solutions for hospitals and international medical networks.",
+      desc: t("enterprise_desc"),
       icon: Crown,
-      features: ["Custom Integration", "Dedicated Account Manager", "Global Sourcing Network", "Advanced AI Hub", "On-site Training"],
+      features: [
+        t("feature_custom_integration"),
+        t("feature_dedicated_manager"),
+        t("feature_global_network"),
+        t("feature_advanced_ai"),
+        t("feature_onsite_training")
+      ],
       color: "emerald"
     }
   ];
@@ -106,7 +134,7 @@ export default function ServicesMembership() {
           >
             {plan.popular && (
               <div className="absolute top-8 right-8 px-4 py-1 bg-white text-purple-600 rounded-full text-[8px] font-bold uppercase tracking-widest">
-                Most Popular
+                {t('most_popular')}
               </div>
             )}
             <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-8 ${
@@ -139,7 +167,7 @@ export default function ServicesMembership() {
                 ? 'bg-white text-purple-600 hover:bg-purple-50' 
                 : 'bg-white/5 border border-white/10 text-white hover:bg-white/10'
             }`}>
-              Get Started
+              {t('get_started')}
             </button>
           </motion.div>
         ))}
@@ -150,28 +178,43 @@ export default function ServicesMembership() {
         <div className="p-12 bg-white/2 border border-white/5 rounded-[3rem] flex flex-col justify-between">
           <div>
             <Building className="w-12 h-12 text-blue-500 mb-8" />
-            <h3 className="text-3xl font-display font-bold uppercase tracking-tighter mb-4">Clinic Setup</h3>
+            <h3 className="text-3xl font-display font-bold uppercase tracking-tighter mb-4">{t('clinic_setup')}</h3>
             <p className="text-gray-500 text-sm leading-relaxed uppercase tracking-widest">
-              Full architectural and technical consultancy for setting up new medical facilities with integrated Synapse technology.
+              {t('clinic_setup_desc')}
             </p>
           </div>
           <button className="mt-12 flex items-center gap-2 text-blue-500 font-bold uppercase tracking-widest text-[10px] group">
-            Learn More <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
+            {t('learn_more')} <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
           </button>
         </div>
         <div className="p-12 bg-white/2 border border-white/5 rounded-[3rem] flex flex-col justify-between">
           <div>
             <Heart className="w-12 h-12 text-red-500 mb-8" />
-            <h3 className="text-3xl font-display font-bold uppercase tracking-tighter mb-4">Patient Care Plus</h3>
+            <h3 className="text-3xl font-display font-bold uppercase tracking-tighter mb-4">{t('patient_care_plus')}</h3>
             <p className="text-gray-500 text-sm leading-relaxed uppercase tracking-widest">
-              Premium support services for patients, including dedicated health coaches and priority access to specialists.
+              {t('patient_care_plus_desc')}
             </p>
           </div>
           <button className="mt-12 flex items-center gap-2 text-red-500 font-bold uppercase tracking-widest text-[10px] group">
-            Learn More <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
+            {t('learn_more')} <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
           </button>
         </div>
       </section>
+
+      {/* Data Sovereignty Section */}
+      <section className="relative p-12 overflow-hidden rounded-[3rem] bg-purple-600 text-white italic">
+        <div className="absolute inset-0 bg-mesh opacity-30" />
+        <div className="relative z-10 flex flex-col items-center text-center gap-6">
+          <Shield className="w-12 h-12 mb-2" />
+          <h2 className="text-4xl font-display font-black uppercase tracking-tighter italic">
+            {t('data_sovereignty')}
+          </h2>
+          <p className="text-purple-100 text-lg sm:text-2xl font-display font-medium uppercase tracking-widest max-w-2xl leading-relaxed">
+            {t('data_sovereignty_desc')}
+          </p>
+        </div>
+      </section>
+
       <QRCodePaymentModal 
         isOpen={isPaymentModalOpen} 
         onClose={() => setIsPaymentModalOpen(false)} 

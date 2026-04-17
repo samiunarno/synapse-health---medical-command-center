@@ -1,40 +1,57 @@
 import OpenAI from 'openai';
 
-// Zhipu AI API Configuration
-const getBaseURL = () => {
-  if (process.env.ZHIPU_BASE_URL) return process.env.ZHIPU_BASE_URL;
-  return 'https://open.bigmodel.cn/api/paas/v4/';
-};
+let aiClient: OpenAI | null = null;
 
-let zhipuClient: OpenAI | null = null;
-let lastApiKey: string | null = null;
-
-const getZhipuClient = () => {
-  const currentKey = process.env.ZHIPU_API_KEY || '';
-  if (!zhipuClient || lastApiKey !== currentKey) {
-    zhipuClient = new OpenAI({
-      apiKey: currentKey,
-      baseURL: getBaseURL(),
-    });
-    lastApiKey = currentKey;
-  }
-  return zhipuClient;
-};
-
-// Helper to get the active AI client
 const getAIClient = () => {
-  const key = process.env.ZHIPU_API_KEY;
-  if (key) {
-    return { 
-      type: 'openai',
-      client: getZhipuClient(), 
-      model: process.env.ZHIPU_MODEL || 'glm-4.7-flash'
-    };
+  // Use Zhipu AI (智谱) for native Chinese language capabilities and free GLM-4-Flash
+  if (!aiClient) {
+    const key = process.env.ZHIPU_API_KEY;
+    if (key) {
+      aiClient = new OpenAI({
+        apiKey: key,
+        baseURL: 'https://open.bigmodel.cn/api/paas/v4/',
+      });
+    }
   }
-  return null;
+  return aiClient;
 };
 
-export const getAIResponse = async (message: string, systemPrompt?: string, jsonMode: boolean = false) => {
+// Robust helper to extract JSON from markdown or verbose responses
+const extractJSON = (content: string): string => {
+  if (!content) return '{}';
+  
+  // Try to find markdown json block first
+  const match = content.match(/```(?:json|JSON)?\s*([\s\S]*?)\s*```/);
+  if (match && match[1]) {
+    content = match[1];
+  }
+
+  const startObj = content.indexOf('{');
+  const endObj = content.lastIndexOf('}');
+  const startArr = content.indexOf('[');
+  const endArr = content.lastIndexOf(']');
+
+  let start = Infinity;
+  let end = -1;
+
+  if (startObj !== -1 && startObj < start) {
+    start = startObj;
+    end = endObj;
+  }
+  if (startArr !== -1 && startArr < start) {
+    start = startArr;
+    end = endArr;
+  }
+
+  if (start !== Infinity && end !== -1 && start < end) {
+    return content.substring(start, end + 1);
+  }
+
+  // Fallback
+  return content.trim();
+};
+
+export const getAIResponse = async (message: string, systemPrompt?: string, jsonMode: boolean = false, lang: string = 'zh') => {
   try {
     const ai = getAIClient();
     if (!ai) {
@@ -42,61 +59,41 @@ export const getAIResponse = async (message: string, systemPrompt?: string, json
       throw new Error('AI Service is not configured. Please add ZHIPU_API_KEY to environment variables.');
     }
 
-    console.log(`🤖 AI Request: Model=${ai.model}, BaseURL=${getBaseURL()}`);
-    if (!process.env.ZHIPU_API_KEY) {
-      console.warn('⚠️ ZHIPU_API_KEY is not set in environment variables.');
-    }
+    const languageInstruction = lang === 'en' ? ' IMPORTANT: Respond in English.' : ' IMPORTANT: Respond in Chinese (Simplified).';
+    const jsonInstruction = jsonMode ? ' You MUST respond with ONLY a valid JSON object or array, without any markdown formatting, explanations, or surrounding text.' : '';
+    const finalSystemPrompt = (systemPrompt || 'You are Synapse Health AI assistant.') + languageInstruction + jsonInstruction;
 
-    try {
-      const response = await (ai.client as OpenAI).chat.completions.create({
-        model: ai.model!,
-        messages: [
-          { role: 'system', content: systemPrompt || 'You are Synapse Health AI assistant.' },
-          { role: 'user', content: message },
-        ],
-        ...(jsonMode ? { response_format: { type: 'json_object' } } : {}),
-      });
+    const response = await ai.chat.completions.create({
+      model: 'glm-4-flash', // glm-4-flash is Zhipu's highly capable, 100% free model
+      messages: [
+        { role: 'system', content: finalSystemPrompt },
+        { role: 'user', content: message }
+      ],
+      // Zhipu's GLM-4-flash doesn't inherently enforce json_object response format the same way, but it follows system prompts well.
+      // We will explicitly prompt it to return json if xml fails fallback.
+    });
 
-      let content = response.choices[0].message.content || '';
-      console.log('✅ AI Response received successfully');
-      
-      // Robust JSON extraction
-      if (jsonMode) {
-        // Remove markdown code blocks
-        content = content.replace(/```json\n?|```\n?/g, '').trim();
-        
-        const firstBrace = content.indexOf('{');
-        const lastBrace = content.lastIndexOf('}');
-        if (firstBrace !== -1 && lastBrace !== -1) {
-          content = content.substring(firstBrace, lastBrace + 1);
-        }
-      }
-      
-      return content;
-    } catch (apiError: any) {
-      console.error('❌ OpenAI/Zhipu API Call Failed:', {
-        status: apiError.status,
-        message: apiError.message,
-        data: apiError.response?.data
-      });
-      throw apiError;
-    }
-  } catch (error: any) {
-    console.error('❌ Zhipu API Error:', error.response?.data || error.message || error);
+    let content = response.choices[0].message.content || '';
     
-    // Graceful fallback for development if key is missing
+    // Robust JSON extraction
+    if (jsonMode) {
+      content = extractJSON(content);
+    }
+    
+    return content;
+  } catch (error: any) {
+    console.error('❌ Zhipu API Error:', error.message || error);
+    
     if (!process.env.ZHIPU_API_KEY) {
-      return jsonMode ? '{"summary": "根据患者数据分析，目前状态稳定，但需关注血压波动。", "suggestions": [{"title": "复查建议", "description": "建议一周后复查心电图和血压。", "type": "Preventive Care"}], "alerts": [{"title": "轻度高血压", "description": "患者近期血压偏高，请注意饮食控制。", "severity": "Medium"}], "insights": [], "recommendations": [], "potentialCauses": [], "abnormalValues": [], "medicines": [], "interactions": [], "suggestedDoctorId": "123", "reasoning": "根据症状，建议咨询心内科专家。", "specialtyRecommended": "心内科"}' : "AI 服务未配置。请在环境变量中添加 ZHIPU_API_KEY。";
+       return jsonMode ? '{"summary": "系统未检测到AI密钥", "suggestions": [], "alerts": [], "insights": [], "recommendations": [], "potentialCauses": [], "abnormalValues": [], "medicines": [], "interactions": [], "suggestedDoctorId": "123", "reasoning": "AI 配置缺失", "specialtyRecommended": "通科"}' : "AI 服务未配置。";
     }
 
-    if (error.status === 401) throw new Error('Invalid Zhipu API Key');
-    if (error.status === 402) throw new Error('Zhipu API Insufficient Balance');
-    if (error.status === 429) throw new Error('Zhipu API Rate Limit Exceeded');
     throw new Error(`AI Service Error: ${error.message || 'Unknown error'}`);
   }
 };
 
-export const getCDSSInsights = async (patientData: any, medicalRecords: any[], labReports: any[]) => {
+
+export const getCDSSInsights = async (patientData: any, medicalRecords: any[], labReports: any[], lang: string = 'en') => {
   const prompt = `
     You are a Clinical Decision Support System (CDSS) for Synapse Health.
     Your goal is to provide evidence-based clinical insights, suggestions, and alerts for a doctor based on patient data.
@@ -116,11 +113,11 @@ export const getCDSSInsights = async (patientData: any, medicalRecords: any[], l
     - summary: A brief clinical summary of the patient's current state.
   `;
 
-  const response = await getAIResponse(prompt, 'You are a Clinical Decision Support System (CDSS). Return ONLY a JSON object.', true);
+  const response = await getAIResponse(prompt, 'You are a Clinical Decision Support System (CDSS). Return ONLY a JSON object.', true, lang);
   return JSON.parse(response || '{}');
 };
 
-export const suggestDoctorAI = async (symptoms: string, doctors: any[]) => {
+export const suggestDoctorAI = async (symptoms: string, doctors: any[], lang: string = 'en') => {
   const prompt = `
     Based on the following symptoms, suggest the most appropriate doctor from the provided list.
     Explain why this doctor is the best fit.
@@ -136,35 +133,46 @@ export const suggestDoctorAI = async (symptoms: string, doctors: any[]) => {
     - specialtyRecommended: string
   `;
 
-  const response = await getAIResponse(prompt, 'You are a medical triage assistant. Match patient symptoms to the correct medical specialty. Return ONLY a JSON object.', true);
+  const response = await getAIResponse(prompt, 'You are a medical triage assistant. Match patient symptoms to the correct medical specialty. Return ONLY a JSON object.', true, lang);
   return JSON.parse(response || '{}');
 };
 
-export const analyzePrescriptionAI = async (imageData: string) => {
+export const analyzePrescriptionAI = async (imageData: string, lang: string = 'zh') => {
   try {
     const ai = getAIClient();
     if (!ai) throw new Error('No AI API Key configured');
 
-    // Note: Standard GLM models might have different vision capabilities.
-    // If using Nvidia NIM with a vision model, this might work.
-    // Otherwise, we fallback to a text-based prompt or warn the user.
+    const languageInstruction = lang === 'en' ? ' IMPORTANT: Respond in English.' : ' IMPORTANT: Respond in Chinese (Simplified).';
     
-    const response = await (ai.client as OpenAI).chat.completions.create({
-      model: ai.model!,
+    // We expect imageData to be a base64 Data URL
+    let imageUrl = imageData;
+    if (!imageData.startsWith('data:')) {
+      // Zhipu requires base64 images to be fully formatted with data URLs
+      imageUrl = `data:image/jpeg;base64,${imageData}`;
+    }
+
+    const response = await ai.chat.completions.create({
+      model: 'glm-4v', // Zhipu's Vision Model
       messages: [
         {
           role: 'user',
           content: [
-            { type: 'text', text: 'Extract the medicine names, dosages, and instructions from this prescription image. Also, provide a simplified explanation of what each medicine is for and check for any potential common drug-drug interactions if multiple medicines are listed. Return the result in a structured JSON format with keys: medicines (array of {name, dosage, instructions, purpose}), interactions (array of {severity, description}), and summary (string).' },
-            { type: 'image_url', image_url: { url: imageData } }
+            { type: 'text', text: 'Extract the medicine names, dosages, and instructions from this prescription image. Also, provide a simplified explanation of what each medicine is for and check for any potential common drug-drug interactions if multiple medicines are listed. Return the result in a structured JSON format with keys: medicines (array of {name, dosage, instructions, purpose}), interactions (array of {severity, description}), and summary (string).' + languageInstruction },
+            { type: 'image_url', image_url: { url: imageUrl } }
           ] as any,
         },
-      ],
-      response_format: { type: 'json_object' },
+      ]
     });
-    return JSON.parse(response.choices[0].message.content || '{}');
+
+    let content = response.choices[0].message.content || '{}';
+    content = extractJSON(content);
+    
+    return JSON.parse(content);
   } catch (error: any) {
     console.error('Prescription Analysis Error:', error.message);
+    if (!process.env.ZHIPU_API_KEY) {
+        return { summary: "AI未配置", medicines: [], interactions: [] };
+    }
     // Fallback for models that don't support vision
     if (error.message.includes('vision') || error.message.includes('image')) {
       throw new Error('Current AI model does not support image analysis. Please use a vision-capable model.');
@@ -173,7 +181,7 @@ export const analyzePrescriptionAI = async (imageData: string) => {
   }
 };
 
-export const analyzeMoodAI = async (journal: string, mood: number) => {
+export const analyzeMoodAI = async (journal: string, mood: number, lang: string = 'en') => {
   const prompt = `Perform sentiment analysis on this journal entry: "${journal}". The user rated their mood as ${mood}/3 (1=Frown, 2=Meh, 3=Smile). 
   Provide a structured analysis including:
   1. Emotional tone
@@ -182,11 +190,11 @@ export const analyzeMoodAI = async (journal: string, mood: number) => {
   4. A recommendation on whether they should consult a specialist (if signs of high stress/depression are present).
   Return in JSON format with keys: tone, insights (array), advice (array), specialistNeeded (boolean), recommendation (string).`;
 
-  const response = await getAIResponse(prompt, 'You are a compassionate mental health assistant.', true);
+  const response = await getAIResponse(prompt, 'You are a compassionate mental health assistant.', true, lang);
   return JSON.parse(response || '{}');
 };
 
-export const generateNutritionPlanAI = async (conditions: string[], preferences: string[]) => {
+export const generateNutritionPlanAI = async (conditions: string[], preferences: string[], lang: string = 'en') => {
   const prompt = `Generate a personalized 1-day meal plan for a user with these conditions: ${conditions.join(', ')}. 
   Preferences: ${preferences.join(', ')}. 
   Focus on healthy options.
@@ -194,11 +202,11 @@ export const generateNutritionPlanAI = async (conditions: string[], preferences:
   Provide nutritional focus for each meal.
   Return in JSON format with keys: dailyFocus, meals (array of {type, name, ingredients, nutritionalValue}), tips (array).`;
 
-  const response = await getAIResponse(prompt, 'You are a professional clinical nutritionist.', true);
+  const response = await getAIResponse(prompt, 'You are a professional clinical nutritionist.', true, lang);
   return JSON.parse(response || '{}');
 };
 
-export const checkSymptomsAI = async (symptoms: string) => {
+export const checkSymptomsAI = async (symptoms: string, lang: string = 'en') => {
   const prompt = `The patient reports the following symptoms: "${symptoms}". 
   Provide a structured analysis including:
   1. Potential causes (disclaimer: not a diagnosis)
@@ -207,22 +215,22 @@ export const checkSymptomsAI = async (symptoms: string) => {
   4. Immediate advice or first aid (if applicable)
   Return in JSON format with keys: potentialCauses (array), recommendedSpecialist (string), urgency (string), advice (string).`;
 
-  const response = await getAIResponse(prompt, 'You are a professional medical triage assistant.', true);
+  const response = await getAIResponse(prompt, 'You are a professional medical triage assistant.', true, lang);
   return JSON.parse(response || '{}');
 };
 
-export const analyzeLabReport = async (reportDetails: string) => {
+export const analyzeLabReport = async (reportDetails: string, lang: string = 'en') => {
   const prompt = `Analyze the following lab report results: "${reportDetails}". 
   Identify which values are outside the normal range (High or Low). 
   Explain in simple terms what these results mean for the patient's health.
   Provide actionable advice (e.g., dietary changes, lifestyle adjustments).
   Return in JSON format with keys: abnormalValues (array of {parameter, value, range, status, meaning}), summary (string), advice (array).`;
 
-  const response = await getAIResponse(prompt, 'You are a professional medical lab report interpreter.', true);
+  const response = await getAIResponse(prompt, 'You are a professional medical lab report interpreter.', true, lang);
   return JSON.parse(response || '{}');
 };
 
-export const getHealthInsightsAI = async (patientData: any) => {
+export const getHealthInsightsAI = async (patientData: any, lang: string = 'en') => {
   const prompt = `
     Analyze the following patient data and provide 3 personalized health insights and 3 actionable recommendations.
     Return the response in JSON format with keys: insights (array of {category, title, description}), recommendations (array of {priority, title, description}), and disclaimer (string).
@@ -231,6 +239,6 @@ export const getHealthInsightsAI = async (patientData: any) => {
     ${JSON.stringify(patientData, null, 2)}
   `;
 
-  const response = await getAIResponse(prompt, 'You are a professional medical AI assistant. Provide empathetic, accurate, and helpful health insights based on patient data.', true);
+  const response = await getAIResponse(prompt, 'You are a professional medical AI assistant. Provide empathetic, accurate, and helpful health insights based on patient data.', true, lang);
   return JSON.parse(response || '{}');
 };

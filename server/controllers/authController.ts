@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
+import { generateToken } from '../utils/jwt';
 import User from '../models/User';
 import Patient from '../models/Patient';
 import Doctor from '../models/Doctor';
@@ -7,11 +7,6 @@ import Hospital from '../models/Hospital';
 import Pharmacy from '../models/Pharmacy';
 import Lab from '../models/Lab';
 
-const generateToken = (id: string) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET || 'your_jwt_secret', {
-    expiresIn: '30d',
-  });
-};
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -94,7 +89,7 @@ export const register = async (req: Request, res: Response) => {
 
     res.status(201).json({ 
       message: 'Registration successful. Your account is pending admin approval.',
-      token: generateToken(user._id.toString()),
+      token: generateToken(user._id.toString(), user.role),
       user: {
         id: user._id,
         username: user.username,
@@ -119,7 +114,7 @@ export const login = async (req: Request, res: Response) => {
       }
 
       res.json({
-        token: generateToken(user._id.toString()),
+        token: generateToken(user._id.toString(), user.role),
         user: {
           id: user._id,
           username: user.username,
@@ -416,7 +411,7 @@ export const qrLogin = async (req: Request, res: Response) => {
     }
     
     res.json({ 
-      token: generateToken(user._id.toString()), 
+      token: generateToken(user._id.toString(), user.role), 
       user: {
         id: user._id,
         username: user.username,
@@ -427,6 +422,17 @@ export const qrLogin = async (req: Request, res: Response) => {
         reference_id: user.reference_id
       }
     });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getUserById = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findById(id).select('-password');
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    res.json(user);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }

@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useTranslation } from 'react-i18next';
-import { X, CheckCircle2, QrCode, Smartphone } from 'lucide-react';
+import { X, CheckCircle2, QrCode, Smartphone, Loader2 } from 'lucide-react';
+import { useAuth } from './AuthContext';
 
 interface QRCodePaymentModalProps {
   isOpen: boolean;
@@ -10,23 +11,41 @@ interface QRCodePaymentModalProps {
   planName?: string;
 }
 
-export default function QRCodePaymentModal({ isOpen, onClose, amount = 99, planName = 'Premium' }: QRCodePaymentModalProps) {
+export default function QRCodePaymentModal({ isOpen, onClose, amount = 0, planName = 'Premium' }: QRCodePaymentModalProps) {
   const { t } = useTranslation();
-  const [paymentStatus, setPaymentStatus] = useState<'pending' | 'success'>('pending');
+  const { token } = useAuth();
+  const [paymentStatus, setPaymentStatus] = useState<'pending' | 'request_sent' | 'success'>('pending');
+  const [method, setMethod] = useState<'WeChat' | 'Alipay'>('Alipay');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    if (isOpen) {
-      setPaymentStatus('pending');
-      // Simulate payment success after 5 seconds for demo purposes
-      const timer = setTimeout(() => {
-        setPaymentStatus('success');
+  const handleConfirmPayment = async () => {
+    setIsSubmitting(true);
+    try {
+      const res = await fetch('/api/membership/request', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          planName,
+          amount,
+          paymentMethod: method
+        })
+      });
+
+      if (res.ok) {
+        setPaymentStatus('request_sent');
         setTimeout(() => {
           onClose();
-        }, 2000);
-      }, 5000);
-      return () => clearTimeout(timer);
+        }, 3000);
+      }
+    } catch (err) {
+      console.error('Failed to submit membership request');
+    } finally {
+      setIsSubmitting(false);
     }
-  }, [isOpen, onClose]);
+  };
 
   if (!isOpen) return null;
 
@@ -48,16 +67,41 @@ export default function QRCodePaymentModal({ isOpen, onClose, amount = 99, planN
 
           <div className="p-8 text-center">
             <h3 className="text-2xl font-medium tracking-tighter mb-2">
-              {paymentStatus === 'success' ? t('payment_successful') : t('scan_to_pay')}
+              {paymentStatus === 'request_sent' ? t('payment_success') : t('scan_to_pay')}
             </h3>
-            <p className="text-black/60 dark:text-white/60 text-sm mb-8">
-              {paymentStatus === 'success' 
-                ? t('membership_active', { plan: planName })
+            <p className="text-black/60 dark:text-white/60 text-sm mb-6">
+              {paymentStatus === 'request_sent' 
+                ? t('payment_request_sent')
                 : t('upgrade_membership', { plan: planName })}
             </p>
 
-            <div className="relative flex justify-center mb-8">
-              {paymentStatus === 'success' ? (
+            {paymentStatus === 'pending' && (
+              <div className="flex justify-center gap-4 mb-8">
+                <button
+                  onClick={() => setMethod('Alipay')}
+                  className={`px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${
+                    method === 'Alipay' 
+                      ? 'bg-blue-600 text-white shadow-lg' 
+                      : 'bg-black/5 dark:bg-white/5 text-black/40 dark:text-white/40 hover:bg-black/10'
+                  }`}
+                >
+                  {t('alipay')}
+                </button>
+                <button
+                  onClick={() => setMethod('WeChat')}
+                  className={`px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${
+                    method === 'WeChat' 
+                      ? 'bg-emerald-600 text-white shadow-lg' 
+                      : 'bg-black/5 dark:bg-white/5 text-black/40 dark:text-white/40 hover:bg-black/10'
+                  }`}
+                >
+                  {t('wechat_pay')}
+                </button>
+              </div>
+            )}
+
+            <div className="relative flex justify-center mb-6">
+              {paymentStatus === 'request_sent' ? (
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
@@ -66,37 +110,48 @@ export default function QRCodePaymentModal({ isOpen, onClose, amount = 99, planN
                   <CheckCircle2 className="w-24 h-24 text-emerald-500" />
                 </motion.div>
               ) : (
-                <div className="relative p-4 bg-white rounded-2xl border border-black/10 shadow-sm">
+                <div className="relative p-3 bg-white rounded-2xl border border-black/10 shadow-sm">
                   {/* Mock QR Code */}
-                  <div className="w-40 h-40 bg-black/5 flex items-center justify-center rounded-xl">
-                    <QrCode className="w-24 h-24 text-black/80" />
+                  <div className="w-40 h-40 bg-black/5 flex items-center justify-center rounded-xl overflow-hidden relative">
+                    <QrCode className={`w-24 h-24 ${method === 'Alipay' ? 'text-blue-600' : 'text-emerald-600'}`} />
+                    <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent" />
                   </div>
                   
                   {/* Scanning Animation */}
                   <motion.div
                     animate={{ top: ['0%', '100%', '0%'] }}
                     transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                    className="absolute left-0 right-0 h-0.5 bg-blue-500/50 shadow-[0_0_8px_2px_rgba(59,130,246,0.5)] z-10"
+                    className={`absolute left-0 right-0 h-0.5 shadow-lg z-10 ${
+                      method === 'Alipay' ? 'bg-blue-500/50' : 'bg-emerald-500/50'
+                    }`}
                   />
                 </div>
               )}
             </div>
 
-            <div className="flex items-center justify-center gap-2 text-3xl font-medium tracking-tighter mb-6">
-              <span className="text-lg text-black/40 dark:text-white/40">¥</span>
-              {amount}
-            </div>
+            {paymentStatus === 'pending' && (
+              <>
+                <div className="flex items-center justify-center gap-2 text-4xl font-display font-black tracking-tighter mb-8">
+                  {amount === 0 ? (
+                    <span className="text-4xl">{t('free')}</span>
+                  ) : (
+                    <>
+                      <span className="text-lg text-black/40 dark:text-white/40 font-medium">¥</span>
+                      {amount}
+                    </>
+                  )}
+                </div>
 
-            <div className="flex justify-center gap-4 text-sm text-black/60 dark:text-white/60">
-              <div className="flex items-center gap-2">
-                <Smartphone className="w-4 h-4" />
-                <span>Alipay</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Smartphone className="w-4 h-4" />
-                <span>WeChat Pay</span>
-              </div>
-            </div>
+                <button
+                  onClick={handleConfirmPayment}
+                  disabled={isSubmitting}
+                  className="w-full py-4 bg-black dark:bg-[#F4F4F0] text-white dark:text-black rounded-2xl font-bold uppercase tracking-widest text-[10px] hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Smartphone className="w-4 h-4" />}
+                  {t('confirm_payment_user')}
+                </button>
+              </>
+            )}
           </div>
         </motion.div>
       </div>

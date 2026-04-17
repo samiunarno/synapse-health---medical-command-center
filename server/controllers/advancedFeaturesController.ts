@@ -19,6 +19,7 @@ import Expense from '../models/Expense';
 import Challenge from '../models/Challenge';
 import UserChallenge from '../models/UserChallenge';
 import OrganDonor from '../models/OrganDonor';
+import User from '../models/User';
 import { analyzeLabReport } from '../services/aiService';
 
 // Queue Controllers
@@ -294,17 +295,31 @@ export const createBill = async (req: Request, res: Response) => {
 
 export const processPayment = async (req: Request, res: Response) => {
   try {
-    // Simulate payment gateway processing
     const { payment_method } = req.body;
+    const userRoleObj = (req as any).user;
     const transaction_id = `TXN_${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
     
-    const bill = await Billing.findByIdAndUpdate(req.params.id, {
-      status: 'Paid',
-      payment_method,
-      transaction_id
-    }, { new: true });
+    const bill = await Billing.findById(req.params.id);
+    if (!bill) return res.status(404).json({ error: 'Bill not found' });
+
+    if (payment_method === 'Wallet') {
+      const user = await User.findById(userRoleObj.id);
+      if (!user) return res.status(404).json({ error: 'User not found' });
+      
+      if ((user as any).balance < bill.amount) {
+        return res.status(400).json({ error: 'Insufficient wallet balance. Please recharge your account.' });
+      }
+
+      (user as any).balance -= bill.amount;
+      await user.save();
+    }
+
+    bill.status = 'Paid';
+    bill.payment_method = payment_method;
+    bill.transaction_id = transaction_id;
+    await bill.save();
     
-    if (bill && bill.status === 'Paid' && bill.doctor_id) {
+    if (bill.status === 'Paid' && bill.doctor_id) {
       const doctor = await Doctor.findById(bill.doctor_id);
       if (doctor) {
         const commission = bill.amount * 0.8; // 80% commission

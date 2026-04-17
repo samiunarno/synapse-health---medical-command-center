@@ -9,7 +9,7 @@ interface HealthInsightsProps {
 }
 
 export default function HealthInsights({ patientData }: HealthInsightsProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [insights, setInsights] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -18,7 +18,7 @@ export default function HealthInsights({ patientData }: HealthInsightsProps) {
     setLoading(true);
     setError(null);
     try {
-      const data = await getHealthInsights(patientData);
+      const data = await getHealthInsights(patientData, i18n.language);
       setInsights(data);
     } catch (err) {
       setError(t('failed_generate_insights'));

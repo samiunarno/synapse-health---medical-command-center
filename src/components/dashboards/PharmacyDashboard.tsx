@@ -13,9 +13,10 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../AuthContext';
 import { useTranslation } from 'react-i18next';
+import { translateDynamic } from '../../lib/i18n-utils';
 
 export default function PharmacyDashboard() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user, token } = useAuth();
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -131,7 +132,7 @@ export default function PharmacyDashboard() {
                         <span className="text-xs text-gray-500 dark:text-gray-400">{order.rider_id?.fullName || t('assigning')}</span>
                       </div>
                     </td>
-                    <td className="px-8 py-6 text-xs font-bold text-gray-900 dark:text-white">${order.total_price}</td>
+                    <td className="px-8 py-6 text-xs font-bold text-gray-900 dark:text-white">¥{order.total_price}</td>
                   </tr>
                 ))}
               </tbody>
@@ -152,8 +153,8 @@ export default function PharmacyDashboard() {
             {lowStockItems.map((item: any) => (
               <div key={item._id} className="p-6 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-3xl flex justify-between items-center group hover:bg-gray-100 dark:hover:bg-white/10 transition-all">
                 <div>
-                  <h4 className="text-gray-900 dark:text-white font-bold uppercase tracking-tight text-sm">{item.brand_name}</h4>
-                  <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">{item.generic_name}</p>
+                  <h4 className="text-gray-900 dark:text-white font-bold uppercase tracking-tight text-sm">{translateDynamic(t, item.brand_name)}</h4>
+                  <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">{translateDynamic(t, item.generic_name)}</p>
                 </div>
                 <div className="text-right">
                   <p className="text-amber-600 dark:text-amber-500 font-bold text-lg">{item.stock_quantity}</p>
@@ -166,11 +167,11 @@ export default function PharmacyDashboard() {
                   <TrendingUp className="w-10 h-10" />
                   <div className="text-right">
                     <p className="text-[10px] font-bold uppercase tracking-widest opacity-70">{t('commission_balance')}</p>
-                    <p className="text-2xl font-display font-bold">${pharmacy?.commissionBalance?.toFixed(2) || '0.00'}</p>
+                    <p className="text-2xl font-display font-bold">¥{pharmacy?.commissionBalance?.toFixed(2) || '0.00'}</p>
                   </div>
                 </div>
                 <h3 className="text-2xl font-display font-bold uppercase tracking-tighter">{t('sales_performance')}</h3>
-                <p className="text-emerald-100 text-xs font-bold uppercase tracking-widest leading-relaxed">{t('total_sales')}: ${pharmacy?.totalSales?.toFixed(2) || '0.00'}</p>
+                <p className="text-emerald-100 text-xs font-bold uppercase tracking-widest leading-relaxed">{t('total_sales')}: ¥{pharmacy?.totalSales?.toFixed(2) || '0.00'}</p>
                 <button 
                   onClick={handleWithdraw}
                   disabled={isWithdrawing || !pharmacy?.commissionBalance || pharmacy.commissionBalance <= 0}

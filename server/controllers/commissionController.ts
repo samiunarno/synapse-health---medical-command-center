@@ -72,10 +72,18 @@ export const withdrawCommission = async (req: Request, res: Response) => {
 
     profile.commissionBalance = (profile.commissionBalance || 0) - amount;
     await profile.save();
+
+    // Deposit into User balance
+    const userProfile = await User.findById(user.id);
+    if (userProfile) {
+      userProfile.balance = (userProfile.balance || 0) + amount;
+      await userProfile.save();
+    }
     
     res.json({ 
-      message: 'Withdrawal successful', 
-      newBalance: profile.commissionBalance 
+      message: 'Withdrawal to wallet successful', 
+      newCommissionBalance: profile.commissionBalance,
+      newWalletBalance: userProfile?.balance || 0
     });
   } catch (error: any) {
     res.status(500).json({ error: error.message });

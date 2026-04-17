@@ -30,7 +30,7 @@ import { useTranslation } from 'react-i18next';
 import { getCDSSInsights } from '../../services/aiService';
 
 export default function DoctorDashboard({ user }: any) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [profile, setProfile] = useState<any>(null);
   const [departments, setDepartments] = useState<any[]>([]);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -170,7 +170,7 @@ export default function DoctorDashboard({ user }: any) {
         ]);
 
         // Call AI service directly from frontend
-        const insights = await getCDSSInsights(patient, records, labs);
+        const insights = await getCDSSInsights(patient, records, labs, i18n.language);
         setCdssInsights(insights);
       }
     } catch (error) {
@@ -312,7 +312,7 @@ export default function DoctorDashboard({ user }: any) {
               <div className="bg-blue-600/10 dark:bg-blue-600/20 px-6 lg:px-8 py-4 rounded-2xl border border-blue-500/20 flex items-center gap-4">
                 <div>
                   <p className="text-[8px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest">{t('commission_balance')}</p>
-                  <p className="text-lg font-display font-bold text-gray-900 dark:text-white">${commissions?.commissionBalance?.toFixed(2) || '0.00'}</p>
+                  <p className="text-lg font-display font-bold text-gray-900 dark:text-white">¥{commissions?.commissionBalance?.toFixed(2) || '0.00'}</p>
                 </div>
                 <button 
                   onClick={handleWithdraw}

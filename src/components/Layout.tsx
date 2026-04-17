@@ -48,6 +48,7 @@ import {
   CreditCard,
   Truck,
   Heart,
+  Wallet,
   AlertTriangle,
   Watch,
   Trophy,
@@ -84,6 +85,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
+  const isLandingPage = location.pathname === '/';
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(window.innerWidth > 1024);
   const [isNotificationsOpen, setIsNotificationsOpen] = React.useState(false);
   const [isLanguageOpen, setIsLanguageOpen] = React.useState(false);
@@ -199,6 +201,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     {label: t('delivery_rider'), icon: Truck, path: '/delivery-rider', roles: ['Rider', 'Admin'] },
     {label: t('notifications'), icon: Bell, path: '/notifications', roles: ['Admin'] },
     {label: t('users'), icon: Users, path: '/users', roles: ['Admin'] },
+    {label: t('messages'), icon: MessageSquare, path: '/messages', roles: ['Admin', 'Doctor', 'Patient', 'Staff', 'Pharmacist', 'Rider', 'Driver'] },
+    {label: t('financial_hub'), icon: Wallet, path: '/wallet', roles: ['Admin', 'Doctor', 'Patient', 'Staff', 'Pharmacist'] },
+    {label: t('recharge_requests'), icon: CreditCard, path: '/admin/finance', roles: ['Admin'] },
     {label: t('settings'), icon: Settings, path: '/settings', roles: ['Admin', 'Doctor', 'Patient', 'Staff', 'Pharmacist'] },
   ];
 
@@ -632,7 +637,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div className="max-w-[1400px] mx-auto relative z-10">
             {children}
           </div>
-          
+
           {/* Background Atmospheric Elements */}
           <div className="fixed top-1/4 right-0 w-[40vw] h-[40vw] bg-blue-600/10 rounded-full blur-[150px] -z-10 pointer-events-none animate-pulse" />
           <div className="fixed bottom-1/4 left-0 w-[30vw] h-[30vw] bg-purple-600/5 rounded-full blur-[150px] -z-10 pointer-events-none animate-pulse delay-1000" />

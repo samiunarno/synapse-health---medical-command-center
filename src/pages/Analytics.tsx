@@ -68,7 +68,7 @@ export default function Analytics() {
         predictive,
         revenue: {
           total: stats.totalRevenue,
-          trends: trends.map((t: any) => ({ date: t.date, amount: t.count * 50 })) // Mocking revenue trends based on admissions
+          trends: trends.map((t: any) => ({ date: t.date, amount: t.count * 350 })) // Mocking revenue trends based on admissions (CNY 350 per admission)
         },
         patients: {
           total: stats.totalPatients,
@@ -164,7 +164,7 @@ export default function Analytics() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <MetricCard 
           title="Total Revenue" 
-          value={`$${(data?.revenue?.total || 0).toLocaleString()}`} 
+          value={`¥${(data?.revenue?.total || 0).toLocaleString()}`} 
           trend="+15.4%" 
           trendUp={true}
           icon={DollarSign}

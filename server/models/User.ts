@@ -26,7 +26,9 @@ export interface IUser extends Document {
   id_card_uploaded_at?: Date;
   account_request: 'none' | 'deactivate' | 'delete';
   account_request_status: 'none' | 'pending' | 'approved' | 'rejected';
+  membership: 'Standard' | 'Professional' | 'Enterprise';
   emergencyContacts: { name: string; phone: string; email?: string; relation: string }[];
+  balance: number;
   qrLoginToken?: string;
   createdAt: Date;
   comparePassword(password: string): Promise<boolean>;
@@ -66,12 +68,14 @@ const userSchema = new mongoose.Schema({
   id_card_uploaded_at: { type: Date },
   account_request: { type: String, enum: ['none', 'deactivate', 'delete'], default: 'none' },
   account_request_status: { type: String, enum: ['none', 'pending', 'approved', 'rejected'], default: 'none' },
+  membership: { type: String, enum: ['Standard', 'Professional', 'Enterprise'], default: 'Standard' },
   emergencyContacts: [{
     name: { type: String, required: true },
     phone: { type: String, required: true },
     email: { type: String },
     relation: { type: String, required: true }
   }],
+  balance: { type: Number, default: 0 },
   qrLoginToken: { type: String, unique: true, sparse: true },
   createdAt: { type: Date, default: Date.now }
 });

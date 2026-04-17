@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../components/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { Activity, Lock, User, ArrowRight, Sparkles, Shield, Zap, QrCode, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import SynapseLogo from '../components/SynapseLogo';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 import axios from 'axios';
 
@@ -16,12 +17,15 @@ export default function Login() {
   const [showScanner, setShowScanner] = useState(false);
   const { user, login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     if (user) {
-      navigate('/dashboard');
+      const searchParams = new URLSearchParams(location.search);
+      const redirectPath = searchParams.get('redirect') || '/dashboard';
+      navigate(redirectPath);
     }
-  }, [user, navigate]);
+  }, [user, navigate, location.search]);
 
   useEffect(() => {
     let scanner: Html5QrcodeScanner | null = null;
@@ -90,11 +94,8 @@ export default function Login() {
 
       {/* Left Side - Form */}
       <div className="w-full lg:w-1/2 p-6 sm:p-12 lg:p-24 flex flex-col justify-between relative z-10">
-        <Link to="/" className="flex items-center gap-3 group mb-20 interactive">
-          <div className="w-12 h-12 bg-[#111111] dark:bg-white rounded-full flex items-center justify-center text-white dark:text-black group-hover:rotate-12 transition-transform duration-500 shadow-2xl shadow-black/10 dark:shadow-white/10">
-            <Activity className="w-6 h-6" />
-          </div>
-          <span className="text-2xl font-display font-bold tracking-tighter uppercase">{t('app_name')}</span>
+        <Link to="/" className="mb-20 interactive inline-block">
+          <SynapseLogo textClassName="text-2xl font-display font-black tracking-tighter uppercase" />
         </Link>
 
         <div className="max-w-md w-full mx-auto lg:mx-0">

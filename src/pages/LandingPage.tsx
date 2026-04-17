@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../components/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { 
@@ -12,12 +12,22 @@ import CookieConsent from '../components/CookieConsent';
 import GlobalNavbar from '../components/GlobalNavbar';
 import EcommerceSlider from '../components/EcommerceSlider';
 import QRCodePaymentModal from '../components/QRCodePaymentModal';
+import SynapseLogo from '../components/SynapseLogo';
 import { CreditCard } from 'lucide-react';
 
 export default function LandingPage() {
   const { user } = useAuth();
   const { t } = useTranslation();
   const [isPaymentModalOpen, setIsPaymentModalOpen] = React.useState(false);
+  const navigate = useNavigate();
+
+  const handlePaymentClick = () => {
+    if (!user) {
+      navigate('/login');
+    } else {
+      setIsPaymentModalOpen(true);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#F4F4F0] dark:bg-[#0a0a0a] text-[#111111] dark:text-[#F4F4F0] font-sans selection:bg-[#0033A0] dark:selection:bg-[#3b82f6] selection:text-white overflow-x-hidden transition-colors duration-300">
@@ -128,8 +138,8 @@ export default function LandingPage() {
                </p>
              </div>
              <div className="relative z-10 mt-24">
-               <div className="text-8xl font-medium tracking-tighter text-[#0033A0] dark:text-[#3b82f6]"></div>
-               <div className="font-mono text-sm uppercase tracking-widest text-white/40 mt-4"></div>
+               <div className="text-8xl font-medium tracking-tighter text-[#0033A0] dark:text-[#3b82f6]">99.99%</div>
+               <div className="font-mono text-sm uppercase tracking-widest text-white/40 mt-4">{t('uptime_sla')}</div>
              </div>
           </div>
         </section>
@@ -224,15 +234,9 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Partners / Slider */}
+        {/* Medical Marketplace Preview */}
         <section className="py-24 border-b border-black/10 dark:border-white/10 bg-white dark:bg-[#111111] overflow-hidden transition-colors duration-300">
-          <div className="px-12 mb-12 flex justify-between items-end">
-            <h2 className="text-2xl font-medium tracking-tight">{t('trusted_by_leaders')}</h2>
-            <span className="font-mono text-xs uppercase tracking-widest text-black/40 dark:text-white/40">{t('network_partners')}</span>
-          </div>
-          <div className="grayscale opacity-60 hover:grayscale-0 hover:opacity-100 dark:opacity-40 dark:hover:opacity-100 transition-all duration-500">
-            <EcommerceSlider />
-          </div>
+          <EcommerceSlider />
         </section>
 
         {/* For Providers */}
@@ -244,14 +248,14 @@ export default function LandingPage() {
                 <div className="bg-[#F4F4F0] dark:bg-[#050505] border border-black/10 dark:border-white/10 p-6 flex flex-col justify-between">
                   <Activity className="w-6 h-6 text-[#0033A0] dark:text-[#3b82f6]" />
                   <div>
-                    <div className="text-2xl font-medium">124 bpm</div>
+                    <div className="text-2xl font-medium">124 {t('bpm')}</div>
                     <div className="text-xs text-black/60 dark:text-white/60 uppercase tracking-widest">{t('heart_rate_landing')}</div>
                   </div>
                 </div>
                 <div className="bg-[#F4F4F0] dark:bg-[#050505] border border-black/10 dark:border-white/10 p-6 flex flex-col justify-between">
                   <Database className="w-6 h-6 text-[#0033A0] dark:text-[#3b82f6]" />
                   <div>
-                    <div className="text-2xl font-medium">Normal</div>
+                    <div className="text-2xl font-medium">{t('stable')}</div>
                     <div className="text-xs text-black/60 dark:text-white/60 uppercase tracking-widest">{t('blood_panel')}</div>
                   </div>
                 </div>
@@ -290,7 +294,7 @@ export default function LandingPage() {
                 {t('membership_desc')}
               </p>
               <button 
-                onClick={() => setIsPaymentModalOpen(true)}
+                onClick={handlePaymentClick}
                 className="py-4 px-8 bg-[#0033A0] dark:bg-[#3b82f6] text-white hover:bg-[#002277] dark:hover:bg-[#2563eb] transition-colors flex items-center gap-4 group interactive"
               >
                 <span className="font-mono text-sm uppercase tracking-widest">{t('qr_pay')}</span>
@@ -298,7 +302,7 @@ export default function LandingPage() {
               </button>
             </div>
             <div className="bg-[#F4F4F0] dark:bg-[#050505] border border-black/10 dark:border-white/10 p-12">
-              <div className="text-4xl font-medium tracking-tighter mb-4">$99<span className="text-lg text-black/40 dark:text-white/40">/{t('month')}</span></div>
+              <div className="text-4xl font-medium tracking-tighter mb-4">{t('zero_count')}<span className="text-lg text-black/40 dark:text-white/40">/{t('month')}</span></div>
               <ul className="space-y-4 font-mono text-sm tracking-widest uppercase text-black/80 dark:text-white/80">
                 <li className="flex items-center gap-4 border-b border-black/10 dark:border-white/10 pb-4"><CheckSquare className="w-4 h-4 text-[#0033A0] dark:text-[#3b82f6]" /> {t('ai_diagnostics_landing')}</li>
                 <li className="flex items-center gap-4 border-b border-black/10 dark:border-white/10 pb-4"><CheckSquare className="w-4 h-4 text-[#0033A0] dark:text-[#3b82f6]" /> {t('telehealth_monitoring')}</li>
@@ -360,60 +364,28 @@ export default function LandingPage() {
         {/* Footer */}
         <footer className="bg-[#111111] dark:bg-[#050505] text-white border-t border-white/10 transition-colors duration-300">
           <div className="max-w-[1600px] mx-auto px-6 lg:px-12 py-16 lg:py-24">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-16">
-              {/* Brand Column */}
-              <div className="flex flex-col gap-6">
-                <div className="flex items-center gap-4">
-                  <div className="w-8 h-8 bg-[#0033A0] dark:bg-[#3b82f6] rounded-sm" />
-                  <span className="font-mono text-xl uppercase tracking-widest">{t('app_name') || 'Synapse'}</span>
-                </div>
-                <p className="text-white/60 font-light text-sm max-w-xs leading-relaxed">
-                  {t('hero_subtitle_landing')}
-                </p>
-              </div>
-
-              {/* Solutions Column */}
-              <div className="flex flex-col gap-4">
-                <h4 className="font-mono text-xs uppercase tracking-widest text-white/40 mb-2">{t('footer_solutions')}</h4>
-                <Link to="#" className="text-white/80 hover:text-white hover:translate-x-1 transition-all text-sm">{t('footer_telehealth')}</Link>
-                <Link to="#" className="text-white/80 hover:text-white hover:translate-x-1 transition-all text-sm">{t('ai_diagnostics_landing')}</Link>
-                <Link to="#" className="text-white/80 hover:text-white hover:translate-x-1 transition-all text-sm">{t('footer_pharmacy_landing')}</Link>
-                <Link to="#" className="text-white/80 hover:text-white hover:translate-x-1 transition-all text-sm">{t('footer_emergency')}</Link>
-              </div>
-
-              {/* Company Column */}
-              <div className="flex flex-col gap-4">
-                <h4 className="font-mono text-xs uppercase tracking-widest text-white/40 mb-2">{t('footer_company')}</h4>
-                <Link to="#" className="text-white/80 hover:text-white hover:translate-x-1 transition-all text-sm">{t('footer_about')}</Link>
-                <Link to="#" className="text-white/80 hover:text-white hover:translate-x-1 transition-all text-sm">{t('footer_careers')}</Link>
-                <Link to="#" className="text-white/80 hover:text-white hover:translate-x-1 transition-all text-sm">{t('network_partners')}</Link>
-                <Link to="#" className="text-white/80 hover:text-white hover:translate-x-1 transition-all text-sm">{t('footer_contact')}</Link>
-              </div>
-
-              {/* Legal Column */}
-              <div className="flex flex-col gap-4">
-                <h4 className="font-mono text-xs uppercase tracking-widest text-white/40 mb-2">{t('footer_legal')}</h4>
-                <Link to="#" className="text-white/80 hover:text-white hover:translate-x-1 transition-all text-sm">{t('footer_privacy')}</Link>
-                <Link to="#" className="text-white/80 hover:text-white hover:translate-x-1 transition-all text-sm">{t('footer_terms')}</Link>
-                <Link to="#" className="text-white/80 hover:text-white hover:translate-x-1 transition-all text-sm">{t('hipaa_gdpr')}</Link>
-              </div>
+            <div className="flex flex-col items-center text-center justify-center gap-6 mb-16">
+              <SynapseLogo />
+              <p className="text-white/60 font-light text-sm max-w-md leading-relaxed">
+                {t('footer_desc')}
+              </p>
             </div>
 
             {/* Bottom Bar */}
             <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="font-mono text-xs uppercase tracking-widest text-white/40">
-                © {new Date().getFullYear()} {t('app_name') || 'Synapse'}. {t('all_systems_operational_footer')}
+                © {new Date().getFullYear()} 智医云. {t('all_rights_reserved')}
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                <span className="font-mono text-xs uppercase tracking-widest text-white/60">{t('status_optimal')}</span>
+                <span className="font-mono text-xs uppercase tracking-widest text-white/60">{t('systems_operational_footer')}</span>
               </div>
             </div>
           </div>
         </footer>
 
       </div>
-      <QRCodePaymentModal isOpen={isPaymentModalOpen} onClose={() => setIsPaymentModalOpen(false)} />
+      <QRCodePaymentModal amount={0} planName={t('app_name') + ' ' + t('standard')} isOpen={isPaymentModalOpen} onClose={() => setIsPaymentModalOpen(false)} />
     </div>
   );
 }

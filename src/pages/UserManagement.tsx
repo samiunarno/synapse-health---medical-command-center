@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../components/AuthContext';
 import { 
   Users, 
@@ -24,12 +25,14 @@ import {
   Stethoscope,
   Briefcase,
   User,
-  Truck
+  Truck,
+  MessageSquare
 } from 'lucide-react';
 import { motion, AnimatePresence, Variants } from 'motion/react';
 import { useTranslation } from 'react-i18next';
 
 export default function UserManagement() {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const { token, user } = useAuth();
   const [users, setUsers] = useState<any[]>([]);
@@ -146,6 +149,13 @@ export default function UserManagement() {
   };
 
   const handleBanUser = async (id: string, isBanned: boolean) => {
+    let banReason = '';
+    if (isBanned) {
+      banReason = prompt('Please enter the reason for banning this user (Optional):') || 'Policy violation';
+    } else {
+      if (!confirm('Are you sure you want to unban this user?')) return;
+    }
+
     try {
       const res = await fetch(`/api/admin/ban-user/${id}`, {
         method: 'POST',
@@ -153,9 +163,12 @@ export default function UserManagement() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({ isBanned })
+        body: JSON.stringify({ isBanned, banReason })
       });
-      if (res.ok) fetchUsers();
+      if (res.ok) {
+        fetchUsers();
+        alert(`User ${isBanned ? 'banned' : 'unbanned'} successfully`);
+      }
     } catch (err) {
       console.error('Failed to ban/unban user');
     }
@@ -541,6 +554,13 @@ export default function UserManagement() {
                             <UserX className="w-4 h-4" />
                           </button>
                         )}
+                        <button 
+                          onClick={() => navigate('/messages', { state: { contactId: u._id } })}
+                          className="p-2 hover:bg-blue-600/10 text-gray-500 hover:text-blue-400 rounded-lg transition-all"
+                          title="Chat with User"
+                        >
+                          <MessageSquare className="w-4 h-4" />
+                        </button>
                         <button 
                           onClick={() => handleBanUser(u._id, !u.isBanned)}
                           className={`p-2 rounded-lg transition-all ${u.isBanned ? 'bg-red-600 text-white' : 'hover:bg-red-600/10 text-gray-500 hover:text-red-400'}`}

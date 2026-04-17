@@ -239,7 +239,7 @@ export default function ProductManagement() {
                   <div className="mt-4 flex items-center justify-between">
                     <div className="flex flex-col">
                       <span className="text-[8px] font-bold text-gray-600 uppercase tracking-widest">{t('price')}</span>
-                      <span className="text-xl font-display font-bold text-white">${product.price}</span>
+                      <span className="text-xl font-display font-bold text-white">¥{product.price}</span>
                     </div>
                     <div className="flex flex-col items-end">
                       <span className="text-[8px] font-bold text-gray-600 uppercase tracking-widest">{t('stock')}</span>

@@ -7,7 +7,7 @@ const billingSchema = new mongoose.Schema({
   amount: { type: Number, required: true },
   description: { type: String, required: true },
   status: { type: String, enum: ['Pending', 'Paid', 'Failed', 'Refunded'], default: 'Pending' },
-  payment_method: { type: String, enum: ['Card', 'UPI', 'Cash', 'Insurance', 'Wallet'], default: 'Card' },
+  payment_method: { type: String, enum: ['Card', 'UPI', 'Cash', 'Insurance', 'Wallet', 'WeChat', 'Alipay'], default: 'Wallet' },
   transaction_id: { type: String },
   insurance_claim_id: { type: String }
 }, { timestamps: true });

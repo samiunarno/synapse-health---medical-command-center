@@ -1,10 +1,12 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { FileText, Upload, Brain, CheckCircle2, AlertCircle, ChevronRight, Info } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { analyzeLabReport as analyzeLabReportAI } from '../services/aiService';
 
 export default function LabReportInterpreter() {
+  const { t, i18n } = useTranslation();
   const [file, setFile] = React.useState<File | null>(null);
   const [isAnalyzing, setIsAnalyzing] = React.useState(false);
   const [result, setResult] = React.useState<any>(null);
@@ -25,7 +27,7 @@ export default function LabReportInterpreter() {
       const simulatedExtraction = `Lab Report for ${file.name}. 
       Parameters: Hemoglobin 10.5 (Normal: 13.5-17.5), Serum Iron 45 (Normal: 60-170), WBC 7.2 (Normal: 4.5-11.0).`;
       
-      const data = await analyzeLabReportAI(simulatedExtraction);
+      const data = await analyzeLabReportAI(simulatedExtraction, i18n.language);
       setResult(data);
     } catch (err) {
       console.error('Lab report analysis failed:', err);
@@ -37,8 +39,8 @@ export default function LabReportInterpreter() {
   return (
     <div className="space-y-12">
       <div className="flex flex-col gap-4">
-        <h1 className="text-6xl font-display font-black tracking-tighter uppercase italic">AI Lab Interpreter</h1>
-        <p className="text-gray-500 font-bold tracking-widest uppercase text-sm">Decode your medical reports with Zhipu AI</p>
+        <h1 className="text-6xl font-display font-black tracking-tighter uppercase italic">{t('ai_lab_interpreter')}</h1>
+        <p className="text-gray-500 font-bold tracking-widest uppercase text-sm">{t('decode_reports_desc')}</p>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-12">
@@ -49,9 +51,9 @@ export default function LabReportInterpreter() {
                 <Upload className="w-10 h-10" />
               </div>
               <div className="space-y-4">
-                <h3 className="text-3xl font-display font-bold uppercase tracking-tight">Upload Report</h3>
+                <h3 className="text-3xl font-display font-bold uppercase tracking-tight">{t('upload_report')}</h3>
                 <p className="text-gray-500 font-bold text-sm uppercase tracking-widest leading-relaxed">
-                  Upload your blood test or lab report (PDF/JPG) for instant AI analysis.
+                  {t('upload_report_desc')}
                 </p>
               </div>
 
@@ -65,7 +67,7 @@ export default function LabReportInterpreter() {
                 <div className="p-8 border-2 border-dashed border-white/10 rounded-3xl flex flex-col items-center justify-center gap-4 bg-white/2 hover:bg-white/5 transition-colors">
                   <FileText className="w-8 h-8 text-gray-600" />
                   <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-                    {file ? file.name : "Drop file here or click to browse"}
+                    {file ? file.name : t('drop_file_here')}
                   </span>
                 </div>
               </div>
@@ -78,12 +80,12 @@ export default function LabReportInterpreter() {
                 {isAnalyzing ? (
                   <>
                     <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
-                    Analyzing with Zhipu AI...
+                    {t('analyzing_with_ai')}
                   </>
                 ) : (
                   <>
                     <Brain className="w-4 h-4" />
-                    Interpret Report
+                    {t('interpret_report')}
                   </>
                 )}
               </button>
@@ -96,9 +98,9 @@ export default function LabReportInterpreter() {
               <AlertCircle className="w-6 h-6" />
             </div>
             <div className="space-y-2">
-              <h4 className="text-sm font-bold text-yellow-500 uppercase tracking-widest">Medical Disclaimer</h4>
+              <h4 className="text-sm font-bold text-yellow-500 uppercase tracking-widest">{t('medical_disclaimer')}</h4>
               <p className="text-xs text-yellow-500/60 font-medium leading-relaxed">
-                This AI interpretation is for informational purposes only and is not a clinical diagnosis. Always consult with a qualified healthcare professional before making any medical decisions.
+                {t('lab_disclaimer_desc')}
               </p>
             </div>
           </div>
@@ -117,7 +119,7 @@ export default function LabReportInterpreter() {
                     <div className="w-12 h-12 bg-green-500/20 rounded-2xl flex items-center justify-center text-green-500 border border-green-500/20">
                       <CheckCircle2 className="w-6 h-6" />
                     </div>
-                    <h3 className="text-2xl font-display font-bold uppercase tracking-tight">AI Interpretation</h3>
+                    <h3 className="text-2xl font-display font-bold uppercase tracking-tight">{t('ai_interpretation')}</h3>
                   </div>
 
                   <p className="text-gray-300 font-medium leading-relaxed italic">
@@ -125,14 +127,14 @@ export default function LabReportInterpreter() {
                   </p>
 
                   <div className="space-y-6">
-                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.4em]">Abnormal Parameters</p>
+                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.4em]">{t('abnormal_parameters')}</p>
                     <div className="grid gap-4">
                       {result.abnormalValues.map((val: any, idx: number) => (
                         <div key={idx} className="p-6 bg-white/2 border border-white/5 rounded-2xl space-y-4">
                           <div className="flex justify-between items-start">
                             <div>
                               <h4 className="text-lg font-bold text-white uppercase tracking-tight">{val.parameter}</h4>
-                              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Normal Range: {val.range}</p>
+                              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{t('normal_range')}: {val.range}</p>
                             </div>
                             <span className="px-3 py-1 bg-red-500/20 text-red-500 rounded-lg text-[10px] font-bold uppercase tracking-widest border border-red-500/20">
                               {val.status}
@@ -148,7 +150,7 @@ export default function LabReportInterpreter() {
                   </div>
 
                   <div className="space-y-6">
-                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.4em]">Actionable Advice</p>
+                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.4em]">{t('actionable_advice')}</p>
                     <div className="grid gap-3">
                       {result.advice.map((item: string, idx: number) => (
                         <div key={idx} className="flex items-center gap-4 p-4 bg-white/2 border border-white/5 rounded-xl group hover:bg-white/5 transition-colors">
@@ -166,9 +168,9 @@ export default function LabReportInterpreter() {
                   <Brain className="w-10 h-10" />
                 </div>
                 <div className="space-y-2">
-                  <h3 className="text-xl font-bold text-gray-600 uppercase tracking-widest">Awaiting Data</h3>
+                  <h3 className="text-xl font-bold text-gray-600 uppercase tracking-widest">{t('awaiting_data')}</h3>
                   <p className="text-sm text-gray-700 font-medium max-w-xs mx-auto">
-                    Upload a report to see the AI interpretation and health insights here.
+                    {t('upload_report_placeholder')}
                   </p>
                 </div>
               </div>

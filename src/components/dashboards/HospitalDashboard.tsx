@@ -90,7 +90,7 @@ export default function HospitalDashboard() {
     { label: t('total_patients'), value: stats?.totalPatients || 0, icon: Users, color: 'blue', trend: '+12%' },
     { label: t('active_doctors'), value: stats?.totalStaff || 0, icon: Stethoscope, color: 'purple', trend: '+5%' },
     { label: t('bed_occupancy'), value: '84%', icon: Bed, color: 'emerald', trend: '-2%' },
-    { label: t('revenue'), value: `$${stats?.totalRevenue?.toLocaleString() || '0'}`, icon: TrendingUp, color: 'blue', trend: '+18%' }
+    { label: t('revenue'), value: `¥${stats?.totalRevenue?.toLocaleString() || '0'}`, icon: TrendingUp, color: 'blue', trend: '+18%' }
   ];
 
   return (
@@ -169,12 +169,12 @@ export default function HospitalDashboard() {
               <DollarSign className="w-12 h-12" />
               <div className="text-right">
                 <p className="text-[10px] font-bold uppercase tracking-widest opacity-70">{t('commission_balance')}</p>
-                <p className="text-3xl font-display font-bold">${commissions?.commissionBalance?.toFixed(2) || '0.00'}</p>
+                <p className="text-3xl font-display font-bold">¥{commissions?.commissionBalance?.toFixed(2) || '0.00'}</p>
               </div>
             </div>
             <div>
               <p className="text-[10px] font-bold uppercase tracking-widest opacity-70 mb-1">{t('total_platform_sales')}</p>
-              <p className="text-xl font-display font-bold">${commissions?.totalSales?.toFixed(2) || '0.00'}</p>
+              <p className="text-xl font-display font-bold">¥{commissions?.totalSales?.toFixed(2) || '0.00'}</p>
             </div>
             <button 
               onClick={handleWithdraw}

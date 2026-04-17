@@ -606,7 +606,7 @@ export default function Pharmacy() {
                           <span className="px-3 py-1 bg-emerald-500/10 text-emerald-400 text-[10px] font-bold rounded-full uppercase tracking-widest">
                             {order.service_type || 'Standard'}
                           </span>
-                          <p className="text-[10px] text-gray-500 font-mono">${order.total_price}</p>
+                          <p className="text-[10px] text-gray-500 font-mono">¥{order.total_price}</p>
                         </div>
                         <p className="text-xs text-white font-medium">{order.delivery_address}</p>
                         <button 
@@ -777,7 +777,7 @@ export default function Pharmacy() {
                     <DollarSign className="w-4 h-4" />
                     <span className="text-xs font-bold uppercase tracking-widest">Price</span>
                   </div>
-                  <span className="text-sm font-bold text-white">${med.price.toFixed(2)}</span>
+                  <span className="text-sm font-bold text-white">¥{med.price.toFixed(2)}</span>
                 </div>
 
                 <div className="p-3 bg-white/5 border border-white/5 rounded-2xl">
@@ -914,7 +914,7 @@ export default function Pharmacy() {
                             <span className="text-xs font-bold text-white w-4 text-center">{item.quantity}</span>
                             <button onClick={() => updateCartQuantity(item.medicine._id, 1)} className="text-gray-400 hover:text-white">+</button>
                           </div>
-                          <p className="text-sm font-bold text-white">${(item.medicine.price * item.quantity).toFixed(2)}</p>
+                          <p className="text-sm font-bold text-white">¥{(item.medicine.price * item.quantity).toFixed(2)}</p>
                         </div>
                       </div>
                     </div>
@@ -927,7 +927,7 @@ export default function Pharmacy() {
                   <div className="space-y-4">
                     <div className="flex items-center justify-between text-gray-400 font-bold uppercase tracking-widest text-[10px]">
                       <span>Subtotal</span>
-                      <span className="text-white text-sm">${cart.reduce((sum, item) => sum + (item.medicine.price * item.quantity), 0).toFixed(2)}</span>
+                      <span className="text-white text-sm">¥{cart.reduce((sum, item) => sum + (item.medicine.price * item.quantity), 0).toFixed(2)}</span>
                     </div>
                     <div className="space-y-2 relative">
                       <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-2 flex items-center gap-2">
@@ -1054,7 +1054,7 @@ export default function Pharmacy() {
                       Scan with {qrType}
                     </h3>
                     <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mb-8">
-                      Total: ${cart.reduce((sum, item) => sum + (item.medicine.price * item.quantity), 0).toFixed(2)}
+                      Total: ¥{cart.reduce((sum, item) => sum + (item.medicine.price * item.quantity), 0).toFixed(2)}
                     </p>
                     
                     <div className="bg-white p-4 rounded-3xl mb-8 shadow-2xl shadow-white/10">
@@ -1135,7 +1135,7 @@ export default function Pharmacy() {
                         {order.medicines.map((item: any, idx: number) => (
                           <div key={idx} className="flex items-center justify-between text-sm">
                             <span className="text-gray-400">{item.medicine_id?.brand_name} x {item.quantity}</span>
-                            <span className="text-white font-bold">${(item.medicine_id?.price * item.quantity).toFixed(2)}</span>
+                            <span className="text-white font-bold">¥{(item.medicine_id?.price * item.quantity).toFixed(2)}</span>
                           </div>
                         ))}
                       </div>
@@ -1154,7 +1154,7 @@ export default function Pharmacy() {
                               Track Rider
                             </button>
                           )}
-                          <p className="text-lg font-display font-bold text-white">Total: ${order.total_price.toFixed(2)}</p>
+                          <p className="text-lg font-display font-bold text-white">Total: ¥{order.total_price.toFixed(2)}</p>
                         </div>
                       </div>
                     </div>
@@ -1276,7 +1276,7 @@ export default function Pharmacy() {
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="text-lg font-display font-bold text-white">${order.total_price.toFixed(2)}</p>
+                          <p className="text-lg font-display font-bold text-white">¥{order.total_price.toFixed(2)}</p>
                         </div>
                       </div>
                     </div>
@@ -1337,7 +1337,7 @@ export default function Pharmacy() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-widest ml-2">Price ($)</label>
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-widest ml-2">Price (¥)</label>
                   <input 
                     required
                     type="number" 
@@ -1429,7 +1429,7 @@ export default function Pharmacy() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-widest ml-2">Price ($)</label>
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-widest ml-2">Price (¥)</label>
                   <input 
                     required
                     type="number" 

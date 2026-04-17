@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useTranslation } from 'react-i18next';
 import { 
   X, 
   ShieldCheck, 
@@ -32,6 +33,7 @@ export default function PaymentGateway({
   description,
   appointmentId 
 }: PaymentGatewayProps) {
+  const { t } = useTranslation();
   const [step, setStep] = useState<'select' | 'processing' | 'success' | 'qr'>('select');
   const [method, setMethod] = useState<PaymentMethod>('Alipay');
   const [error, setError] = useState<string | null>(null);
@@ -56,7 +58,7 @@ export default function PaymentGateway({
         onSuccess(method);
         setStep('success');
       } catch (err) {
-        setError('Transaction failed. Please try again.');
+        setError(t('transaction_failed'));
         setStep('select');
       }
     }, 2000);
@@ -88,8 +90,8 @@ export default function PaymentGateway({
                 <ShieldCheck className="w-6 h-6 text-blue-500" />
               </div>
               <div>
-                <h3 className="text-white font-bold">Secure Gateway</h3>
-                <p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">256-bit SSL Encrypted</p>
+                <h3 className="text-white font-bold">{t('secure_gateway')}</h3>
+                <p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">{t('ssl_encryption_label')}</p>
               </div>
             </div>
             <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-full text-gray-500 transition-colors">
@@ -101,16 +103,16 @@ export default function PaymentGateway({
             {step === 'select' && (
               <div className="space-y-6">
                 <div className="bg-white/5 rounded-2xl p-4 border border-white/5">
-                  <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">Payment for</p>
+                  <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">{t('payment_for')}</p>
                   <p className="text-white font-bold">{description}</p>
                   <div className="mt-4 pt-4 border-t border-white/5 flex justify-between items-end">
-                    <span className="text-xs text-gray-400 font-bold uppercase tracking-widest">Amount Due</span>
-                    <span className="text-2xl font-display font-bold text-blue-500">${amount.toFixed(2)}</span>
+                    <span className="text-xs text-gray-400 font-bold uppercase tracking-widest">{t('amount_due')}</span>
+                    <span className="text-2xl font-display font-bold text-blue-500">¥{amount.toFixed(2)}</span>
                   </div>
                 </div>
 
                 <div className="space-y-3">
-                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Select Method</p>
+                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{t('select_payment_method')}</p>
                   {(['Alipay', 'WeChat', 'Card'] as PaymentMethod[]).map((m) => (
                     <button
                       key={m}
@@ -127,7 +129,7 @@ export default function PaymentGateway({
                         }`}>
                           {m === 'Card' ? <CreditCard className="w-5 h-5" /> : <Smartphone className="w-5 h-5" />}
                         </div>
-                        <span className="font-bold text-sm text-white">{m} {m !== 'Card' && 'Pay'}</span>
+                        <span className="font-bold text-sm text-white">{t('pay_with_method', { method: m })}</span>
                       </div>
                       {method === m && <div className="w-2 h-2 bg-blue-500 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.5)]" />}
                     </button>
@@ -139,7 +141,7 @@ export default function PaymentGateway({
                   className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold text-sm uppercase tracking-widest transition-all flex items-center justify-center gap-3 shadow-xl shadow-blue-600/20"
                 >
                   <Lock className="w-4 h-4" />
-                  Pay ${amount.toFixed(2)}
+                  {t('pay_amount', { amount: amount.toFixed(2) })}
                 </button>
               </div>
             )}
@@ -155,12 +157,12 @@ export default function PaymentGateway({
                   />
                 </div>
                 <div>
-                  <h4 className="text-white font-bold text-lg">Scan with {method}</h4>
-                  <p className="text-gray-500 text-sm mt-1">Please complete the payment on your mobile device.</p>
+                  <h4 className="text-white font-bold text-lg">{t('scan_with_method', { method })}</h4>
+                  <p className="text-gray-500 text-sm mt-1">{t('complete_payment_mobile')}</p>
                 </div>
                 <div className="flex gap-4">
-                  <button onClick={() => setStep('select')} className="flex-1 py-3 bg-white/5 text-white rounded-xl font-bold text-xs uppercase tracking-widest">Back</button>
-                  <button onClick={handleQRConfirmed} className="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold text-xs uppercase tracking-widest">I have paid</button>
+                  <button onClick={() => setStep('select')} className="flex-1 py-3 bg-white/5 text-white rounded-xl font-bold text-xs uppercase tracking-widest">{t('back')}</button>
+                  <button onClick={handleQRConfirmed} className="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold text-xs uppercase tracking-widest">{t('i_have_paid')}</button>
                 </div>
               </div>
             )}
@@ -174,8 +176,8 @@ export default function PaymentGateway({
                   </div>
                 </div>
                 <div>
-                  <h4 className="text-white font-bold text-xl">Verifying Transaction</h4>
-                  <p className="text-gray-500 text-sm mt-2">Securing your payment with 256-bit encryption...</p>
+                  <h4 className="text-white font-bold text-xl">{t('verifying_transaction')}</h4>
+                  <p className="text-gray-500 text-sm mt-2">{t('securing_payment_desc')}</p>
                 </div>
               </div>
             )}
@@ -190,14 +192,14 @@ export default function PaymentGateway({
                   <CheckCircle2 className="w-10 h-10 text-emerald-500" />
                 </motion.div>
                 <div>
-                  <h4 className="text-white font-bold text-2xl">Payment Successful</h4>
-                  <p className="text-gray-500 text-sm mt-2">Your appointment has been confirmed.</p>
+                  <h4 className="text-white font-bold text-2xl">{t('payment_successful')}</h4>
+                  <p className="text-gray-500 text-sm mt-2">{t('appointment_confirmed')}</p>
                 </div>
                 <button
                   onClick={onClose}
                   className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-bold text-sm uppercase tracking-widest transition-all"
                 >
-                  Return to Dashboard
+                  {t('return_to_dashboard')}
                 </button>
               </div>
             )}

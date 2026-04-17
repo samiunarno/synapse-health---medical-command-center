@@ -19,6 +19,7 @@ import {
   Moon
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import SynapseLogo from './SynapseLogo';
 
 export default function GlobalNavbar() {
   const { user, logout } = useAuth();
@@ -48,15 +49,12 @@ export default function GlobalNavbar() {
   return (
     <nav className={`fixed top-0 w-full z-[100] transition-all duration-500 ${
       isScrolled || !isLandingPage 
-        ? 'bg-white/80 dark:bg-black/80 backdrop-blur-xl border-b border-gray-200 dark:border-white/5 py-4' 
+        ? 'bg-white dark:bg-[#0a0a0a] border-b border-black/5 dark:border-white/5 py-4' 
         : 'bg-transparent py-8'
     }`}>
-      <div className="max-w-[1400px] mx-auto px-6 flex justify-between items-center">
-        <Link to="/" className="flex items-center gap-2 group relative z-[110] interactive">
-          <div className="w-8 h-8 lg:w-10 lg:h-10 bg-gray-900 dark:bg-white rounded-full flex items-center justify-center text-white dark:text-black group-hover:rotate-12 transition-transform duration-500">
-            <Brain className="w-4 h-4 lg:w-6 lg:h-6" />
-          </div>
-          <span className="text-lg lg:text-2xl font-display font-bold tracking-tighter uppercase text-gray-900 dark:text-white">{t('app_name')}</span>
+      <div className="max-w-[1600px] mx-auto px-6 flex justify-between items-center">
+        <Link to="/" className="z-[110] interactive">
+          <SynapseLogo />
         </Link>
 
         {/* Desktop Nav */}

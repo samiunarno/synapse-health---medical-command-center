@@ -7,12 +7,14 @@ import {
   updateUser, 
   deleteUser, 
   handleAccountRequest,
-  banUser
+  banUser,
+  getUserById
 } from '../controllers/authController';
 import { authenticate, authorize } from '../middleware/auth';
 
 const router = express.Router();
 
+router.get('/users/:id', authenticate, authorize(['Admin', 'Staff', 'Doctor', 'Patient', 'Pharmacist', 'Rider', 'Driver']), getUserById);
 router.get('/pending-users', authenticate, authorize(['Admin']), getPendingUsers);
 router.post('/approve-user/:id', authenticate, authorize(['Admin']), approveUser);
 router.get('/users', authenticate, authorize(['Admin', 'Staff', 'Doctor', 'Lab']), getAllUsers);

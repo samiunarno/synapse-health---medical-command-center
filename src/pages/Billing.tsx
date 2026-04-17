@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { CreditCard, DollarSign, FileText, CheckCircle2, Clock, ShieldCheck, AlertCircle, Lock, Loader2 } from 'lucide-react';
 import { useAuth } from '../components/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 export default function Billing() {
   const { user, token } = useAuth();
+  const { t } = useTranslation();
   const [bills, setBills] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedBill, setSelectedBill] = useState<any>(null);
@@ -48,14 +50,17 @@ export default function Billing() {
         },
         body: JSON.stringify({ payment_method: paymentMethod })
       });
+      const data = await res.json();
       if (res.ok) {
-        alert('Payment successful!');
+        alert(t('payment_successful'));
         setSelectedBill(null);
         fetchBills();
+      } else {
+        alert(data.error || t('payment_failed'));
       }
     } catch (error) {
       console.error('Payment failed', error);
-      alert('Payment failed');
+      alert(t('payment_failed'));
     } finally {
       setIsProcessing(false);
     }
@@ -118,10 +123,10 @@ export default function Billing() {
                 </div>
                 <div className="flex items-center gap-6 w-full sm:w-auto justify-between sm:justify-end">
                   <div className="text-right">
-                    <p className="text-2xl font-display font-bold text-white">${bill.amount.toFixed(2)}</p>
+                    <p className="text-2xl font-display font-bold text-white">¥{bill.amount.toLocaleString()}</p>
                     <p className={`text-[10px] font-bold uppercase tracking-widest ${
                       bill.status === 'Paid' ? 'text-emerald-400' : 'text-amber-400'
-                    }`}>{bill.status}</p>
+                    }`}>{bill.status === 'Paid' ? t('paid_status') : t('pending_status') }</p>
                   </div>
                   {bill.status === 'Pending' && (
                     <button
@@ -151,14 +156,14 @@ export default function Billing() {
                   <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-2">Invoice for</p>
                   <p className="font-bold text-white text-lg">{selectedBill.description}</p>
                   <div className="mt-6 flex justify-between items-end border-t border-white/5 pt-6">
-                    <span className="text-xs text-gray-400 font-bold uppercase tracking-widest">Total Amount</span>
-                    <span className="text-3xl font-display font-bold text-blue-500">${selectedBill.amount.toFixed(2)}</span>
+                    <span className="text-xs text-gray-400 font-bold uppercase tracking-widest">{t('total_amount')}</span>
+                    <span className="text-3xl font-display font-bold text-blue-500">¥{selectedBill.amount.toLocaleString()}</span>
                   </div>
                 </div>
 
                 <div className="space-y-4">
-                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Select Payment Method</p>
-                  {['Card', 'UPI', 'Wallet', 'Insurance', 'WeChat', 'Alipay'].map((method) => (
+                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{t('select_payment_method')}</p>
+                  {['Wallet', 'Alipay', 'WeChat', 'Card'].map((method) => (
                     <label key={method} className={`flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all ${
                       paymentMethod === method 
                         ? 'bg-blue-600/10 border-blue-500/40' 
@@ -211,7 +216,7 @@ export default function Billing() {
                   ) : (
                     <>
                       <ShieldCheck className="w-5 h-5" />
-                      Pay ${selectedBill.amount.toFixed(2)}
+                      {t('pay_amount', { amount: selectedBill.amount })}
                     </>
                   )}
                 </button>

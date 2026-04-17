@@ -20,11 +20,15 @@ import {
   X,
   CheckCircle2,
   ShoppingBag,
-  Zap
+  Zap,
+  MessageSquare,
+  BadgeCheck
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../components/AuthContext';
 import { useTranslation } from 'react-i18next';
+import { translateDynamic } from '../lib/i18n-utils';
+import GlobalNavbar from '../components/GlobalNavbar';
 
 interface Product {
   _id: string;
@@ -56,7 +60,14 @@ export default function Ecommerce() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [checkoutSuccess, setCheckoutSuccess] = useState(false);
 
-  const categories = ['All', 'Medicine', 'Equipment', 'Supplies', 'Diagnostics', 'Wellness'];
+  const categories = [
+    { value: 'All', label: t('all_categories') },
+    { value: 'Medicine', label: t('medicine_category') },
+    { value: 'Equipment', label: t('equipment_category') },
+    { value: 'Supplies', label: t('supplies_category') },
+    { value: 'Diagnostics', label: t('diagnostics_category') },
+    { value: 'Wellness', label: t('wellness_category') }
+  ];
 
   useEffect(() => {
     fetchProducts();
@@ -72,7 +83,6 @@ export default function Ecommerce() {
       if (Array.isArray(data)) {
         setProducts(data);
       } else {
-        console.error('API returned non-array data:', data);
         setProducts([]);
       }
     } catch (err) {
@@ -136,7 +146,6 @@ export default function Ecommerce() {
       }
     } catch (err) {
       console.error('Checkout error:', err);
-      alert('An error occurred during checkout');
     }
   };
 
@@ -147,8 +156,7 @@ export default function Ecommerce() {
   const updateQuantity = (productId: string, delta: number) => {
     setCart(prev => prev.map(item => {
       if (item.product._id === productId) {
-        const newQty = Math.max(1, item.quantity + delta);
-        return { ...item, quantity: newQty };
+        return { ...item, quantity: Math.max(1, item.quantity + delta) };
       }
       return item;
     }));
@@ -156,228 +164,144 @@ export default function Ecommerce() {
 
   const cartTotal = cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
 
-  const filteredProducts = Array.isArray(products) ? products.filter(p => 
+  const filteredProducts = products.filter(p => 
     p.name.toLowerCase().includes(search.toLowerCase()) ||
     p.description.toLowerCase().includes(search.toLowerCase())
-  ) : [];
+  );
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#050505] text-gray-900 dark:text-white flex flex-col transition-colors duration-500">
-      {/* Top Navigation Bar - Alibaba Style */}
-      <nav className="sticky top-0 z-[100] bg-white/80 dark:bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-gray-200 dark:border-white/5 px-6 py-4">
-        <div className="max-w-[1600px] mx-auto flex items-center justify-between gap-8">
-          <div className="flex items-center gap-3 shrink-0">
-            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
-              <ShoppingBag className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-xl font-display font-black tracking-tighter uppercase italic text-gray-900 dark:text-white">Synapse<span className="text-blue-500">Global</span></span>
-          </div>
+    <div className="min-h-screen bg-[#F4F4F0] dark:bg-[#0a0a0a] text-[#111111] dark:text-[#F4F4F0] flex flex-col transition-colors duration-300">
+      <GlobalNavbar />
 
-          <div className="flex-1 max-w-2xl relative hidden md:block">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-            <input 
-              type="text"
-              placeholder={t('search_placeholder_ecommerce')}
-              className="w-full bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl py-2.5 pl-12 pr-4 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all text-gray-900 dark:text-white"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
-
-          <div className="flex items-center gap-6">
-            <div className="hidden lg:flex items-center gap-6 text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400">
-              <a href="#" className="hover:text-blue-500 transition-colors">{t('sourcing')}</a>
-              <a href="#" className="hover:text-blue-500 transition-colors">{t('membership')}</a>
-              <a href="#" className="hover:text-blue-500 transition-colors">{t('help_center')}</a>
+      <main className="flex-1 max-w-[1600px] mx-auto w-full px-6 pt-32 lg:pt-40 pb-20 border-x border-black/10 dark:border-white/10">
+        <div className="flex flex-col lg:flex-row gap-12">
+          {/* Sidebar Categories */}
+          <aside className="w-full lg:w-80 space-y-12">
+            <div className="space-y-4">
+              <h3 className="text-sm font-mono text-black/40 dark:text-white/40 uppercase tracking-[0.3em] mb-8 flex items-center gap-2">
+                <Filter className="w-4 h-4" /> {t('catalog_filter')}
+              </h3>
+              <div className="space-y-1">
+                {categories.map(cat => (
+                  <button
+                    key={cat.value}
+                    onClick={() => setCategory(cat.value)}
+                    className={`w-full text-left px-6 py-4 rounded-sm text-lg font-medium transition-all flex items-center justify-between group ${
+                      category === cat.value 
+                        ? 'bg-[#111111] dark:bg-[#F4F4F0] text-white dark:text-[#111111]' 
+                        : 'text-black/60 dark:text-white/60 hover:bg-black/5 dark:hover:bg-white/5'
+                    }`}
+                  >
+                    {cat.label}
+                    <ChevronRight className={`w-4 h-4 transition-transform ${category === cat.value ? 'translate-x-1' : 'opacity-0 group-hover:opacity-100'}`} />
+                  </button>
+                ))}
+              </div>
             </div>
-            <button 
-              onClick={() => setIsCartOpen(true)}
-              className="relative p-2.5 bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 rounded-xl border border-gray-200 dark:border-white/10 transition-all group"
-            >
-              <ShoppingCart className="w-5 h-5 text-gray-500 dark:text-gray-400 group-hover:text-blue-500" />
-              {cart.length > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-blue-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white dark:border-[#0a0a0a]">
-                  {cart.reduce((sum, item) => sum + item.quantity, 0)}
-                </span>
-              )}
-            </button>
+
+            <div className="bg-[#111111] dark:bg-[#F4F4F0] text-white dark:text-[#111111] p-10 rounded-sm">
+              <ShieldCheck className="w-12 h-12 mb-8" strokeWidth={1} />
+              <h4 className="text-2xl font-medium tracking-tight mb-4">{t('trade_assurance')}</h4>
+              <p className="text-sm font-light opacity-60 leading-relaxed mb-8">
+                {t('trade_assurance_desc')}
+              </p>
+              <button className="w-full py-4 border border-white/20 dark:border-black/20 text-xs font-mono uppercase tracking-widest hover:bg-white/10 dark:hover:bg-black/10 transition-all">
+                {t('learn_more')}
+              </button>
+            </div>
+          </aside>
+
+          {/* Catalog Area */}
+          <div className="flex-1 space-y-12">
+            {/* Search and Stats */}
+            <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
+              <div className="relative flex-1 group w-full">
+                <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-black/20 dark:text-white/20 group-focus-within:text-[#0033A0] transition-colors" />
+                <input 
+                  type="text"
+                  placeholder={t('search_catalog')}
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full bg-white dark:bg-[#111111] border border-black/10 dark:border-white/10 rounded-sm py-5 pl-16 pr-6 text-xl outline-none focus:border-[#0033A0] dark:focus:border-[#3b82f6] transition-all"
+                />
+              </div>
+              <div className="flex items-center gap-4">
+                <button 
+                  onClick={() => setViewMode('grid')}
+                  className={`p-3 rounded-sm border ${viewMode === 'grid' ? 'bg-[#111111] dark:bg-[#F4F4F0] text-white dark:text-[#111111] border-transparent' : 'border-black/10 dark:border-white/10 text-black/40 dark:text-white/40'}`}
+                >
+                  <Grid className="w-5 h-5" />
+                </button>
+                <button 
+                  onClick={() => setViewMode('list')}
+                  className={`p-3 rounded-sm border ${viewMode === 'list' ? 'bg-[#111111] dark:bg-[#F4F4F0] text-white dark:text-[#111111] border-transparent' : 'border-black/10 dark:border-white/10 text-black/40 dark:text-white/40'}`}
+                >
+                  <List className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {loading ? (
+              <div className="flex flex-col items-center justify-center py-40 gap-6">
+                <Loader2 className="w-16 h-16 text-[#0033A0] animate-spin" strokeWidth={1} />
+                <span className="font-mono text-xs uppercase tracking-[0.3em] opacity-40">{t('synchronizing_clinical_catalog')}</span>
+              </div>
+            ) : (
+              <div className={viewMode === 'grid' ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8" : "space-y-6"}>
+                {filteredProducts.map((product) => (
+                  <motion.div
+                    key={product._id}
+                    layout
+                    whileHover={{ y: -10 }}
+                    className={`bg-white dark:bg-[#111111] border border-black/10 dark:border-white/10 p-6 group transition-all duration-500 hover:shadow-2xl hover:shadow-[#0033A0]/10 ${
+                      viewMode === 'list' ? 'flex flex-row items-center gap-8' : 'flex flex-col'
+                    }`}
+                  >
+                    <div className={`relative overflow-hidden mb-8 bg-[#F4F4F0] dark:bg-[#050505] border border-black/5 dark:border-white/5 ${viewMode === 'list' ? 'w-48 h-48 mb-0' : 'aspect-square'}`}>
+                      <img 
+                        src={product.image_url || `https://picsum.photos/seed/${product.name}/600/600`}
+                        alt={product.name}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                      />
+                      <div className="absolute top-4 left-4">
+                        <div className="px-3 py-1 bg-[#0033A0] dark:bg-[#3b82f6] text-white text-[10px] font-mono uppercase tracking-widest flex items-center gap-2 shadow-xl">
+                          <ShieldCheck className="w-4 h-4" /> {t('verified')}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex-1 space-y-6">
+                      <div>
+                        <div className="flex items-center gap-3 mb-4">
+                          <span className="text-[10px] font-mono text-[#0033A0] dark:text-[#3b82f6] uppercase tracking-widest">{translateDynamic(t, product.category)}</span>
+                          <span className="w-1 h-1 bg-black/10 dark:border-white/10 rounded-full" />
+                          <span className="text-[10px] font-mono text-black/40 dark:text-white/40 uppercase tracking-widest">{product.manufacturer}</span>
+                        </div>
+                        <h3 className="text-2xl font-medium tracking-tight line-clamp-2">{translateDynamic(t, product.name)}</h3>
+                      </div>
+
+                      <div className="flex items-baseline justify-between border-t border-black/5 dark:border-white/5 pt-6">
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-3xl font-medium">¥{product.price}</span>
+                          <span className="text-xs font-mono uppercase tracking-widest opacity-40">CNY</span>
+                        </div>
+                        <button 
+                          onClick={() => addToCart(product)}
+                          className="w-14 h-14 bg-[#111111] dark:bg-[#F4F4F0] text-white dark:text-[#111111] flex items-center justify-center hover:bg-[#0033A0] dark:hover:bg-[#3b82f6] dark:hover:text-white transition-all shadow-xl group/btn"
+                        >
+                          <Plus className="w-6 h-6 group-hover/btn:rotate-90 transition-transform" />
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
-      </nav>
+      </main>
 
-      <div className="flex-1 flex max-w-[1600px] mx-auto w-full px-6 py-8 gap-8">
-        {/* Sidebar Categories */}
-        <aside className="w-64 shrink-0 hidden lg:block space-y-8">
-          <div className="bg-gray-50 dark:bg-white/2 border border-gray-200 dark:border-white/5 rounded-3xl p-6">
-            <h3 className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-[0.3em] mb-6 flex items-center gap-2">
-              <List className="w-3 h-3" /> {t('categories')}
-            </h3>
-            <div className="space-y-1">
-              {categories.map(cat => (
-                <button
-                  key={cat}
-                  onClick={() => setCategory(cat)}
-                  className={`w-full text-left px-4 py-3 rounded-xl text-xs font-bold transition-all flex items-center justify-between group ${
-                    category === cat ? 'bg-blue-600 text-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white'
-                  }`}
-                >
-                  {cat}
-                  <ChevronRight className={`w-3 h-3 transition-transform ${category === cat ? 'translate-x-1' : 'opacity-0 group-hover:opacity-100'}`} />
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="bg-gradient-to-br from-blue-600/10 to-purple-600/10 border border-blue-500/20 rounded-3xl p-6">
-            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center mb-4">
-              <ShieldCheck className="w-6 h-6 text-white" />
-            </div>
-            <h4 className="text-sm font-bold text-gray-900 dark:text-white mb-2">{t('trade_assurance')}</h4>
-            <p className="text-[10px] text-gray-500 dark:text-gray-400 leading-relaxed mb-4">
-              {t('trade_assurance_desc')}
-            </p>
-            <button className="w-full py-2.5 bg-gray-900 dark:bg-white/10 hover:bg-black dark:hover:bg-white/20 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all text-white dark:text-white">
-              {t('learn_more')}
-            </button>
-          </div>
-        </aside>
-
-        {/* Main Content Area */}
-        <main className="flex-1 min-w-0 space-y-8">
-          {/* Hero Banner */}
-          <section className="relative h-64 rounded-[2.5rem] overflow-hidden group">
-            <img 
-              src="https://picsum.photos/seed/medical-sourcing/1200/400" 
-              alt="Global Sourcing"
-              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000"
-              referrerPolicy="no-referrer"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-black via-black/40 to-transparent p-12 flex flex-col justify-center">
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-600 text-white rounded-full text-[8px] font-bold uppercase tracking-widest mb-4 w-fit">
-                <Zap className="w-3 h-3" /> {t('flash_sourcing_event')}
-              </div>
-              <h2 className="text-4xl font-display font-black text-white mb-4 uppercase tracking-tighter">
-                {t('direct_from')} <br />
-                <span className="text-blue-500">{t('global_manufacturers')}</span>
-              </h2>
-              <p className="text-gray-300 text-xs font-bold uppercase tracking-widest max-w-md">
-                {t('ecommerce_hero_desc')}
-              </p>
-            </div>
-          </section>
-
-          {/* Quick Filters & View Toggle */}
-          <div className="flex items-center justify-between bg-gray-50 dark:bg-white/2 border border-gray-200 dark:border-white/5 rounded-2xl p-4">
-            <div className="flex items-center gap-4">
-              <span className="text-[10px] font-bold text-gray-400 dark:text-gray-600 uppercase tracking-widest">{t('sort_by')}:</span>
-              <select className="bg-transparent text-[10px] font-bold uppercase tracking-widest text-gray-900 dark:text-white outline-none">
-                <option className="bg-white dark:bg-[#0a0a0a]">{t('best_match')}</option>
-                <option className="bg-white dark:bg-[#0a0a0a]">{t('price_low_high')}</option>
-                <option className="bg-white dark:bg-[#0a0a0a]">{t('newest_arrivals')}</option>
-              </select>
-            </div>
-            <div className="flex items-center gap-2">
-              <button 
-                onClick={() => setViewMode('grid')}
-                className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-gray-200 dark:bg-white/10 text-gray-900 dark:text-white' : 'text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
-              >
-                <Grid className="w-4 h-4" />
-              </button>
-              <button 
-                onClick={() => setViewMode('list')}
-                className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-gray-200 dark:bg-white/10 text-gray-900 dark:text-white' : 'text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
-              >
-                <List className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-
-          {/* Product Grid */}
-          {loading ? (
-            <div className="flex flex-col items-center justify-center py-32 gap-4">
-              <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.3em]">{t('synchronizing_catalog')}</p>
-            </div>
-          ) : (
-            <div className={viewMode === 'grid' 
-              ? "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6" 
-              : "flex flex-col gap-4"
-            }>
-              {filteredProducts.map((product) => (
-                <motion.div
-                  key={product._id}
-                  layout
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  whileHover={{ y: -5 }}
-                  className={`bg-white dark:bg-white/2 border border-gray-200 dark:border-white/5 rounded-3xl overflow-hidden group hover:bg-gray-50 dark:hover:bg-white/5 transition-all duration-500 shadow-sm dark:shadow-none ${
-                    viewMode === 'list' ? 'flex gap-6 p-6' : 'flex flex-col'
-                  }`}
-                >
-                  <div className={`relative overflow-hidden shrink-0 ${viewMode === 'list' ? 'w-48 h-48 rounded-2xl' : 'aspect-square'}`}>
-                    <img 
-                      src={product.image_url || `https://picsum.photos/seed/${product.name}/400/400`}
-                      alt={product.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                      referrerPolicy="no-referrer"
-                    />
-                    <div className="absolute top-4 left-4 flex flex-col gap-2">
-                      <div className="px-2 py-1 bg-blue-600 text-white text-[8px] font-bold uppercase tracking-widest rounded flex items-center gap-1 shadow-lg">
-                        <ShieldCheck className="w-3 h-3" /> {t('verified')}
-                      </div>
-                      <div className="px-2 py-1 bg-amber-500 text-black text-[8px] font-bold uppercase tracking-widest rounded flex items-center gap-1 shadow-lg">
-                        <Star className="w-3 h-3 fill-current" /> {t('top_rated')}
-                      </div>
-                    </div>
-                    <button className="absolute top-4 right-4 p-2 bg-black/40 backdrop-blur-md text-white rounded-full opacity-0 group-hover:opacity-100 transition-all hover:bg-blue-600">
-                      <Heart className="w-4 h-4" />
-                    </button>
-                  </div>
-
-                  <div className="p-6 flex-1 flex flex-col">
-                    <div className="mb-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-[8px] font-bold text-blue-500 uppercase tracking-widest">{product.category}</span>
-                        <span className="w-1 h-1 bg-gray-300 dark:bg-gray-700 rounded-full" />
-                        <span className="text-[8px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">{product.manufacturer || 'Global Supplier'}</span>
-                      </div>
-                      <h3 className="text-lg font-display font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
-                        {product.name}
-                      </h3>
-                    </div>
-
-                    <div className="mt-auto space-y-4">
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-2xl font-display font-black text-gray-900 dark:text-white">${product.price}</span>
-                        <span className="text-[10px] font-bold text-gray-400 dark:text-gray-600 uppercase tracking-widest">/ {t('unit')}</span>
-                      </div>
-
-                      <div className="flex items-center gap-4 text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">
-                        <div className="flex items-center gap-1.5">
-                          <Package className="w-3 h-3" /> {product.stock_quantity} {t('in_stock')}
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <Truck className="w-3 h-3" /> {t('global_shipping')}
-                        </div>
-                      </div>
-
-                      <button 
-                        onClick={() => addToCart(product)}
-                        className="w-full py-4 bg-gray-900 dark:bg-white text-white dark:text-black rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all duration-500 flex items-center justify-center gap-3"
-                      >
-                        <ShoppingCart className="w-4 h-4" />
-                        {t('source_now')}
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          )}
-        </main>
-      </div>
-
-      {/* Cart Drawer Overlay */}
+      {/* Cart Slider */}
       <AnimatePresence>
         {isCartOpen && (
           <>
@@ -386,57 +310,56 @@ export default function Ecommerce() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsCartOpen(false)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100]"
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[110]"
             />
             <motion.div 
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
-              className="fixed top-0 right-0 bottom-0 w-full max-w-md bg-white dark:bg-[#0a0a0a] border-l border-gray-200 dark:border-white/10 z-[101] shadow-2xl flex flex-col"
+              className="fixed top-0 right-0 bottom-0 w-full max-w-lg bg-[#F4F4F0] dark:bg-[#0a0a0a] border-l border-black/10 dark:border-white/10 z-[120] flex flex-col p-12"
             >
-              <div className="p-8 border-b border-gray-200 dark:border-white/10 flex items-center justify-between">
+              <div className="flex items-center justify-between mb-16">
                 <div>
-                  <h2 className="text-2xl font-display font-bold text-gray-900 dark:text-white">{t('your_cart')}</h2>
-                  <p className="text-gray-500 text-sm">{cart.length} {t('items_selected')}</p>
+                  <h2 className="text-4xl font-medium tracking-tight mb-2">{t('your_cart')}</h2>
+                  <p className="text-sm font-mono text-black/40 dark:text-white/40 uppercase tracking-widest">{cart.length} {t('clinical_items')}</p>
                 </div>
-                <button 
-                  onClick={() => setIsCartOpen(false)}
-                  className="w-12 h-12 flex items-center justify-center bg-gray-100 dark:bg-white/5 rounded-2xl hover:bg-gray-200 dark:hover:bg-white/10 transition-all text-gray-600 dark:text-white"
-                >
+                <button onClick={() => setIsCartOpen(false)} className="w-12 h-12 bg-white dark:bg-[#111111] border border-black/10 dark:border-white/10 flex items-center justify-center text-black dark:text-white hover:text-red-500 transition-colors">
                   <X className="w-6 h-6" />
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto p-8 space-y-6">
-                {checkoutSuccess ? (
-                  <div className="flex flex-col items-center justify-center py-20 text-center">
-                    <div className="w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center text-green-500 mb-6">
-                      <CheckCircle2 className="w-10 h-10" />
-                    </div>
-                    <h3 className="text-2xl font-bold mb-2 text-gray-900 dark:text-white">{t('order_placed')}</h3>
-                    <p className="text-gray-500">{t('order_placed_desc')}</p>
+              <div className="flex-1 overflow-y-auto space-y-8 pr-4">
+                {cart.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center h-full gap-8 opacity-20">
+                    <ShoppingBag className="w-32 h-32" strokeWidth={0.5} />
+                    <span className="font-mono text-xs uppercase tracking-[0.5em]">{t('cart_is_empty')}</span>
                   </div>
-                ) : cart.length === 0 ? (
-                  <div className="text-center py-20 text-gray-500">
-                    <ShoppingBag className="w-16 h-16 mx-auto mb-4 opacity-20" />
-                    <p className="font-bold uppercase tracking-widest text-xs">{t('cart_empty')}</p>
+                ) : checkoutSuccess ? (
+                  <div className="bg-green-500/10 border border-green-500/20 p-8 text-center rounded-sm">
+                    <CheckCircle2 className="w-12 h-12 text-green-500 mx-auto mb-6" />
+                    <h3 className="text-2xl font-medium mb-4">{t('order_successful')}</h3>
+                    <p className="text-sm opacity-60 leading-relaxed mb-8">{t('thank_you_order')}</p>
                   </div>
                 ) : (
                   cart.map(item => (
-                    <div key={item.product._id} className="flex gap-4">
-                      <div className="w-20 h-20 rounded-2xl overflow-hidden bg-gray-100 dark:bg-white/5">
-                        <img src={item.product.image_url || `https://picsum.photos/seed/${item.product.name}/100/100`} alt="" className="w-full h-full object-cover" />
+                    <div key={item.product._id} className="flex gap-8 group">
+                      <div className="w-24 h-24 bg-white dark:bg-[#111111] border border-black/5 dark:border-white/5 p-2 shrink-0">
+                        <img src={item.product.image_url || `https://picsum.photos/seed/${item.product.name}/200/200`} alt="" className="w-full h-full object-cover" />
                       </div>
-                      <div className="flex-1">
-                        <h4 className="font-bold text-sm mb-1 text-gray-900 dark:text-white">{item.product.name}</h4>
-                        <p className="text-blue-600 dark:text-blue-400 font-bold text-sm mb-3">${item.product.price}</p>
-                        <div className="flex items-center gap-4">
-                          <div className="flex items-center gap-2 bg-gray-100 dark:bg-white/5 rounded-lg p-1">
-                            <button onClick={() => updateQuantity(item.product._id, -1)} className="p-1 hover:bg-gray-200 dark:hover:bg-white/10 rounded text-gray-600 dark:text-gray-400"><Minus className="w-3 h-3" /></button>
-                            <span className="text-xs font-bold w-4 text-center text-gray-900 dark:text-white">{item.quantity}</span>
-                            <button onClick={() => updateQuantity(item.product._id, 1)} className="p-1 hover:bg-gray-200 dark:hover:bg-white/10 rounded text-gray-600 dark:text-gray-400"><Plus className="w-3 h-3" /></button>
+                      <div className="flex-1 space-y-4">
+                        <div className="flex justify-between items-start">
+                          <h4 className="text-lg font-medium tracking-tight leading-tight">{item.product.name}</h4>
+                          <button onClick={() => removeFromCart(item.product._id)} className="text-black/20 dark:text-white/20 hover:text-red-500 transition-colors">
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center border border-black/10 dark:border-white/10">
+                            <button onClick={() => updateQuantity(item.product._id, -1)} className="w-8 h-8 flex items-center justify-center hover:bg-black/5 transition-colors"><Minus className="w-3 h-3" /></button>
+                            <span className="w-8 h-8 flex items-center justify-center font-mono text-xs">{item.quantity}</span>
+                            <button onClick={() => updateQuantity(item.product._id, 1)} className="w-8 h-8 flex items-center justify-center hover:bg-black/5 transition-colors"><Plus className="w-3 h-3" /></button>
                           </div>
-                          <button onClick={() => removeFromCart(item.product._id)} className="text-xs text-red-500 font-bold hover:underline">{t('remove')}</button>
+                          <span className="text-xl font-medium tracking-tight">¥{(item.product.price * item.quantity).toFixed(2)}</span>
                         </div>
                       </div>
                     </div>
@@ -444,28 +367,17 @@ export default function Ecommerce() {
                 )}
               </div>
 
-              <div className="p-8 bg-gray-50 dark:bg-white/2 border-t border-gray-200 dark:border-white/10 space-y-6">
-                <div className="space-y-2">
-                  <div className="flex justify-between text-gray-500 dark:text-gray-400 text-sm">
-                    <span>{t('subtotal')}</span>
-                    <span>${cartTotal.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-gray-500 dark:text-gray-400 text-sm">
-                    <span>{t('shipping')}</span>
-                    <span className="text-green-600 dark:text-green-400 font-bold uppercase tracking-widest text-[10px]">{t('calculated_at_next_step')}</span>
-                  </div>
-                  <div className="flex justify-between text-gray-900 dark:text-white font-bold text-xl pt-2 border-t border-gray-200 dark:border-white/5">
-                    <span>{t('total')}</span>
-                    <span>${cartTotal.toFixed(2)}</span>
-                  </div>
+              <div className="mt-16 pt-16 border-t border-black/10 dark:border-white/10 space-y-12">
+                <div className="flex justify-between items-end">
+                  <span className="font-mono text-xs uppercase tracking-[0.3em] opacity-40">{t('total_amount')}</span>
+                  <span className="text-6xl font-medium tracking-tighter leading-none">¥{cartTotal.toFixed(2)}</span>
                 </div>
                 <button 
                   onClick={handleCheckout}
                   disabled={cart.length === 0 || checkoutSuccess}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-2xl font-bold transition-all shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full py-8 bg-[#111111] dark:bg-[#F4F4F0] text-white dark:text-[#111111] text-xl font-medium tracking-tight uppercase hover:bg-[#0033A0] dark:hover:bg-[#3b82f6] dark:hover:text-white transition-all disabled:opacity-20 flex items-center justify-center gap-6 group"
                 >
-                  {checkoutSuccess ? t('processing_request') : t('proceed_to_checkout')}
-                  <ArrowRight className="w-5 h-5" />
+                  {t('confirm_clinical_sourcing')} <ArrowRight className="w-8 h-8 group-hover:translate-x-4 transition-transform" />
                 </button>
               </div>
             </motion.div>
@@ -473,68 +385,20 @@ export default function Ecommerce() {
         )}
       </AnimatePresence>
 
-      {/* Floating Cart Button */}
+      {/* Floating Cart Tooltip */}
       <motion.button
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsCartOpen(true)}
-        className="fixed bottom-8 right-8 z-50 w-16 h-16 bg-blue-600 text-white rounded-full shadow-2xl shadow-blue-500/40 flex items-center justify-center"
+        className="fixed bottom-12 right-12 z-[100] w-20 h-20 bg-[#111111] dark:bg-[#F4F4F0] text-white dark:text-[#111111] flex items-center justify-center shadow-2xl shadow-blue-500/20 group"
       >
-        <ShoppingCart className="w-6 h-6" />
+        <ShoppingCart className="w-8 h-8" />
         {cart.length > 0 && (
-          <span className="absolute -top-1 -right-1 w-6 h-6 bg-red-500 rounded-full text-[10px] font-bold flex items-center justify-center border-2 border-[#050505]">
+          <span className="absolute -top-3 -right-3 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-bold border-4 border-[#F4F4F0] dark:border-[#0a0a0a]">
             {cart.length}
           </span>
         )}
       </motion.button>
-
-      {/* Success Notification */}
-      <AnimatePresence>
-        {showSuccess && (
-          <motion.div
-            initial={{ opacity: 0, y: 50, x: '-50%' }}
-            animate={{ opacity: 1, y: 0, x: '-50%' }}
-            exit={{ opacity: 0, y: 20, x: '-50%' }}
-            className="fixed bottom-8 left-1/2 z-[200] bg-emerald-500 text-white px-6 py-3 rounded-2xl font-bold shadow-2xl flex items-center gap-3"
-          >
-            <CheckCircle2 className="w-5 h-5" />
-            {t('added_to_cart')}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Trust Badges */}
-      <section className="bg-gray-50 dark:bg-white/2 border-y border-gray-200 dark:border-white/5 py-12">
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-600 dark:text-blue-400">
-              <Truck className="w-6 h-6" />
-            </div>
-            <div>
-              <h5 className="font-bold text-sm text-gray-900 dark:text-white">{t('global_logistics')}</h5>
-              <p className="text-xs text-gray-500">{t('global_logistics_desc')}</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-green-500/10 flex items-center justify-center text-green-600 dark:text-green-400">
-              <ShieldCheck className="w-6 h-6" />
-            </div>
-            <div>
-              <h5 className="font-bold text-sm text-gray-900 dark:text-white">{t('quality_guaranteed')}</h5>
-              <p className="text-xs text-gray-500">{t('quality_guaranteed_desc')}</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center text-purple-600 dark:text-purple-400">
-              <Clock className="w-6 h-6" />
-            </div>
-            <div>
-              <h5 className="font-bold text-sm text-gray-900 dark:text-white">{t('support_24_7')}</h5>
-              <p className="text-xs text-gray-500">{t('support_24_7_desc')}</p>
-            </div>
-          </div>
-        </div>
-      </section>
     </div>
   );
 }

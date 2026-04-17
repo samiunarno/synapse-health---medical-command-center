@@ -62,7 +62,7 @@ export default function AdminDashboard({
   onApprove,
   onVerify 
 }: any) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [searchTerm, setSearchTerm] = React.useState('');
   const COLORS = ['#3b82f6', '#8b5cf6', '#f59e0b', '#ef4444'];
 
@@ -162,7 +162,7 @@ export default function AdminDashboard({
         <div className="flex flex-wrap items-center gap-4">
           <div className="bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 px-8 py-4 rounded-2xl font-mono text-xs font-bold text-gray-500 dark:text-gray-400 flex items-center gap-4 backdrop-blur-xl">
             <Calendar className="w-4 h-4 text-blue-600 dark:text-blue-500" />
-            {new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase()} • {new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })} {t('utc')}
+            {new Date().toLocaleDateString(i18n.language === 'zh' ? 'zh-CN' : 'en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase()} • {new Date().toLocaleTimeString(i18n.language === 'zh' ? 'zh-CN' : 'en-GB', { hour: '2-digit', minute: '2-digit' })} {t('utc')}
           </div>
           <button 
             onClick={handleExport}
@@ -208,7 +208,7 @@ export default function AdminDashboard({
         />
         <StatCard 
           title={t('total_revenue')} 
-          value={`$${(stats?.totalRevenue || 0).toLocaleString()}`} 
+          value={`¥${(stats?.totalRevenue || 0).toLocaleString()}`} 
           icon={DollarSign} 
           trend={t('optimal')} 
           trendUp={true}
@@ -217,7 +217,7 @@ export default function AdminDashboard({
         />
         <StatCard 
           title={t('platform_commissions')} 
-          value={`$${(stats?.totalCommissionBalance || 0).toLocaleString()}`} 
+          value={`¥${(stats?.totalCommissionBalance || 0).toLocaleString()}`} 
           icon={DollarSign} 
           trend="+24.2%" 
           trendUp={true}
@@ -226,7 +226,7 @@ export default function AdminDashboard({
         />
         <StatCard 
           title={t('platform_sales')} 
-          value={`$${(stats?.totalPlatformSales || 0).toLocaleString()}`} 
+          value={`¥${(stats?.totalPlatformSales || 0).toLocaleString()}`} 
           icon={ShoppingCart} 
           trend="+32.1%" 
           trendUp={true}
@@ -258,11 +258,12 @@ export default function AdminDashboard({
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" className="dark:stroke-[rgba(255,255,255,0.03)]" />
                 <XAxis 
-                  dataKey="date" 
+                  dataKey="month" 
                   axisLine={false} 
                   tickLine={false} 
                   tick={{fill: '#9ca3af', fontSize: 10, fontWeight: 800, fontFamily: 'Space Grotesk'}} 
                   dy={20} 
+                  tickFormatter={(val) => t(val.toLowerCase())}
                 />
                 <YAxis 
                   axisLine={false} 
@@ -407,7 +408,12 @@ export default function AdminDashboard({
                   </div>
                   <div>
                     <p className="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-tight">{activity.user}</p>
-                    <p className="text-[10px] font-medium text-gray-500">{activity.action}</p>
+                    <p className="text-[10px] font-medium text-gray-500">
+                      {activity.action === 'New user registration' ? t('new_user_registration') :
+                       activity.action.startsWith('Requested ambulance') ? t('requested_ambulance', { address: activity.action.split('at ')[1] }) :
+                       activity.action.startsWith('Placed medicine order') ? t('placed_medicine_order', { price: activity.action.split('¥')[1] || activity.action.split('$')[1] }) :
+                       activity.action}
+                    </p>
                   </div>
                 </div>
                 <span className="text-[9px] font-mono font-bold text-gray-400 dark:text-gray-700 uppercase">{activity.time}</span>
@@ -453,7 +459,7 @@ export default function AdminDashboard({
                       </div>
                       <div>
                         <p className="font-bold text-gray-900 dark:text-white text-lg uppercase tracking-tighter">{vUser.username}</p>
-                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{vUser.role}</p>
+                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{t(vUser.role.toLowerCase())}</p>
                       </div>
                     </div>
                   </td>
@@ -591,7 +597,7 @@ export default function AdminDashboard({
                       user.role === 'Patient' ? 'bg-blue-600/10 text-blue-500 border-blue-500/20' :
                       'bg-green-600/10 text-green-500 border-green-500/20'
                     }`}>
-                      {user.role}
+                      {t(user.role.toLowerCase())}
                     </span>
                   </td>
                   <td className="px-6 lg:px-12 py-6 lg:py-10">

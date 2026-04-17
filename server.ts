@@ -45,6 +45,8 @@ import chatbotRoutes from './server/routes/chatbotRoutes';
 import productRoutes from './server/routes/productRoutes';
 import verificationRoutes from './server/routes/verificationRoutes';
 import commissionRoutes from './server/routes/commissionRoutes';
+import financeRoutes from './server/routes/financeRoutes';
+import membershipRoutes from './server/routes/membershipRoutes';
 import { seedDatabase } from './server/seed';
 import { initVerificationCron } from './server/services/verificationService';
 import { MongoMemoryServer } from 'mongodb-memory-server';
@@ -181,6 +183,8 @@ async function startServer() {
   app.use('/api/products', productRoutes);
   app.use('/api/verification', verificationRoutes);
   app.use('/api/commissions', commissionRoutes);
+  app.use('/api/finance', financeRoutes);
+  app.use('/api/membership', membershipRoutes);
 
   // Health Check
   app.get('/api/health', (req, res) => {

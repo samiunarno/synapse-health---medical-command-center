@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../components/AuthContext';
+import { useTranslation } from 'react-i18next';
 import { 
   Stethoscope, 
   MessageSquare, 
@@ -16,6 +17,7 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 
 export default function SymptomChecker() {
+  const { t, i18n } = useTranslation();
   const { user, token } = useAuth();
   const [symptoms, setSymptoms] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -35,7 +37,7 @@ export default function SymptomChecker() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ symptoms })
+        body: JSON.stringify({ symptoms, lang: i18n.language })
       });
       
       if (!res.ok) throw new Error('Analysis failed');
@@ -54,14 +56,14 @@ export default function SymptomChecker() {
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <h1 className="text-4xl md:text-6xl font-display font-bold text-white tracking-tighter uppercase">
-            AI Symptom <span className="text-emerald-500">Checker</span>
+            {t('ai_symptom')} <span className="text-emerald-500">{t('checker')}</span>
           </h1>
-          <p className="text-gray-500 font-medium mt-2">Intelligent triage and preliminary analysis powered by Zhipu AI.</p>
+          <p className="text-gray-500 font-medium mt-2">{t('symptom_checker_desc')}</p>
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
             <ShieldAlert className="w-4 h-4 text-emerald-400" />
-            <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">Triage Support</span>
+            <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">{t('triage_support')}</span>
           </div>
         </div>
       </header>
@@ -71,18 +73,18 @@ export default function SymptomChecker() {
         <div className="space-y-6">
           <div className="bg-white/2 border border-white/5 rounded-[2.5rem] p-8 lg:p-12 relative overflow-hidden group">
             <div className="relative z-10">
-              <h3 className="text-2xl font-display font-bold text-white mb-6">Describe Symptoms</h3>
+              <h3 className="text-2xl font-display font-bold text-white mb-6">{t('describe_symptoms')}</h3>
               
               <form onSubmit={analyzeSymptoms} className="space-y-6">
                 <div className="relative">
                   <textarea
                     value={symptoms}
                     onChange={(e) => setSymptoms(e.target.value)}
-                    placeholder="e.g. I have a persistent headache and feel dizzy since morning..."
+                    placeholder={t('symptom_placeholder')}
                     className="w-full h-48 bg-black/40 border border-white/10 rounded-[1.5rem] p-6 text-sm text-white placeholder:text-gray-700 focus:ring-2 focus:ring-emerald-500 outline-none transition-all resize-none"
                   />
                   <div className="absolute bottom-4 right-4 text-[10px] font-bold text-gray-700 uppercase tracking-widest">
-                    AI Powered
+                    {t('ai_powered')}
                   </div>
                 </div>
 
@@ -94,12 +96,12 @@ export default function SymptomChecker() {
                   {isAnalyzing ? (
                     <>
                       <Loader2 className="w-5 h-5 animate-spin" />
-                      Analyzing with Zhipu AI...
+                      {t('analyzing_with_ai')}
                     </>
                   ) : (
                     <>
                       <Stethoscope className="w-5 h-5" />
-                      Check Symptoms
+                      {t('check_symptoms')}
                     </>
                   )}
                 </button>
@@ -109,11 +111,11 @@ export default function SymptomChecker() {
           </div>
 
           <div className="bg-white/2 border border-white/5 rounded-[2.5rem] p-8">
-            <h4 className="text-xs font-bold text-gray-500 uppercase tracking-[0.3em] mb-6">Medical Disclaimer</h4>
+            <h4 className="text-xs font-bold text-gray-500 uppercase tracking-[0.3em] mb-6">{t('medical_disclaimer')}</h4>
             <div className="flex gap-4 p-4 bg-amber-500/5 border border-amber-500/10 rounded-2xl">
               <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0" />
               <p className="text-xs text-amber-200/70 leading-relaxed font-medium">
-                This tool provides preliminary information and is NOT a substitute for professional medical advice, diagnosis, or treatment. If you are experiencing a medical emergency, call emergency services immediately.
+                {t('symptom_disclaimer_desc')}
               </p>
             </div>
           </div>
@@ -136,9 +138,9 @@ export default function SymptomChecker() {
                     <Brain className="w-12 h-12 text-white" />
                   </div>
                 </div>
-                <h3 className="text-2xl font-display font-bold text-white mb-4">Zhipu AI is Thinking...</h3>
+                <h3 className="text-2xl font-display font-bold text-white mb-4">{t('ai_thinking')}</h3>
                 <p className="text-gray-500 text-sm max-w-xs leading-relaxed">
-                  Analyzing symptoms and cross-referencing medical knowledge for triage.
+                  {t('symptom_analysis_desc')}
                 </p>
               </motion.div>
             ) : result ? (
@@ -154,14 +156,14 @@ export default function SymptomChecker() {
                     result.urgency === 'High' ? 'bg-rose-600/10 border-rose-500/20' : 
                     result.urgency === 'Medium' ? 'bg-amber-600/10 border-amber-500/20' : 'bg-emerald-600/10 border-emerald-500/20'
                   }`}>
-                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Urgency Level</p>
+                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">{t('urgency_level')}</p>
                     <h4 className={`text-2xl font-display font-bold ${
                       result.urgency === 'High' ? 'text-rose-500' : 
                       result.urgency === 'Medium' ? 'text-amber-500' : 'text-emerald-500'
-                    }`}>{result.urgency}</h4>
+                    }`}>{t(result.urgency.toLowerCase())}</h4>
                   </div>
                   <div className="p-8 bg-blue-600/10 border border-blue-500/20 rounded-[2rem]">
-                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Recommended Specialist</p>
+                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">{t('recommended_specialist')}</p>
                     <h4 className="text-2xl font-display font-bold text-blue-500">{result.recommendedSpecialist}</h4>
                   </div>
                 </div>
@@ -170,7 +172,7 @@ export default function SymptomChecker() {
                 <div className="bg-white/2 border border-white/5 rounded-[2.5rem] p-8">
                   <h3 className="text-lg font-display font-bold text-white mb-6 flex items-center gap-3">
                     <Info className="w-5 h-5 text-emerald-500" />
-                    Potential Causes
+                    {t('potential_causes')}
                   </h3>
                   <div className="space-y-3">
                     {result.potentialCauses.map((cause: string, i: number) => (
@@ -186,7 +188,7 @@ export default function SymptomChecker() {
                 <div className="bg-white/2 border border-white/5 rounded-[2.5rem] p-8">
                   <h3 className="text-lg font-display font-bold text-white mb-6 flex items-center gap-3">
                     <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                    Immediate Advice
+                    {t('immediate_advice')}
                   </h3>
                   <p className="text-sm text-gray-400 leading-relaxed bg-black/20 p-6 rounded-2xl border border-white/5">
                     {result.advice}
@@ -196,14 +198,14 @@ export default function SymptomChecker() {
             ) : error ? (
               <div className="h-full min-h-[500px] bg-rose-500/5 border border-rose-500/10 rounded-[2.5rem] flex flex-col items-center justify-center p-12 text-center">
                 <AlertTriangle className="w-12 h-12 text-rose-500 mb-4" />
-                <h3 className="text-xl font-display font-bold text-white mb-2">Analysis Error</h3>
+                <h3 className="text-xl font-display font-bold text-white mb-2">{t('analysis_error')}</h3>
                 <p className="text-gray-500 text-xs">{error}</p>
               </div>
             ) : (
               <div className="h-full min-h-[500px] bg-white/2 border border-white/5 rounded-[2.5rem] flex flex-col items-center justify-center p-12 text-center border-dashed">
                 <MessageSquare className="w-12 h-12 text-gray-700 mb-4" />
-                <h3 className="text-xl font-display font-bold text-gray-700 mb-2">Ready for Triage</h3>
-                <p className="text-gray-600 text-xs">Describe your symptoms to get a preliminary analysis.</p>
+                <h3 className="text-xl font-display font-bold text-gray-700 mb-2">{t('ready_for_triage')}</h3>
+                <p className="text-gray-600 text-xs">{t('describe_symptoms_placeholder')}</p>
               </div>
             )}
           </AnimatePresence>

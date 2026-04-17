@@ -12,7 +12,7 @@ interface ChatMessage {
 }
 
 export default function Chatbot() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([
@@ -39,7 +39,7 @@ export default function Chatbot() {
     try {
       const responseText = await getAIResponse(
         messageToSend,
-        "You are a helpful and professional healthcare assistant for Synapse Health. You can answer general health questions, explain medical terms, and provide wellness tips. Always state that you are an AI and not a doctor. If a user describes an emergency, tell them to call emergency services immediately."
+        `You are a helpful and professional healthcare assistant for ${t('app_name')}. You can answer general health questions, explain medical terms, and provide wellness tips. Always state that you are an AI and not a doctor. If a user describes an emergency, tell them to call emergency services immediately. IMPORTANT: Please respond in the following language: ${i18n.language === 'zh' ? 'Chinese (Simplified)' : 'English'}.`
       );
       
       const modelMessage: ChatMessage = { role: 'model', text: responseText };
@@ -76,7 +76,7 @@ export default function Chatbot() {
                   <Bot className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-display font-bold text-white">Synapse Health</h3>
+                  <h3 className="text-sm font-display font-bold text-white">{t('app_name')}</h3>
                   <p className="text-[10px] text-blue-200 font-bold uppercase tracking-widest flex items-center gap-1">
                     <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
                     {t('ai_assistant_online')}

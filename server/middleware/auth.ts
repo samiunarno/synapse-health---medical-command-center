@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+import { verifyToken } from '../utils/jwt';
 import User from '../models/User';
 
 export interface AuthRequest extends Request {
@@ -16,11 +16,8 @@ export const authenticate = async (req: AuthRequest, res: Response, next: NextFu
   if (!token) return res.status(401).json({ error: 'No token provided' });
 
   try {
-    const secret = process.env.JWT_SECRET;
-    if (!secret) {
-      console.warn('⚠️ WARNING: JWT_SECRET is not set. Using default insecure secret.');
-    }
-    const decoded: any = jwt.verify(token, secret || 'your_jwt_secret');
+    const decoded = verifyToken(token);
+    if (!decoded) return res.status(401).json({ error: 'Invalid or expired token' });
     
     const user = await User.findById(decoded.id);
     if (!user) return res.status(401).json({ error: 'User not found' });

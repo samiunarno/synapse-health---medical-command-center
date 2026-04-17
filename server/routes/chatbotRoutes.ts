@@ -13,7 +13,10 @@ import { authenticate } from '../middleware/auth';
 
 const router = express.Router();
 
-router.post('/chat', authenticate, chat);
+// Public route for the landing page chatbot
+router.post('/chat', chat);
+
+// Protected routes for patient-specific data
 router.post('/health-insights', authenticate, getHealthInsights);
 router.post('/analyze-mood', authenticate, analyzeMood);
 router.post('/nutrition-plan', authenticate, generateNutritionPlan);

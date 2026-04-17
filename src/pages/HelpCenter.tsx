@@ -10,146 +10,209 @@ import {
   FileText,
   Video,
   Zap,
-  ArrowRight
+  ArrowRight,
+  Terminal,
+  HelpCircle,
+  Activity,
+  Globe,
+  Database,
+  Lock,
+  HeadphonesIcon
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import GlobalNavbar from '../components/GlobalNavbar';
 
 export default function HelpCenter() {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
 
   const categories = [
-    { title: "Getting Started", icon: Zap, count: 12, color: "blue" },
-    { title: "EHR Management", icon: FileText, count: 24, color: "purple" },
-    { title: "TeleHealth Guide", icon: Video, count: 15, color: "emerald" },
-    { title: "Billing & Plans", icon: Book, count: 8, color: "amber" }
+    { title: t('getting_started'), icon: Zap, count: 12, color: "blue" },
+    { title: t('ehr_management'), icon: FileText, count: 24, color: "purple" },
+    { title: t('telehealth_guide'), icon: Video, count: 15, color: "emerald" },
+    { title: t('billing_plans'), icon: Book, count: 8, color: "amber" }
   ];
 
   const faqs = [
     {
-      q: "How do I set up my Digital Health ID?",
-      a: "Navigate to the Health ID section in your dashboard. Click 'Initialize ID' and follow the biometric verification steps. Once verified, your unique QR code will be generated instantly."
+      q: t('faq_q1'),
+      a: t('faq_a1')
     },
     {
-      q: "Can I source equipment internationally?",
-      a: "Yes, the Sourcing Solutions module allows you to browse global manufacturers. Our system handles all international trade protocols, customs documentation, and logistics tracking."
+      q: t('faq_q2'),
+      a: t('faq_a2')
     },
     {
-      q: "Is my medical data secure?",
-      a: "Synapse Health uses military-grade AES-256 encryption and a zero-trust architecture. All data is HIPAA and GDPR compliant, with immutable audit logs for every access request."
+      q: t('faq_q3'),
+      a: t('faq_a3')
     },
     {
-      q: "How does the AI Prescription scan work?",
-      a: "Simply upload a clear photo of your physical prescription. Our AI-powered system will analyze the text, verify dosage safety, and cross-reference it with your medical history for potential interactions."
+      q: t('faq_q4'),
+      a: t('faq_a4')
     }
   ];
 
   return (
-    <div className="space-y-20 pb-20">
-      {/* Hero Section */}
-      <section className="relative py-20 overflow-hidden rounded-[3rem] bg-white/5 border border-white/10">
-        <div className="absolute inset-0 bg-mesh opacity-20" />
-        <div className="relative z-10 max-w-4xl mx-auto text-center px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 border border-blue-500/20 rounded-full text-[10px] font-bold uppercase tracking-widest mb-8 text-blue-400"
-          >
-            <LifeBuoy className="w-3 h-3" />
-            Support Protocol v3.0
-          </motion.div>
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-5xl sm:text-7xl font-display font-black uppercase tracking-tighter leading-none mb-12"
-          >
-            How can we <span className="text-blue-500">Help?</span>
-          </motion.h1>
-          
-          <div className="relative max-w-2xl mx-auto">
-            <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-500" />
-            <input 
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search for guides, tutorials, or FAQs..."
-              className="w-full bg-white/5 border border-white/10 rounded-2xl py-6 pl-16 pr-8 text-white font-bold uppercase tracking-widest text-xs focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-            />
-          </div>
-        </div>
-      </section>
+    <div className="min-h-screen bg-[#F4F4F0] dark:bg-[#0a0a0a] text-[#111111] dark:text-[#F4F4F0] font-sans selection:bg-[#0033A0] dark:selection:bg-[#3b82f6] selection:text-white transition-colors duration-300">
+      <GlobalNavbar />
 
-      {/* Categories */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {categories.map((cat, i) => (
-          <motion.div
-            key={cat.title}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.1 }}
-            className="p-10 bg-white/2 border border-white/5 rounded-[2.5rem] hover:bg-white/5 transition-all group cursor-pointer"
-          >
-            <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-8 bg-${cat.color}-600/20 text-${cat.color}-500 group-hover:scale-110 transition-transform`}>
-              <cat.icon className="w-6 h-6" />
-            </div>
-            <h4 className="text-xl font-display font-bold uppercase tracking-tighter mb-2">{cat.title}</h4>
-            <p className="text-[10px] font-bold text-gray-600 uppercase tracking-widest">{cat.count} Articles</p>
-          </motion.div>
-        ))}
-      </section>
-
-      {/* FAQs */}
-      <section className="max-w-4xl mx-auto">
-        <h2 className="text-4xl font-display font-black uppercase tracking-tighter mb-12 text-center">Frequently Asked Questions</h2>
-        <div className="space-y-4">
-          {faqs.map((faq, i) => (
-            <div 
-              key={i}
-              className="bg-white/2 border border-white/5 rounded-3xl overflow-hidden"
+      <div className="relative z-10 max-w-[1600px] mx-auto border-x border-black/10 dark:border-white/10 min-h-screen pt-32 lg:pt-48">
+        
+        {/* Hero Section */}
+        <section className="px-6 lg:px-12 pb-20 border-b border-black/10 dark:border-white/10">
+          <div className="max-w-4xl">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="flex items-center gap-4 mb-12"
             >
-              <button 
-                onClick={() => setActiveFaq(activeFaq === i ? null : i)}
-                className="w-full p-8 flex items-center justify-between text-left hover:bg-white/5 transition-colors"
-              >
-                <span className="text-sm font-bold uppercase tracking-widest text-white">{faq.q}</span>
-                {activeFaq === i ? <ChevronUp className="w-5 h-5 text-blue-500" /> : <ChevronDown className="w-5 h-5 text-gray-600" />}
-              </button>
-              <AnimatePresence>
-                {activeFaq === i && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className="px-8 pb-8"
-                  >
-                    <p className="text-gray-500 text-xs leading-relaxed uppercase tracking-widest border-t border-white/5 pt-6">
-                      {faq.a}
-                    </p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          ))}
-        </div>
-      </section>
+              <div className="w-2 h-2 bg-[#0033A0] dark:bg-[#3b82f6] animate-pulse" />
+              <span className="font-mono text-xs uppercase tracking-[0.2em] text-black/60 dark:text-white/60">{t('support_protocol_active')}</span>
+            </motion.div>
+            
+            <motion.h1 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="text-6xl sm:text-8xl lg:text-[9rem] font-medium tracking-tighter leading-[0.85] mb-12"
+            >
+              {t('help_center_hero_1')}<br/>
+              <span className="text-[#0033A0] dark:text-[#3b82f6]">{t('help_center_hero_2')}</span>
+            </motion.h1>
 
-      {/* Contact Section */}
-      <section className="bg-white/5 border border-white/10 rounded-[3rem] p-12 lg:p-20 flex flex-col lg:flex-row items-center justify-between gap-12">
-        <div className="space-y-6 text-center lg:text-left">
-          <h3 className="text-3xl lg:text-5xl font-display font-black uppercase tracking-tighter leading-none">Still need help?</h3>
-          <p className="text-gray-500 text-sm uppercase tracking-widest leading-relaxed max-w-md">
-            Our support team is available 24/7 to assist you with any technical or clinical inquiries.
-          </p>
-        </div>
-        <div className="flex flex-col sm:flex-row gap-6">
-          <button className="px-10 py-5 bg-blue-600 text-white rounded-2xl font-bold uppercase tracking-widest text-xs hover:bg-blue-500 transition-all flex items-center gap-3">
-            <MessageSquare className="w-4 h-4" /> Live Chat
-          </button>
-          <button className="px-10 py-5 bg-white/5 border border-white/10 text-white rounded-2xl font-bold uppercase tracking-widest text-xs hover:bg-white/10 transition-all flex items-center gap-3">
-            <ArrowRight className="w-4 h-4" /> Submit Ticket
-          </button>
-        </div>
-      </section>
+            <div className="relative max-w-2xl border-b-2 border-black dark:border-white pb-4 group">
+              <Search className="absolute left-0 top-1/2 -translate-y-1/2 w-6 h-6 text-black/20 dark:text-white/20 group-focus-within:text-[#0033A0] dark:group-focus-within:text-[#3b82f6] transition-colors" />
+              <input 
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={t('search_help_placeholder')}
+                className="w-full bg-transparent py-4 pl-12 pr-4 text-2xl font-light tracking-tight outline-none"
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* Categories Grid */}
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-black/10 dark:divide-white/10 border-b border-black/10 dark:border-white/10">
+          {categories.map((cat, i) => (
+            <motion.div
+              key={cat.title}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+              className="p-12 hover:bg-white dark:hover:bg-[#111111] transition-colors group cursor-pointer"
+            >
+              <cat.icon className="w-8 h-8 text-[#0033A0] dark:text-[#3b82f6] mb-12" strokeWidth={1.5} />
+              <h4 className="text-2xl font-medium tracking-tight mb-4">{cat.title}</h4>
+              <p className="text-sm font-mono text-black/40 dark:text-white/40 uppercase tracking-widest">{cat.count} {t('articles')}</p>
+            </motion.div>
+          ))}
+        </section>
+
+        {/* FAQs */}
+        <section className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-black/10 dark:divide-white/10 border-b border-black/10 dark:border-white/10">
+          <div className="lg:col-span-4 p-12 lg:p-24">
+            <h2 className="text-4xl lg:text-5xl font-medium tracking-tight mb-8">{t('faq_title')}</h2>
+            <p className="text-lg text-black/60 dark:text-white/60 font-light leading-relaxed">
+              {t('faq_subtitle')}
+            </p>
+          </div>
+          <div className="lg:col-span-8 divide-y divide-black/10 dark:divide-white/10">
+            {faqs.map((faq, i) => (
+              <div key={i} className="group">
+                <button 
+                  onClick={() => setActiveFaq(activeFaq === i ? null : i)}
+                  className="w-full p-12 lg:p-16 flex items-center justify-between text-left hover:bg-white dark:hover:bg-[#111111] transition-colors"
+                >
+                  <span className="text-xl lg:text-2xl font-medium tracking-tight">{faq.q}</span>
+                  <div className={`w-8 h-8 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center transition-all ${activeFaq === i ? 'bg-[#111111] dark:bg-[#F4F4F0] text-white dark:text-[#111111] rotate-180' : ''}`}>
+                    <ChevronDown className="w-4 h-4" />
+                  </div>
+                </button>
+                <AnimatePresence>
+                  {activeFaq === i && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="px-12 lg:px-16 pb-16">
+                        <p className="text-lg text-black/60 dark:text-white/60 font-light leading-relaxed max-w-2xl">
+                          {faq.a}
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Support CTA */}
+        <section className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-black/10 dark:divide-white/10 border-b border-black/10 dark:border-white/10">
+          <div className="p-12 lg:p-24 flex flex-col justify-center">
+            <h2 className="text-5xl lg:text-7xl font-medium tracking-tighter leading-[0.9] mb-8">
+              {t('still_need_help')}
+            </h2>
+            <p className="text-xl text-black/60 dark:text-white/60 font-light leading-relaxed">
+              {t('support_desc')}
+            </p>
+          </div>
+          <div className="flex flex-col">
+            <button className="flex-1 p-12 lg:p-24 flex items-center justify-between bg-[#111111] dark:bg-[#F4F4F0] text-white dark:text-[#111111] hover:bg-[#0033A0] dark:hover:bg-[#3b82f6] dark:hover:text-white transition-colors group">
+              <div className="flex items-center gap-8">
+                <HeadphonesIcon className="w-12 h-12" strokeWidth={1} />
+                <span className="text-3xl lg:text-5xl font-medium tracking-tight uppercase">{t('live_chat')}</span>
+              </div>
+              <ArrowRight className="w-12 h-12 group-hover:translate-x-4 transition-transform" />
+            </button>
+            <button className="flex-1 p-12 lg:p-24 flex items-center justify-between border-t border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5 transition-colors group">
+              <div className="flex items-center gap-8">
+                <Terminal className="w-12 h-12 text-black/40 dark:text-white/40" strokeWidth={1} />
+                <span className="text-3xl lg:text-5xl font-medium tracking-tight uppercase text-black/60 dark:text-white/60 group-hover:text-black dark:group-hover:text-white">{t('submit_ticket')}</span>
+              </div>
+              <ArrowRight className="w-12 h-12 group-hover:translate-x-4 transition-transform text-black/20 dark:text-white/20 group-hover:text-black dark:group-hover:text-white" />
+            </button>
+          </div>
+        </section>
+
+        {/* Footer */}
+        <footer className="bg-[#111111] dark:bg-[#050505] text-white p-12 lg:p-24">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+            <div className="flex flex-col gap-6">
+              <div className="flex items-center gap-4">
+                <div className="w-8 h-8 bg-[#0033A0] dark:bg-[#3b82f6] rounded-sm" />
+                <span className="font-mono text-xl uppercase tracking-widest">{t('app_name')}</span>
+              </div>
+              <p className="text-white/40 text-sm font-light">
+                {t('footer_desc_support')}
+              </p>
+            </div>
+            {/* Quick Links */}
+            <div className="flex flex-col gap-4">
+              <h4 className="font-mono text-xs uppercase tracking-widest text-white/40 mb-4">{t('platform')}</h4>
+              <Link to="/ecommerce" className="text-sm hover:text-[#3b82f6] transition-colors">{t('marketplace')}</Link>
+              <Link to="/help-center" className="text-sm hover:text-[#3b82f6] transition-colors">{t('help_center')}</Link>
+              <Link to="/presentation" className="text-sm hover:text-[#3b82f6] transition-colors">{t('pitch_deck')}</Link>
+            </div>
+          </div>
+          <div className="pt-12 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-6">
+            <p className="font-mono text-[10px] uppercase tracking-widest text-white/20">
+              © 2026 {t('app_name')}. {t('all_rights_reserved')}
+            </p>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+              <span className="font-mono text-[10px] uppercase tracking-widest text-white/40">{t('systems_operational_footer')}</span>
+            </div>
+          </div>
+        </footer>
+      </div>
     </div>
   );
 }

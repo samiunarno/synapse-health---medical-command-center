@@ -276,16 +276,16 @@ export const seedDatabase = async () => {
     try {
       if (await Medicine.countDocuments() <= 5) {
         const medicines = [
-          { brand_name: 'Lipitor', generic_name: 'Atorvastatin', stock_quantity: 500, price: 15.5, associated_department_id: cardiologyId },
-          { brand_name: 'Panadol', generic_name: 'Paracetamol', stock_quantity: 1000, price: 5.0, associated_department_id: emergencyId },
-          { brand_name: 'Amoxil', generic_name: 'Amoxicillin', stock_quantity: 300, price: 12.0, associated_department_id: pediatricsId },
-          { brand_name: 'Zestril', generic_name: 'Lisinopril', stock_quantity: 450, price: 25.0, associated_department_id: cardiologyId },
-          { brand_name: 'Glucophage', generic_name: 'Metformin', stock_quantity: 600, price: 10.0, associated_department_id: oncologyId },
-          { brand_name: 'Norvasc', generic_name: 'Amlodipine', stock_quantity: 400, price: 20.0, associated_department_id: cardiologyId },
-          { brand_name: 'Ventolin', generic_name: 'Albuterol', stock_quantity: 250, price: 45.0, associated_department_id: emergencyId },
-          { brand_name: 'Zoloft', generic_name: 'Sertraline', stock_quantity: 350, price: 30.0, associated_department_id: neurologyId },
-          { brand_name: 'Neurontin', generic_name: 'Gabapentin', stock_quantity: 300, price: 22.0, associated_department_id: neurologyId },
-          { brand_name: 'Prilosec', generic_name: 'Omeprazole', stock_quantity: 500, price: 18.0, associated_department_id: pediatricsId }
+          { brand_name: 'Lipitor', generic_name: 'Atorvastatin', stock_quantity: 500, price: 15.5, associated_department_id: cardiologyId, image_url: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?q=80&w=400&auto=format&fit=crop' },
+          { brand_name: 'Panadol', generic_name: 'Paracetamol', stock_quantity: 1000, price: 5.0, associated_department_id: emergencyId, image_url: 'https://images.unsplash.com/photo-1550572017-ed20027aa215?q=80&w=400&auto=format&fit=crop' },
+          { brand_name: 'Amoxil', generic_name: 'Amoxicillin', stock_quantity: 300, price: 12.0, associated_department_id: pediatricsId, image_url: 'https://images.unsplash.com/photo-1471864190281-a93a3070b6de?q=80&w=400&auto=format&fit=crop' },
+          { brand_name: 'Zestril', generic_name: 'Lisinopril', stock_quantity: 450, price: 25.0, associated_department_id: cardiologyId, image_url: 'https://images.unsplash.com/photo-1626716493137-b67fe9501e76?q=80&w=400&auto=format&fit=crop' },
+          { brand_name: 'Glucophage', generic_name: 'Metformin', stock_quantity: 600, price: 10.0, associated_department_id: oncologyId, image_url: 'https://images.unsplash.com/photo-1550572017-d1a104b2c86b?q=80&w=400&auto=format&fit=crop' },
+          { brand_name: 'Advil', generic_name: 'Ibuprofen', stock_quantity: 400, price: 8.5, associated_department_id: emergencyId, image_url: 'https://images.unsplash.com/photo-1616671285410-0935562093e9?q=80&w=400&auto=format&fit=crop' },
+          { brand_name: 'Ventolin', generic_name: 'Albuterol', stock_quantity: 250, price: 45.0, associated_department_id: emergencyId, image_url: 'https://images.unsplash.com/photo-1599059021750-8474273dc28b?q=80&w=400&auto=format&fit=crop' },
+          { brand_name: 'Zyrtec', generic_name: 'Cetirizine', stock_quantity: 350, price: 18.0, associated_department_id: neurologyId, image_url: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?q=80&w=400&auto=format&fit=crop' },
+          { brand_name: 'Neurontin', generic_name: 'Gabapentin', stock_quantity: 300, price: 22.0, associated_department_id: neurologyId, image_url: 'https://images.unsplash.com/photo-1550572017-ed20027aa215?q=80&w=400&auto=format&fit=crop' },
+          { brand_name: 'Prilosec', generic_name: 'Omeprazole', stock_quantity: 500, price: 18.0, associated_department_id: pediatricsId, image_url: 'https://images.unsplash.com/photo-1626716493137-b67fe9501e76?q=80&w=400&auto=format&fit=crop' }
         ];
         
         for (const med of medicines) {
@@ -317,16 +317,12 @@ export const seedDatabase = async () => {
     try {
       if (await Product.countDocuments() <= 5) {
         const products = [
-          { name: 'Digital BP Monitor', description: 'Automatic blood pressure monitor.', price: 45.99, category: 'Equipment', stock_quantity: 100, manufacturer: 'HealthTech' },
-          { name: 'N95 Mask Pack', description: 'Box of 50 masks.', price: 25.00, category: 'Supplies', stock_quantity: 500, manufacturer: 'SafeGuard' },
-          { name: 'Stethoscope', description: 'Professional grade stethoscope.', price: 120.00, category: 'Equipment', stock_quantity: 50, manufacturer: 'Littmann' },
-          { name: 'Infrared Thermometer', description: 'Non-contact digital thermometer.', price: 15.00, category: 'Equipment', stock_quantity: 150, manufacturer: 'Omron' },
-          { name: 'Wheelchair', description: 'Lightweight folding wheelchair.', price: 450.00, category: 'Equipment', stock_quantity: 10, manufacturer: 'Drive Medical' },
-          { name: 'Surgical Gloves (100pk)', description: 'Nitrile exam gloves.', price: 18.00, category: 'Supplies', stock_quantity: 300, manufacturer: 'Ansell' },
-          { name: 'Hand Sanitizer (500ml)', description: '70% alcohol gel.', price: 8.00, category: 'Supplies', stock_quantity: 200, manufacturer: 'Purell' },
-          { name: 'First Aid Kit', description: 'Comprehensive emergency kit.', price: 45.00, category: 'Supplies', stock_quantity: 40, manufacturer: 'Johnson & Johnson' },
-          { name: 'Pulse Oximeter', description: 'Fingertip oxygen monitor.', price: 35.00, category: 'Equipment', stock_quantity: 60, manufacturer: 'Masimo' },
-          { name: 'Nebulizer', description: 'Portable compressor nebulizer.', price: 75.00, category: 'Equipment', stock_quantity: 20, manufacturer: 'Philips' }
+          { name: 'Digital BP Monitor', description: 'Automatic clinical blood pressure monitor.', price: 45.99, category: 'Equipment', stock_quantity: 100, manufacturer: 'HealthTech', image_url: 'https://images.unsplash.com/photo-1616391182219-e080b4d1043a?q=80&w=400&auto=format&fit=crop' },
+          { name: 'N95 Mask Pack', description: 'Box of 50 medical-grade masks.', price: 25.00, category: 'Supplies', stock_quantity: 500, manufacturer: 'SafeGuard', image_url: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=400&auto=format&fit=crop' },
+          { name: 'Stethoscope', description: 'Professional medical grade stethoscope.', price: 120.00, category: 'Equipment', stock_quantity: 50, manufacturer: 'Littmann', image_url: 'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?q=80&w=400&auto=format&fit=crop' },
+          { name: 'Infrared Thermometer', description: 'Non-contact hospital-grade thermometer.', price: 15.00, category: 'Equipment', stock_quantity: 150, manufacturer: 'Omron', image_url: 'https://images.unsplash.com/photo-1584036561566-baf8f5f1b144?q=80&w=400&auto=format&fit=crop' },
+          { name: 'Wheelchair', description: 'Lightweight ergonomic folding wheelchair.', price: 450.00, category: 'Equipment', stock_quantity: 10, manufacturer: 'Drive Medical', image_url: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?q=80&w=400&auto=format&fit=crop' },
+          { name: 'Pulse Oximeter', description: 'Fingertip oxygen saturation monitor.', price: 35.00, category: 'Equipment', stock_quantity: 60, manufacturer: 'Masimo', image_url: 'https://images.unsplash.com/photo-1584036561566-baf8f5f1b144?q=80&w=400&auto=format&fit=crop' }
         ];
         
         for (const prod of products) {

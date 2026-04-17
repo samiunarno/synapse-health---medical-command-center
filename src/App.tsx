@@ -1,5 +1,6 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { AuthProvider, useAuth } from './components/AuthContext';
 import { ThemeProvider } from './components/ThemeContext';
 import { SocketProvider } from './components/SocketContext';
@@ -44,10 +45,13 @@ import OrganDonation from './pages/OrganDonation';
 import AIChatbot from './pages/AIChatbot';
 import Ecommerce from './pages/Ecommerce';
 import AdminProducts from './pages/AdminProducts';
+import MessagingPage from './pages/MessagingPage';
 import Presentation from './pages/Presentation';
 import SourcingSolutions from './pages/SourcingSolutions';
 import ServicesMembership from './pages/ServicesMembership';
 import HelpCenter from './pages/HelpCenter';
+import HospitalWallet from './pages/HospitalWallet';
+import AdminFinance from './pages/AdminFinance';
 import Chatbot from './components/Chatbot';
 import SOSButton from './components/SOSButton';
 import CustomCursor from './components/CustomCursor';
@@ -56,12 +60,25 @@ import ErrorBoundary from './components/ErrorBoundary';
 
 function PrivateRoute({ children, roles }: { children: React.ReactNode; roles?: string[] }) {
   const { user, loading } = useAuth();
+  const { t } = useTranslation();
 
-  if (loading) return <div className="flex items-center justify-center h-screen bg-[#050505] text-white font-bold uppercase tracking-[0.3em]">正在加载系统核心...</div>;
+  if (loading) return <div className="flex items-center justify-center h-screen bg-[#050505] text-white font-bold uppercase tracking-[0.3em]">{t('loading_system_core') || '正在加载系统核心...'}</div>;
   if (!user) return <Navigate to="/login" />;
   if (roles && !roles.includes(user.role)) return <Navigate to="/dashboard" />;
 
   return <Layout>{children}</Layout>;
+}
+
+function FloatingWidgets() {
+  const location = useLocation();
+  // Only show the floating AI Chatbot and Emergency SOS on the root Landing page.
+  if (location.pathname !== '/') return null;
+  return (
+    <>
+      <Chatbot />
+      <SOSButton />
+    </>
+  );
 }
 
 export default function App() {
@@ -73,8 +90,7 @@ export default function App() {
             <div className="lg:cursor-none min-h-screen">
               <Router>
                 <CustomCursor />
-                <Chatbot />
-                <SOSButton />
+                <FloatingWidgets />
                 <Routes>
                   <Route path="/" element={<Landing />} />
                   <Route path="/login" element={<Login />} />
@@ -121,6 +137,9 @@ export default function App() {
                   <Route path="/ai-chatbot" element={<PrivateRoute><AIChatbot /></PrivateRoute>} />
                   <Route path="/ecommerce" element={<Ecommerce />} />
                   <Route path="/admin/products" element={<PrivateRoute roles={['Admin']}><AdminProducts /></PrivateRoute>} />
+                  <Route path="/admin/finance" element={<PrivateRoute roles={['Admin']}><AdminFinance /></PrivateRoute>} />
+                  <Route path="/wallet" element={<PrivateRoute><HospitalWallet /></PrivateRoute>} />
+                  <Route path="/messages" element={<PrivateRoute><MessagingPage /></PrivateRoute>} />
                   
                   <Route path="*" element={<Navigate to="/" />} />
                 </Routes>

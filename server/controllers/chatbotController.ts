@@ -12,11 +12,11 @@ import {
 
 export const chat = async (req: Request, res: Response) => {
   try {
-    const { message, systemPrompt } = req.body;
+    const { message, systemPrompt, lang } = req.body;
     if (!message) {
       return res.status(400).json({ error: 'Message is required' });
     }
-    const response = await getAIResponse(message, systemPrompt);
+    const response = await getAIResponse(message, systemPrompt, false, lang);
     res.json({ response });
   } catch (error: any) {
     console.error('Chat Controller Error:', error);
@@ -26,8 +26,8 @@ export const chat = async (req: Request, res: Response) => {
 
 export const getHealthInsights = async (req: Request, res: Response) => {
   try {
-    const { patientData } = req.body;
-    const response = await getHealthInsightsAI(patientData);
+    const { patientData, lang } = req.body;
+    const response = await getHealthInsightsAI(patientData, lang);
     res.json(response);
   } catch (error: any) {
     console.error('Health Insights Controller Error:', error);
@@ -37,8 +37,8 @@ export const getHealthInsights = async (req: Request, res: Response) => {
 
 export const analyzeMood = async (req: Request, res: Response) => {
   try {
-    const { journal, mood } = req.body;
-    const response = await analyzeMoodAI(journal, mood);
+    const { journal, mood, lang } = req.body;
+    const response = await analyzeMoodAI(journal, mood, lang);
     res.json(response);
   } catch (error: any) {
     console.error('Mood Analysis Controller Error:', error);
@@ -48,8 +48,8 @@ export const analyzeMood = async (req: Request, res: Response) => {
 
 export const generateNutritionPlan = async (req: Request, res: Response) => {
   try {
-    const { conditions, preferences } = req.body;
-    const response = await generateNutritionPlanAI(conditions, preferences);
+    const { conditions, preferences, lang } = req.body;
+    const response = await generateNutritionPlanAI(conditions, preferences, lang);
     res.json(response);
   } catch (error: any) {
     console.error('Nutrition Plan Controller Error:', error);
@@ -59,8 +59,8 @@ export const generateNutritionPlan = async (req: Request, res: Response) => {
 
 export const checkSymptoms = async (req: Request, res: Response) => {
   try {
-    const { symptoms } = req.body;
-    const response = await checkSymptomsAI(symptoms);
+    const { symptoms, lang } = req.body;
+    const response = await checkSymptomsAI(symptoms, lang);
     res.json(response);
   } catch (error: any) {
     console.error('Symptom Check Controller Error:', error);
@@ -70,8 +70,8 @@ export const checkSymptoms = async (req: Request, res: Response) => {
 
 export const analyzeLab = async (req: Request, res: Response) => {
   try {
-    const { reportDetails } = req.body;
-    const response = await analyzeLabReport(reportDetails);
+    const { reportDetails, lang } = req.body;
+    const response = await analyzeLabReport(reportDetails, lang);
     res.json(response);
   } catch (error: any) {
     console.error('Lab Analysis Controller Error:', error);
@@ -81,8 +81,8 @@ export const analyzeLab = async (req: Request, res: Response) => {
 
 export const analyzePrescription = async (req: Request, res: Response) => {
   try {
-    const { imageData } = req.body;
-    const response = await analyzePrescriptionAI(imageData);
+    const { imageData, lang } = req.body;
+    const response = await analyzePrescriptionAI(imageData, lang);
     res.json(response);
   } catch (error: any) {
     console.error('Prescription Analysis Controller Error:', error);
@@ -92,8 +92,8 @@ export const analyzePrescription = async (req: Request, res: Response) => {
 
 export const suggestDoctor = async (req: Request, res: Response) => {
   try {
-    const { symptoms, doctors } = req.body;
-    const response = await suggestDoctorAI(symptoms, doctors);
+    const { symptoms, doctors, lang } = req.body;
+    const response = await suggestDoctorAI(symptoms, doctors, lang);
     res.json(response);
   } catch (error: any) {
     console.error('Doctor Suggestion Controller Error:', error);

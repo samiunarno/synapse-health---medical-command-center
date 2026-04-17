@@ -144,7 +144,7 @@ export default function LabAppointments() {
                     </div>
                     <div className="flex items-center gap-6 w-full md:w-auto">
                       <div className="text-right">
-                        <p className="text-lg font-display font-bold text-white">${app.price}</p>
+                        <p className="text-lg font-display font-bold text-white">¥{app.price}</p>
                         <span className={`px-3 py-1 rounded-full text-[8px] font-bold uppercase tracking-widest border ${
                           app.status === 'Confirmed' ? 'bg-green-500/10 text-green-500 border-green-500/20' : 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'
                         }`}>
@@ -178,7 +178,7 @@ export default function LabAppointments() {
                       <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{test.duration}</p>
                     </div>
                   </div>
-                  <p className="text-sm font-bold text-blue-500">${test.price}</p>
+                  <p className="text-sm font-bold text-blue-500">¥{test.price}</p>
                 </div>
               ))}
             </div>
@@ -254,7 +254,7 @@ export default function LabAppointments() {
                 <div className="bg-white/2 border border-white/5 rounded-3xl p-6 flex items-center justify-between">
                   <div>
                     <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Total Price</p>
-                    <p className="text-3xl font-display font-bold text-white">${selectedTest.price}</p>
+                    <p className="text-3xl font-display font-bold text-white">¥{selectedTest.price}</p>
                   </div>
                   <button
                     type="submit"

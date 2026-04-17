@@ -61,32 +61,42 @@ export default function EcommerceSlider() {
   if (products.length === 0) return null;
 
   return (
-    <section className="py-24 border-b border-black/10 dark:border-white/10 bg-white dark:bg-[#111111] overflow-hidden transition-colors duration-300">
-      <div className="px-12 mb-12 flex justify-between items-end">
-        <h2 className="text-2xl font-medium tracking-tight">{t('trusted_by_leaders')}</h2>
-        <span className="font-mono text-xs uppercase tracking-widest text-black/40 dark:text-white/40">{t('network_partners')}</span>
+    <div className="relative group/slider">
+      <div className="flex items-center justify-between mb-8 px-12">
+        <div>
+          <h3 className="text-3xl font-medium tracking-tight mb-2">{t('medical_marketplace_slider')}</h3>
+          <p className="text-sm text-black/60 dark:text-white/60 font-light">{t('medical_marketplace_desc_slider')}</p>
+        </div>
+        <Link 
+          to="/ecommerce"
+          className="group flex items-center gap-2 text-sm font-mono uppercase tracking-widest text-[#0033A0] dark:text-[#3b82f6] hover:gap-4 transition-all"
+        >
+          {t('view_all_products')} <ArrowRight className="w-4 h-4" />
+        </Link>
       </div>
-      <div className="grayscale opacity-60 hover:grayscale-0 hover:opacity-100 dark:opacity-40 dark:hover:opacity-100 transition-all duration-500">
-        <div className="relative overflow-hidden">
+
+      <div className="relative overflow-visible">
+        <div className="overflow-hidden px-12 pb-12">
           <motion.div 
-            animate={{ x: `-${currentIndex * 100}%` }}
+            animate={{ x: `-${currentIndex * 25}%` }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="flex gap-6 px-12"
+            className="flex gap-6"
           >
             {products.map((product) => (
-              <div 
+              <Link 
                 key={product._id}
-                className="w-[300px] shrink-0 bg-[#F4F4F0] dark:bg-[#050505] border border-black/10 dark:border-white/10 p-6 group transition-colors duration-300"
+                to="/ecommerce"
+                className="w-[300px] shrink-0 bg-white dark:bg-[#111111] border border-black/10 dark:border-white/10 p-6 group transition-all duration-300 hover:shadow-2xl hover:shadow-[#0033A0]/10 dark:hover:shadow-[#3b82f6]/10 hover:-translate-y-1 block"
               >
-                <div className="aspect-square overflow-hidden mb-6 relative border border-black/10 dark:border-white/10">
+                <div className="aspect-square overflow-hidden mb-6 relative border border-black/10 dark:border-white/10 bg-[#F4F4F0] dark:bg-[#050505]">
                   <img 
                     src={product.image_url || `https://picsum.photos/seed/${product.name}/400/400`}
                     alt={product.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     referrerPolicy="no-referrer"
                   />
                   <div className="absolute top-4 left-4">
-                    <div className="px-2 py-1 bg-[#0033A0] dark:bg-[#3b82f6] text-white text-[10px] font-mono uppercase tracking-widest flex items-center gap-1">
+                    <div className="px-2 py-1 bg-[#0033A0] dark:bg-[#3b82f6] text-white text-[10px] font-mono uppercase tracking-widest flex items-center gap-1 shadow-lg">
                       <ShieldCheck className="w-3 h-3" /> {t('verified')}
                     </div>
                   </div>
@@ -94,25 +104,44 @@ export default function EcommerceSlider() {
                 
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono text-[#0033A0] dark:text-[#3b82f6] uppercase tracking-widest">{product.category}</span>
+                    <span className="text-[10px] font-mono text-[#0033A0] dark:text-[#3b82f6] uppercase tracking-widest">
+                      {t(`category_${product.category.toLowerCase()}`, { defaultValue: product.category })}
+                    </span>
                     <div className="flex items-center gap-1">
-                      <Star className="w-3 h-3 text-black dark:text-white fill-current" />
+                      <Star className="w-3 h-3 text-yellow-400 fill-current" />
                       <span className="text-[10px] font-mono text-black/60 dark:text-white/60">4.9</span>
                     </div>
                   </div>
                   <h3 className="text-lg font-medium text-black dark:text-white line-clamp-1 group-hover:text-[#0033A0] dark:group-hover:text-[#3b82f6] transition-colors">
-                    {product.name}
+                    {t(`product_${product.name.toLowerCase().replace(/ /g, '_').replace(/[^a-z0-9_]/g, '')}`, { defaultValue: product.name })}
                   </h3>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-2xl font-medium text-black dark:text-white">${product.price}</span>
-                    <span className="text-[10px] font-mono text-black/60 dark:text-white/60 uppercase tracking-widest">/ {t('unit')}</span>
+                  <div className="flex items-baseline justify-between border-t border-black/5 dark:border-white/5 pt-4">
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-2xl font-medium text-black dark:text-white">¥{product.price}</span>
+                      <span className="text-xs font-mono text-black/40 dark:text-white/40 uppercase tracking-widest">CNY</span>
+                    </div>
+                    <ShoppingBag className="w-5 h-5 text-black/20 dark:text-white/20 group-hover:text-[#0033A0] dark:group-hover:text-[#3b82f6] transition-colors" />
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </motion.div>
         </div>
+
+        {/* Navigation Controls */}
+        <button 
+          onClick={prev}
+          className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white dark:bg-[#111111] border border-black/10 dark:border-white/10 flex items-center justify-center text-black dark:text-white hover:bg-[#0033A0] dark:hover:bg-[#3b82f6] hover:text-white transition-all shadow-xl z-20 group"
+        >
+          <ChevronLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
+        </button>
+        <button 
+          onClick={next}
+          className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white dark:bg-[#111111] border border-black/10 dark:border-white/10 flex items-center justify-center text-black dark:text-white hover:bg-[#0033A0] dark:hover:bg-[#3b82f6] hover:text-white transition-all shadow-xl z-20 group"
+        >
+          <ChevronRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+        </button>
       </div>
-    </section>
+    </div>
   );
 }

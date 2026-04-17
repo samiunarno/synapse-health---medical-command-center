@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { io } from 'socket.io-client';
+import { translateDynamic } from '../lib/i18n-utils';
 
 interface LabReport {
   _id: string;
@@ -33,7 +34,7 @@ interface LabReport {
 }
 
 export default function LabDashboard() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [reports, setReports] = React.useState<LabReport[]>([]);
   const [loading, ReactSetLoading] = React.useState(true);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
@@ -246,13 +247,13 @@ export default function LabDashboard() {
               </div>
               <div className="text-right">
                 <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">{t('commission_balance')}</p>
-                <h3 className="text-4xl font-display font-bold text-white tracking-tighter">${commissions?.commissionBalance?.toFixed(2) || '0.00'}</h3>
+                <h3 className="text-4xl font-display font-bold text-white tracking-tighter">¥{commissions?.commissionBalance?.toFixed(2) || '0.00'}</h3>
               </div>
             </div>
             
             <div className="p-6 bg-white/5 rounded-2xl border border-white/5">
               <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">{t('total_platform_sales')}</p>
-              <p className="text-2xl font-display font-bold text-white tracking-tighter">${commissions?.totalSales?.toFixed(2) || '0.00'}</p>
+              <p className="text-2xl font-display font-bold text-white tracking-tighter">¥{commissions?.totalSales?.toFixed(2) || '0.00'}</p>
             </div>
 
             <button 
@@ -327,11 +328,11 @@ export default function LabDashboard() {
                       </div>
                     </td>
                     <td className="px-8 py-6">
-                      <span className="text-sm font-bold text-white uppercase tracking-tight">{report.test_name}</span>
+                      <span className="text-sm font-bold text-white uppercase tracking-tight">{translateDynamic(t, report.test_name)}</span>
                     </td>
                     <td className="px-8 py-6">
                       <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">
-                        {new Date(report.createdAt).toLocaleDateString()}
+                        {new Date(report.createdAt).toLocaleDateString(i18n.language === 'zh' ? 'zh-CN' : 'en-GB')}
                       </span>
                     </td>
                     <td className="px-8 py-6">
@@ -343,7 +344,7 @@ export default function LabDashboard() {
                             : 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20 hover:bg-yellow-500/20'
                         }`}
                       >
-                        {report.status}
+                        {t(report.status.toLowerCase())}
                       </button>
                     </td>
                     <td className="px-8 py-6 text-right">

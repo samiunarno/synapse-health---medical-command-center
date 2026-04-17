@@ -9,11 +9,12 @@ const getAuthHeaders = () => {
   };
 };
 
-export const getAIResponse = async (message: string, systemPrompt?: string) => {
+export const getAIResponse = async (message: string, systemPrompt?: string, lang: string = 'en') => {
   try {
     const response = await axios.post('/api/chatbot/chat', {
-      message,
-      systemPrompt
+       message,
+       systemPrompt,
+       lang
     }, getAuthHeaders());
     return response.data.response;
   } catch (error) {
@@ -22,7 +23,7 @@ export const getAIResponse = async (message: string, systemPrompt?: string) => {
   }
 };
 
-export const getCDSSInsights = async (patientData: any, medicalRecords: any[], labReports: any[]) => {
+export const getCDSSInsights = async (patientData: any, medicalRecords: any[], labReports: any[], lang: string = 'en') => {
   try {
     // Note: The backend doesn't have a specific CDSS endpoint in chatbotRoutes, 
     // but we can use the chat endpoint with a specific prompt, or if there's another endpoint we can use it.
@@ -44,7 +45,8 @@ export const getCDSSInsights = async (patientData: any, medicalRecords: any[], l
     `;
     const response = await axios.post('/api/chatbot/chat', {
       message: prompt,
-      systemPrompt: "You are a Clinical Decision Support System (CDSS). Return ONLY a JSON object."
+      systemPrompt: "You are a Clinical Decision Support System (CDSS). Return ONLY a JSON object.",
+      lang
     }, getAuthHeaders());
     
     let content = response.data.response;
@@ -56,11 +58,12 @@ export const getCDSSInsights = async (patientData: any, medicalRecords: any[], l
   }
 };
 
-export const analyzeMood = async (journal: string, mood: number) => {
+export const analyzeMood = async (journal: string, mood: number, lang: string = 'en') => {
   try {
     const response = await axios.post('/api/chatbot/analyze-mood', {
       journal,
-      mood
+      mood,
+      lang
     }, getAuthHeaders());
     return response.data;
   } catch (error) {
@@ -69,11 +72,12 @@ export const analyzeMood = async (journal: string, mood: number) => {
   }
 };
 
-export const generateNutritionPlan = async (conditions: string[], preferences: string[]) => {
+export const generateNutritionPlan = async (conditions: string[], preferences: string[], lang: string = 'en') => {
   try {
     const response = await axios.post('/api/chatbot/nutrition-plan', {
       conditions,
-      preferences
+      preferences,
+      lang
     }, getAuthHeaders());
     return response.data;
   } catch (error) {
@@ -82,10 +86,11 @@ export const generateNutritionPlan = async (conditions: string[], preferences: s
   }
 };
 
-export const analyzeLabReport = async (reportDetails: string) => {
+export const analyzeLabReport = async (reportDetails: string, lang: string = 'en') => {
   try {
     const response = await axios.post('/api/chatbot/analyze-lab', {
-      reportDetails
+      reportDetails,
+      lang
     }, getAuthHeaders());
     return response.data;
   } catch (error) {
@@ -94,10 +99,11 @@ export const analyzeLabReport = async (reportDetails: string) => {
   }
 };
 
-export const getHealthInsights = async (patientData: any) => {
+export const getHealthInsights = async (patientData: any, lang: string = 'en') => {
   try {
     const response = await axios.post('/api/chatbot/health-insights', {
-      patientData
+      patientData,
+      lang
     }, getAuthHeaders());
     return response.data;
   } catch (error) {
@@ -106,11 +112,12 @@ export const getHealthInsights = async (patientData: any) => {
   }
 };
 
-export const suggestDoctor = async (symptoms: string, doctors: any[]) => {
+export const suggestDoctor = async (symptoms: string, doctors: any[], lang: string = 'en') => {
   try {
     const response = await axios.post('/api/chatbot/suggest-doctor', {
       symptoms,
-      doctors
+      doctors,
+      lang
     }, getAuthHeaders());
     return response.data;
   } catch (error) {
@@ -119,10 +126,11 @@ export const suggestDoctor = async (symptoms: string, doctors: any[]) => {
   }
 };
 
-export const analyzePrescription = async (imageData: string) => {
+export const analyzePrescription = async (imageData: string, lang: string = 'en') => {
   try {
     const response = await axios.post('/api/chatbot/analyze-prescription', {
-      imageData
+      imageData,
+      lang
     }, getAuthHeaders());
     return response.data;
   } catch (error) {
