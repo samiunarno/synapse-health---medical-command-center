@@ -97,12 +97,18 @@ export default function HealthInsights({ patientData }: HealthInsightsProps) {
                 >
                   <div className="flex items-center gap-3 mb-4">
                     <div className="p-2 bg-white/5 rounded-xl group-hover:scale-110 transition-transform">
-                      {categoryIcons[insight.category] || <Activity className="w-5 h-5 text-gray-400" />}
+                      {categoryIcons[typeof insight.category === 'string' ? insight.category : ''] || <Activity className="w-5 h-5 text-gray-400" />}
                     </div>
-                    <span className="text-[8px] font-black uppercase tracking-[0.2em] text-gray-500">{insight.category}</span>
+                    <span className="text-[8px] font-black uppercase tracking-[0.2em] text-gray-500">
+                      {typeof insight.category === 'object' ? JSON.stringify(insight.category) : insight.category}
+                    </span>
                   </div>
-                  <h4 className="font-display font-bold text-white mb-2">{insight.title}</h4>
-                  <p className="text-xs text-gray-400 leading-relaxed">{insight.description}</p>
+                  <h4 className="font-display font-bold text-white mb-2">
+                    {typeof insight.title === 'object' ? JSON.stringify(insight.title) : insight.title}
+                  </h4>
+                  <p className="text-xs text-gray-400 leading-relaxed">
+                    {typeof insight.description === 'object' ? JSON.stringify(insight.description) : insight.description}
+                  </p>
                 </motion.div>
               ))}
             </div>
@@ -116,15 +122,19 @@ export default function HealthInsights({ patientData }: HealthInsightsProps) {
                 {(Array.isArray(insights?.recommendations) ? insights.recommendations : []).map((rec: any, idx: number) => (
                   <div key={idx} className="flex items-start gap-4 p-4 bg-white/2 rounded-2xl border border-white/5">
                     <div className={`mt-1 px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest ${
-                      rec.priority === 'High' ? 'bg-red-500/10 text-red-400 border border-red-500/20' :
-                      rec.priority === 'Medium' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
+                      typeof rec.priority === 'string' && rec.priority === 'High' ? 'bg-red-500/10 text-red-400 border border-red-500/20' :
+                      typeof rec.priority === 'string' && rec.priority === 'Medium' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
                       'bg-blue-500/10 text-blue-400 border border-blue-500/20'
                     }`}>
-                      {rec.priority}
+                      {typeof rec.priority === 'object' ? JSON.stringify(rec.priority) : rec.priority}
                     </div>
                     <div>
-                      <h5 className="font-bold text-white text-sm">{rec.title}</h5>
-                      <p className="text-xs text-gray-500 mt-1">{rec.description}</p>
+                      <h5 className="font-bold text-white text-sm">
+                        {typeof rec.title === 'object' ? JSON.stringify(rec.title) : rec.title}
+                      </h5>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {typeof rec.description === 'object' ? JSON.stringify(rec.description) : rec.description}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -134,7 +144,7 @@ export default function HealthInsights({ patientData }: HealthInsightsProps) {
             <div className="flex items-center gap-3 p-4 bg-white/2 rounded-2xl border border-white/5">
               <ShieldAlert className="w-5 h-5 text-gray-600 shrink-0" />
               <p className="text-[10px] text-gray-600 font-medium italic leading-relaxed">
-                {insights.disclaimer}
+                {typeof insights.disclaimer === 'object' ? JSON.stringify(insights.disclaimer) : insights.disclaimer}
               </p>
             </div>
           </div>

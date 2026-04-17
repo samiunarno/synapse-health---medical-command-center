@@ -123,7 +123,7 @@ export default function LabReportInterpreter() {
                   </div>
 
                   <p className="text-gray-300 font-medium leading-relaxed italic">
-                    "{result.summary}"
+                    "{typeof result.summary === 'object' ? JSON.stringify(result.summary) : result.summary}"
                   </p>
 
                   <div className="space-y-6">
@@ -133,16 +133,20 @@ export default function LabReportInterpreter() {
                         <div key={idx} className="p-6 bg-white/2 border border-white/5 rounded-2xl space-y-4">
                           <div className="flex justify-between items-start">
                             <div>
-                              <h4 className="text-lg font-bold text-white uppercase tracking-tight">{val.parameter}</h4>
-                              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{t('normal_range')}: {val.range}</p>
+                              <h4 className="text-lg font-bold text-white uppercase tracking-tight">
+                                {typeof val.parameter === 'object' ? JSON.stringify(val.parameter) : val.parameter}
+                              </h4>
+                              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{t('normal_range')}: {typeof val.range === 'object' ? JSON.stringify(val.range) : val.range}</p>
                             </div>
                             <span className="px-3 py-1 bg-red-500/20 text-red-500 rounded-lg text-[10px] font-bold uppercase tracking-widest border border-red-500/20">
-                              {val.status}
+                              {typeof val.status === 'object' ? JSON.stringify(val.status) : val.status}
                             </span>
                           </div>
                           <div className="flex gap-3 items-start">
                             <Info className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
-                            <p className="text-xs text-gray-400 font-medium leading-relaxed">{val.meaning}</p>
+                            <p className="text-xs text-gray-400 font-medium leading-relaxed">
+                              {typeof val.meaning === 'object' ? JSON.stringify(val.meaning) : val.meaning}
+                            </p>
                           </div>
                         </div>
                       ))}
@@ -152,10 +156,12 @@ export default function LabReportInterpreter() {
                   <div className="space-y-6">
                     <p className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.4em]">{t('actionable_advice')}</p>
                     <div className="grid gap-3">
-                      {(Array.isArray(result.advice) ? result.advice : []).map((item: string, idx: number) => (
+                      {(Array.isArray(result.advice) ? result.advice : []).map((item: any, idx: number) => (
                         <div key={idx} className="flex items-center gap-4 p-4 bg-white/2 border border-white/5 rounded-xl group hover:bg-white/5 transition-colors">
                           <div className="w-2 h-2 bg-blue-500 rounded-full group-hover:scale-150 transition-transform" />
-                          <span className="text-xs font-bold text-gray-300 uppercase tracking-widest">{item}</span>
+                          <span className="text-xs font-bold text-gray-300 uppercase tracking-widest">
+                            {typeof item === 'object' ? JSON.stringify(item) : String(item)}
+                          </span>
                         </div>
                       ))}
                     </div>

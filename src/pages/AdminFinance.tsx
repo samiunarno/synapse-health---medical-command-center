@@ -15,7 +15,6 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../components/AuthContext';
 import { useTranslation } from 'react-i18next';
-import GlobalNavbar from '../components/GlobalNavbar';
 
 export default function AdminFinance() {
   const { t } = useTranslation();
@@ -91,9 +90,8 @@ export default function AdminFinance() {
 
   return (
     <div className="min-h-screen bg-[#F4F4F0] dark:bg-[#0a0a0a] text-[#111111] dark:text-[#F4F4F0] flex flex-col transition-colors duration-300">
-      <GlobalNavbar />
       
-      <main className="flex-1 max-w-[1600px] mx-auto w-full px-6 pt-32 lg:pt-40 pb-20">
+      <main className="flex-1 max-w-[1600px] mx-auto w-full px-6 pt-12 pb-20">
         <div className="space-y-12">
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pb-12 border-b border-black/10 dark:border-white/10">

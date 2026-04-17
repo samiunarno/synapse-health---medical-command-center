@@ -309,7 +309,14 @@ export default function Appointments() {
       for (let i = 0; i < 7; i++) {
         formattedDate = format(day, dateFormat);
         const cloneDay = day;
-        const dayAppointments = appointments.filter(a => isSameDay(parseISO(a.date), cloneDay));
+        const dayAppointments = appointments.filter(a => {
+          if (!a.date || !a.time) return false;
+          try {
+            return isSameDay(parseISO(a.date), cloneDay);
+          } catch {
+            return false;
+          }
+        });
         
         days.push(
           <div
@@ -404,9 +411,18 @@ export default function Appointments() {
                   <div key={hour} className="h-20 border-b border-white/5"></div>
                 ))}
                 {appointments
-                  .filter(a => isSameDay(parseISO(a.date), day))
+                  .filter(a => {
+                    if (!a.date || !a.time) return false;
+                    try {
+                      return isSameDay(parseISO(a.date), day);
+                    } catch {
+                      return false;
+                    }
+                  })
                   .map(appt => {
-                    const [h, m] = appt.time.split(':').map(Number);
+                    const timeStr = appt.time || "08:00";
+                    const [h, m] = timeStr.split(':').map(Number);
+                    if (isNaN(h) || isNaN(m)) return null;
                     if (h < 8 || h > 22) return null;
                     const top = ((h - 8) * 80) + (m / 60 * 80);
                     return (
@@ -440,7 +456,14 @@ export default function Appointments() {
 
   const renderDayView = () => {
     const hours = Array.from({ length: 15 }, (_, i) => i + 8);
-    const dayAppointments = appointments.filter(a => isSameDay(parseISO(a.date), currentDate));
+    const dayAppointments = appointments.filter(a => {
+      if (!a.date || !a.time) return false;
+      try {
+        return isSameDay(parseISO(a.date), currentDate);
+      } catch {
+        return false;
+      }
+    });
 
     return (
       <div className="rounded-3xl border border-white/10 overflow-hidden bg-[#0a0a0a] flex flex-col h-[700px]">
@@ -464,7 +487,9 @@ export default function Appointments() {
               </div>
             ))}
             {dayAppointments.map(appt => {
-              const [h, m] = appt.time.split(':').map(Number);
+              const timeStr = appt.time || "08:00";
+              const [h, m] = timeStr.split(':').map(Number);
+              if (isNaN(h) || isNaN(m)) return null;
               if (h < 8 || h > 22) return null;
               const top = ((h - 8) * 96) + (m / 60 * 96);
               return (

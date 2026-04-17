@@ -160,11 +160,15 @@ export default function SymptomChecker() {
                     <h4 className={`text-2xl font-display font-bold ${
                       result.urgency === 'High' ? 'text-rose-500' : 
                       result.urgency === 'Medium' ? 'text-amber-500' : 'text-emerald-500'
-                    }`}>{t(result.urgency.toLowerCase())}</h4>
+                    }`}>
+                      {typeof result.urgency === 'string' ? t(result.urgency.toLowerCase()) : 'None'}
+                    </h4>
                   </div>
                   <div className="p-8 bg-blue-600/10 border border-blue-500/20 rounded-[2rem]">
                     <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">{t('recommended_specialist')}</p>
-                    <h4 className="text-2xl font-display font-bold text-blue-500">{result.recommendedSpecialist}</h4>
+                    <h4 className="text-2xl font-display font-bold text-blue-500">
+                      {typeof result.recommendedSpecialist === 'object' ? JSON.stringify(result.recommendedSpecialist) : String(result.recommendedSpecialist)}
+                    </h4>
                   </div>
                 </div>
 
@@ -175,10 +179,12 @@ export default function SymptomChecker() {
                     {t('potential_causes')}
                   </h3>
                   <div className="space-y-3">
-                      {(Array.isArray(result.potentialCauses) ? result.potentialCauses : []).map((cause: string, i: number) => (
+                      {(Array.isArray(result.potentialCauses) ? result.potentialCauses : []).map((cause: any, i: number) => (
                       <div key={i} className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
                         <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                        <p className="text-xs text-gray-300 font-medium">{cause}</p>
+                        <p className="text-xs text-gray-300 font-medium">
+                          {typeof cause === 'object' ? JSON.stringify(cause) : String(cause)}
+                        </p>
                       </div>
                     ))}
                   </div>
@@ -191,7 +197,7 @@ export default function SymptomChecker() {
                     {t('immediate_advice')}
                   </h3>
                   <p className="text-sm text-gray-400 leading-relaxed bg-black/20 p-6 rounded-2xl border border-white/5">
-                    {result.advice}
+                    {typeof result.advice === 'object' ? JSON.stringify(result.advice) : String(result.advice)}
                   </p>
                 </div>
               </motion.div>

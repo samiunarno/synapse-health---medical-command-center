@@ -525,11 +525,15 @@ export default function DoctorDashboard({ user }: any) {
               (Array.isArray(cdssInsights?.suggestions) ? cdssInsights.suggestions : []).map((suggestion: any, index: number) => (
                 <div key={index} className="bg-white dark:bg-black/20 p-6 rounded-2xl border border-gray-200 dark:border-white/5 shadow-sm dark:shadow-none">
                   <p className={`text-[10px] font-bold uppercase tracking-widest mb-2 ${
-                    suggestion.type === 'Diagnosis Suggestion' ? 'text-blue-600 dark:text-blue-400' : 
-                    suggestion.type === 'Treatment Guideline' ? 'text-purple-600 dark:text-purple-400' : 'text-emerald-600 dark:text-emerald-400'
-                  }`}>{t(suggestion.type.toLowerCase().replace(/ /g, '_'))}</p>
-                  <p className="text-sm font-medium text-gray-900 dark:text-white mb-2">{suggestion.title}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">{suggestion.description}</p>
+                    typeof suggestion.type === 'string' && suggestion.type === 'Diagnosis Suggestion' ? 'text-blue-600 dark:text-blue-400' : 
+                    typeof suggestion.type === 'string' && suggestion.type === 'Treatment Guideline' ? 'text-purple-600 dark:text-purple-400' : 'text-emerald-600 dark:text-emerald-400'
+                  }`}>{typeof suggestion.type === 'string' ? t(suggestion.type.toLowerCase().replace(/ /g, '_')) : 'Unknown Type'}</p>
+                  <p className="text-sm font-medium text-gray-900 dark:text-white mb-2">
+                    {typeof suggestion.title === 'object' ? JSON.stringify(suggestion.title) : suggestion.title}
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {typeof suggestion.description === 'object' ? JSON.stringify(suggestion.description) : suggestion.description}
+                  </p>
                 </div>
               ))
             ) : (
@@ -566,8 +570,12 @@ export default function DoctorDashboard({ user }: any) {
                       alert.severity === 'High' ? 'bg-red-500' : alert.severity === 'Medium' ? 'bg-orange-500' : 'bg-yellow-500'
                     }`} />
                     <div>
-                      <p className="text-sm font-bold text-gray-900 dark:text-white">{alert.title}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">{alert.description}</p>
+                      <p className="text-sm font-bold text-gray-900 dark:text-white">
+                        {typeof alert.title === 'object' ? JSON.stringify(alert.title) : alert.title}
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        {typeof alert.description === 'object' ? JSON.stringify(alert.description) : alert.description}
+                      </p>
                     </div>
                   </div>
                 ))}

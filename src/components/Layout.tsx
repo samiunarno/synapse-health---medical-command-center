@@ -3,7 +3,6 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import VerificationBanner from './VerificationBanner';
 import { useTranslation } from 'react-i18next';
-import GlobalNavbar from './GlobalNavbar';
 import SOSButton from './SOSButton';
 import { io } from 'socket.io-client';
 import { 
@@ -54,7 +53,15 @@ import {
   Trophy,
   Sparkles,
   Play,
-  FlaskConical
+  FlaskConical,
+  Fingerprint,
+  ActivitySquare,
+  ScanLine,
+  Stethoscope,
+  Ambulance,
+  Syringe,
+  Droplet,
+  HeartHandshake
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -184,36 +191,69 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   };
 
   const navItems = [
-    {label: t('dashboard'), icon: LayoutDashboard, path: '/dashboard', roles: ['Admin', 'Doctor', 'Patient', 'Staff', 'Pharmacist'] },
-    {label: t('appointments'), icon: Calendar, path: '/appointments', roles: ['Admin', 'Doctor', 'Patient'] },
-    {label: t('patients'), icon: Users, path: '/patients', roles: ['Admin', 'Doctor', 'Staff'] },
-    {label: t('doctors'), icon: UserRound, path: '/doctors', roles: ['Admin', 'Staff'] },
-    {label: t('wards'), icon: Bed, path: '/wards', roles: ['Admin', 'Staff'] },
-    {label: t('pharmacy'), icon: Pill, path: '/pharmacy', roles: ['Admin', 'Staff', 'Doctor', 'Pharmacist', 'Patient'] },
-    {label: t('lab_reports'), icon: FlaskConical, path: '/lab', roles: ['Admin', 'LabTechnician', 'Lab'] },
-    {label: t('lab_appointments'), icon: FlaskConical, path: '/lab-appointments', roles: ['Patient', 'Admin'] },
-    {label: t('records'), icon: FileText, path: '/records', roles: ['Admin', 'Doctor', 'Patient', 'Pharmacist'] },
-    {label: t('video_call'), icon: Video, path: '/video-conference', roles: ['Admin', 'Doctor', 'Patient'] },
-    {label: t('health_ai'), icon: Brain, path: '/health-ai', roles: ['Admin', 'Patient', 'Doctor'] },
-    {label: t('ai_chatbot'), icon: MessageSquare, path: '/ai-chatbot', roles: ['Admin', 'Patient', 'Doctor', 'Pharmacist'] },
-    {label: t('billing'), icon: CreditCard, path: '/billing', roles: ['Admin', 'Patient'] },
-    {label: t('analytics'), icon: BarChart3, path: '/analytics', roles: ['Admin'] },
-    {label: t('delivery_rider'), icon: Truck, path: '/delivery-rider', roles: ['Rider', 'Admin'] },
-    {label: t('notifications'), icon: Bell, path: '/notifications', roles: ['Admin'] },
-    {label: t('users'), icon: Users, path: '/users', roles: ['Admin'] },
-    {label: t('messages'), icon: MessageSquare, path: '/messages', roles: ['Admin', 'Doctor', 'Patient', 'Staff', 'Pharmacist', 'Rider', 'Driver'] },
-    {label: t('financial_hub'), icon: Wallet, path: '/wallet', roles: ['Admin', 'Doctor', 'Patient', 'Staff', 'Pharmacist'] },
-    {label: t('recharge_requests'), icon: CreditCard, path: '/admin/finance', roles: ['Admin'] },
-    {label: t('settings'), icon: Settings, path: '/settings', roles: ['Admin', 'Doctor', 'Patient', 'Staff', 'Pharmacist'] },
+    // Core
+    {label: t('dashboard'), icon: LayoutDashboard, path: '/dashboard', roles: ['Doctor', 'Patient', 'Staff', 'Pharmacist', 'Rider', 'Lab', 'LabTechnician'] },
+    
+    // Patient Centric
+    {label: t('digital_health_id') || 'Digital ID', icon: Fingerprint, path: '/health-id', roles: ['Patient'] },
+    {label: t('appointments'), icon: Calendar, path: '/appointments', roles: ['Patient'] },
+    {label: t('tele_health') || 'Tele-Health', icon: Video, path: '/tele-health', roles: ['Patient'] },
+    {label: t('health_ai') || 'Health AI', icon: Brain, path: '/health-ai', roles: ['Patient'] },
+    {label: t('lab_interpreter') || 'Lab AI Interpreter', icon: ActivitySquare, path: '/lab-interpreter', roles: ['Patient'] },
+    {label: t('symptom_checker') || 'Symptom Checker', icon: Stethoscope, path: '/symptoms', roles: ['Patient'] },
+    {label: t('wearables') || 'Wearable Integration', icon: Watch, path: '/wearables', roles: ['Patient'] },
+    {label: t('prescriptions'), icon: FileText, path: '/prescriptions', roles: ['Patient'] },
+    {label: t('prescription_ai') || 'Prescription AI', icon: ScanLine, path: '/prescription-ai', roles: ['Patient'] },
+    {label: t('lab_appointments'), icon: FlaskConical, path: '/lab-appointments', roles: ['Patient'] },
+    {label: t('ambulance_service') || 'Ambulance Service', icon: Ambulance, path: '/ambulance', roles: ['Patient', 'Staff'] },
+    {label: t('vaccination_tracker') || 'Vaccinations', icon: Syringe, path: '/vaccinations', roles: ['Patient'] },
+    {label: t('blood_hub') || 'Blood Hub', icon: Droplet, path: '/blood-hub', roles: ['Patient'] },
+    {label: t('organ_donation') || 'Organ Donation', icon: HeartHandshake, path: '/organ-donation', roles: ['Patient'] },
+
+    // Medical Professional Centric
+    {label: t('patients'), icon: Users, path: '/patients', roles: ['Doctor', 'Staff'] },
+    {label: t('doctors'), icon: UserRound, path: '/doctors', roles: ['Staff'] },
+    {label: t('appointments') || 'Provider Appointments', icon: Calendar, path: '/appointments', roles: ['Doctor', 'Staff'] },
+    {label: t('appointment_optimizer') || 'Schedule Optimizer', icon: Calendar, path: '/appointment-optimizer', roles: ['Doctor', 'Staff'] },
+    {label: t('wards'), icon: Bed, path: '/wards', roles: ['Doctor', 'Staff'] },
+    {label: t('video_call'), icon: Video, path: '/video-conference', roles: ['Doctor'] },
+    {label: t('records'), icon: FileText, path: '/records', roles: ['Doctor'] },
+
+    // Department Specific
+    {label: t('pharmacy'), icon: Pill, path: '/pharmacy', roles: ['Pharmacist'] },
+    {label: t('medicine_inventory') || 'Medicine Inventory', icon: Pill, path: '/medicine-inventory', roles: ['Pharmacist'] },
+    {label: t('lab_reports'), icon: FlaskConical, path: '/lab', roles: ['Lab', 'LabTechnician', 'Doctor'] },
+    {label: t('delivery_rider'), icon: Truck, path: '/delivery-rider', roles: ['Rider'] },
+
+    // General Interaction
+    {label: t('ai_chatbot'), icon: MessageSquare, path: '/ai-chatbot', roles: ['Patient', 'Doctor'] },
+    {label: t('messages'), icon: MessageSquare, path: '/messages', roles: ['Doctor', 'Patient', 'Pharmacist', 'Rider', 'Staff', 'Lab', 'LabTechnician'] },
+    
+    // Finance & Billing
+    {label: t('billing') || 'Billing & Payments', icon: CreditCard, path: '/billing', roles: ['Patient'] },
+    {label: t('financial_hub'), icon: Wallet, path: '/wallet', roles: ['Doctor', 'Patient', 'Pharmacist', 'Rider', 'Staff', 'Lab', 'LabTechnician'] },
+
+    // Admin Explicit
+    {label: t('analytics'), icon: BarChart3, path: '/analytics', roles: [] },
+    {label: t('notifications') || 'Alert Hub', icon: Bell, path: '/notifications', roles: [] },
+    {label: t('users'), icon: Users, path: '/users', roles: [] },
+    {label: t('recharge_requests'), icon: CreditCard, path: '/admin/finance', roles: [] },
+    
+    // Configuration
+    {label: t('settings'), icon: Settings, path: '/settings', roles: ['Doctor', 'Patient', 'Staff', 'Pharmacist', 'Rider', 'Lab', 'LabTechnician'] },
   ];
 
-  const filteredNavItems = navItems.filter(item => user && item.roles.includes(user.role));
+  // The admin dashboard contains all features
+  const filteredNavItems = navItems.filter((item, index, self) => 
+    user && (user.role === 'Admin' || item.roles.includes(user.role)) && 
+    // Prevent duplicate paths just in case
+    index === self.findIndex((t) => t.path === item.path)
+  );
 
   return (
     <div className="relative flex flex-col h-screen bg-white dark:bg-[#050505] overflow-hidden font-sans text-gray-900 dark:text-white transition-colors duration-500">
-      <GlobalNavbar />
       <VerificationBanner />
-      <div className="relative flex flex-1 overflow-hidden pt-20">
+      <div className="relative flex flex-1 overflow-hidden pt-0">
         {/* Command Palette Modal */}
       <AnimatePresence>
         {isSearchOpen && (
@@ -452,7 +492,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       {/* Main Content */}
       <main className={`relative flex-1 flex flex-col min-w-0 overflow-hidden ${user?.role === 'Admin' ? 'pt-10' : ''}`}>
-        {user?.role === 'Patient' && <SOSButton />}
         <header className="h-20 lg:h-28 bg-white/40 dark:bg-black/20 backdrop-blur-xl border-b border-gray-200 dark:border-white/5 flex items-center justify-between px-4 sm:px-6 lg:px-12 flex-shrink-0 relative z-20">
           <div className="flex items-center gap-4 lg:gap-10">
             <button

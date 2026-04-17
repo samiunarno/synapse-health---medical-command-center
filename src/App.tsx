@@ -53,7 +53,6 @@ import HelpCenter from './pages/HelpCenter';
 import HospitalWallet from './pages/HospitalWallet';
 import AdminFinance from './pages/AdminFinance';
 import Chatbot from './components/Chatbot';
-import SOSButton from './components/SOSButton';
 import CustomCursor from './components/CustomCursor';
 
 import ErrorBoundary from './components/ErrorBoundary';
@@ -71,12 +70,11 @@ function PrivateRoute({ children, roles }: { children: React.ReactNode; roles?: 
 
 function FloatingWidgets() {
   const location = useLocation();
-  // Only show the floating AI Chatbot and Emergency SOS on the root Landing page.
+  // Only show the floating AI Chatbot on the root Landing page.
   if (location.pathname !== '/') return null;
   return (
     <>
       <Chatbot />
-      <SOSButton />
     </>
   );
 }
@@ -116,7 +114,7 @@ export default function App() {
                   <Route path="/video-conference" element={<PrivateRoute><VideoConference /></PrivateRoute>} />
                   <Route path="/tasks" element={<PrivateRoute roles={['Admin', 'Doctor', 'Staff']}><Tasks /></PrivateRoute>} />
                   <Route path="/map" element={<PrivateRoute><MapTracking /></PrivateRoute>} />
-                  <Route path="/bridge" element={<PrivateRoute><Billing /></PrivateRoute>} />
+                  <Route path="/billing" element={<PrivateRoute><Billing /></PrivateRoute>} />
                   <Route path="/iot" element={<PrivateRoute roles={['Admin', 'Doctor', 'Staff']}><IoTDevices /></PrivateRoute>} />
                   <Route path="/ambulance" element={<PrivateRoute roles={['Patient', 'Admin', 'Staff']}><AmbulanceService /></PrivateRoute>} />
                   <Route path="/prescription-ai" element={<PrivateRoute roles={['Patient', 'Admin', 'Doctor']}><PrescriptionAI /></PrivateRoute>} />

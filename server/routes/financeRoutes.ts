@@ -52,19 +52,17 @@ router.post('/admin/recharge-action/:id', authenticate, authorize(['Admin']), as
     if (!request) return res.status(404).json({ error: 'Request not found' });
     if (request.status !== 'Pending') return res.status(400).json({ error: 'Request already processed' });
 
-    request.status = action;
+    const finalStatus = action === 'approve' || action === 'Approved' ? 'Approved' : 'Rejected';
+
+    request.status = finalStatus;
     request.adminActionBy = req.user?.id as any;
     await request.save();
 
-    if (action === 'Approved') {
-      const user = await User.findById(request.userId);
-      if (user) {
-        user.balance = (user.balance || 0) + request.amount;
-        await user.save();
-      }
+    if (finalStatus === 'Approved') {
+      await User.updateOne({ _id: request.userId }, { $inc: { balance: request.amount } });
     }
 
-    res.json({ message: `Recharge request ${action.toLowerCase()}`, request });
+    res.json({ message: `Recharge request ${finalStatus.toLowerCase()}`, request });
   } catch (error) {
     res.status(500).json({ error: 'Failed to process recharge request' });
   }

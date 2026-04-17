@@ -196,7 +196,7 @@ export default function PrescriptionAI() {
                     <h3 className="text-xl font-display font-bold text-white">{t('analysis_summary')}</h3>
                   </div>
                   <p className="text-sm text-blue-100/70 leading-relaxed font-medium">
-                    {result.summary}
+                    {typeof result.summary === 'object' ? JSON.stringify(result.summary) : result.summary}
                   </p>
                 </div>
 
@@ -210,15 +210,21 @@ export default function PrescriptionAI() {
                     {(Array.isArray(result.medicines) ? result.medicines : []).map((med: any, i: number) => (
                       <div key={i} className="p-6 bg-white/5 border border-white/5 rounded-2xl group hover:bg-white/10 transition-all">
                         <div className="flex items-center justify-between mb-2">
-                          <h4 className="text-lg font-bold text-white">{med.name}</h4>
+                          <h4 className="text-lg font-bold text-white">
+                            {typeof med.name === 'object' ? JSON.stringify(med.name) : med.name}
+                          </h4>
                           <span className="text-[10px] font-bold text-blue-400 uppercase tracking-widest bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">
-                            {med.dosage}
+                            {typeof med.dosage === 'object' ? JSON.stringify(med.dosage) : med.dosage}
                           </span>
                         </div>
-                        <p className="text-xs text-gray-500 font-bold uppercase tracking-widest mb-3">{med.purpose}</p>
+                        <p className="text-xs text-gray-500 font-bold uppercase tracking-widest mb-3">
+                          {typeof med.purpose === 'object' ? JSON.stringify(med.purpose) : med.purpose}
+                        </p>
                         <div className="flex items-start gap-3 p-3 bg-black/20 rounded-xl">
                           <FileText className="w-4 h-4 text-gray-500 mt-0.5" />
-                          <p className="text-xs text-gray-300 leading-relaxed">{med.instructions}</p>
+                          <p className="text-xs text-gray-300 leading-relaxed">
+                            {typeof med.instructions === 'object' ? JSON.stringify(med.instructions) : med.instructions}
+                          </p>
                         </div>
                       </div>
                     ))}
@@ -226,7 +232,7 @@ export default function PrescriptionAI() {
                 </div>
 
                 {/* Interactions */}
-                {result.interactions.length > 0 && (
+                {Array.isArray(result.interactions) && result.interactions.length > 0 && (
                   <div className="bg-rose-600/10 border border-rose-500/20 rounded-[2.5rem] p-8">
                     <h3 className="text-lg font-display font-bold text-white mb-6 flex items-center gap-3">
                       <AlertCircle className="w-5 h-5 text-rose-500" />
@@ -236,17 +242,19 @@ export default function PrescriptionAI() {
                       {(Array.isArray(result.interactions) ? result.interactions : []).map((inter: any, i: number) => (
                         <div key={i} className="flex gap-4 p-4 bg-black/20 rounded-2xl border border-white/5">
                           <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${
-                            inter.severity === 'High' ? 'bg-rose-500 animate-pulse' : 
-                            inter.severity === 'Medium' ? 'bg-amber-500' : 'bg-blue-500'
+                            typeof inter.severity === 'string' && inter.severity === 'High' ? 'bg-rose-500 animate-pulse' : 
+                            typeof inter.severity === 'string' && inter.severity === 'Medium' ? 'bg-amber-500' : 'bg-blue-500'
                           }`} />
                           <div>
                             <p className={`text-[10px] font-bold uppercase tracking-widest mb-1 ${
-                              inter.severity === 'High' ? 'text-rose-400' : 
-                              inter.severity === 'Medium' ? 'text-amber-400' : 'text-blue-400'
+                              typeof inter.severity === 'string' && inter.severity === 'High' ? 'text-rose-400' : 
+                              typeof inter.severity === 'string' && inter.severity === 'Medium' ? 'text-amber-400' : 'text-blue-400'
                             }`}>
-                              {t(inter.severity.toLowerCase())} {t('severity')}
+                              {typeof inter.severity === 'string' ? t(inter.severity.toLowerCase()) : 'Unknown'} {t('severity')}
                             </p>
-                            <p className="text-sm text-white font-medium">{inter.description}</p>
+                            <p className="text-sm text-white font-medium">
+                              {typeof inter.description === 'object' ? JSON.stringify(inter.description) : inter.description}
+                            </p>
                           </div>
                         </div>
                       ))}

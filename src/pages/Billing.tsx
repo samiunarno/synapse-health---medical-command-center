@@ -19,17 +19,13 @@ export default function Billing() {
 
   const fetchBills = async () => {
     try {
-      const res = await fetch('/api/advanced/billing', {
+      const endpoint = user?.role === 'Patient' ? '/api/advanced/billing/me' : '/api/advanced/billing';
+      const res = await fetch(endpoint, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
       if (res.ok) {
-        // If patient, filter their bills. If admin/staff, show all.
-        if (user?.role === 'Patient') {
-          setBills(data.filter((b: any) => b.patient_id?.user_id === user.id || b.patient_id?.patient_id === user.reference_id));
-        } else {
-          setBills(data);
-        }
+        setBills(data);
       }
     } catch (error) {
       console.error('Failed to fetch bills', error);

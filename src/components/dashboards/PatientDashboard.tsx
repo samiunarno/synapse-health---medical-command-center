@@ -33,7 +33,6 @@ import { useAuth } from '../AuthContext';
 import { io } from 'socket.io-client';
 import HealthInsights from '../HealthInsights';
 import HealthTips from '../HealthTips';
-import SOSButton from '../SOSButton';
 
 export default function PatientDashboard({ user }: any) {
   const { t } = useTranslation();
@@ -293,36 +292,10 @@ export default function PatientDashboard({ user }: any) {
         <HealthInsights patientData={patientData} />
       </motion.div>
 
-      {/* Health Tips & Emergency */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <motion.div variants={itemVariants} className="lg:col-span-2">
+      {/* Health Tips */}
+      <div className="grid grid-cols-1 gap-8">
+        <motion.div variants={itemVariants} className="w-full">
           <HealthTips />
-        </motion.div>
-        <motion.div variants={itemVariants}>
-          <div className="bg-rose-600/5 border border-rose-500/20 rounded-[2.5rem] p-8 h-full flex flex-col justify-between relative overflow-hidden group">
-            <div className="relative z-10">
-              <div className="w-14 h-14 bg-rose-600 rounded-2xl flex items-center justify-center text-white mb-6 shadow-xl shadow-rose-600/20 group-hover:rotate-12 transition-transform">
-                <AlertTriangle className="w-8 h-8" />
-              </div>
-              <h3 className="text-2xl font-display font-bold text-white uppercase tracking-tight mb-2">{t('emergency_help')}</h3>
-              <p className="text-rose-200/60 text-sm font-medium leading-relaxed mb-8">
-                {t('emergency_desc_short')}
-              </p>
-            </div>
-            <button 
-              onClick={() => {
-                // Trigger the SOS modal from the floating button if possible, 
-                // but since SOSButton is a sibling in Layout, we might need a different approach.
-                // For now, we'll just show a button that encourages using the floating SOS.
-                const sosBtn = document.querySelector('.fixed.bottom-8.left-8') as HTMLButtonElement;
-                if (sosBtn) sosBtn.click();
-              }}
-              className="w-full py-4 bg-rose-600 text-white rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-rose-700 transition-all shadow-xl shadow-rose-600/20 relative z-10"
-            >
-              {t('request_emergency_help')}
-            </button>
-            <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-rose-600/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000" />
-          </div>
         </motion.div>
       </div>
 
@@ -497,9 +470,9 @@ export default function PatientDashboard({ user }: any) {
                 className={`p-6 lg:p-8 ${i === 0 ? 'bg-indigo-600/5 dark:bg-indigo-900/20 border-indigo-500/20' : 'bg-white dark:bg-white/5 border-gray-200 dark:border-white/5'} border rounded-[2rem] text-gray-900 dark:text-white relative overflow-hidden group/card backdrop-blur-sm shadow-sm dark:shadow-none`}
               >
                 <div className="relative z-10">
-                  <p className={`text-[10px] font-bold ${i === 0 ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-500'} uppercase tracking-widest mb-4`}>{a.time}</p>
-                  <p className="text-xl lg:text-2xl font-display font-bold mb-1">{a.doctorName}</p>
-                  <p className={`text-sm ${i === 0 ? 'text-indigo-600/70 dark:text-indigo-200/70' : 'text-gray-500'} mb-8 font-medium`}>{a.type}</p>
+                  <p className={`text-[10px] font-bold ${i === 0 ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-500'} uppercase tracking-widest mb-4`}>{typeof a.time === 'object' ? JSON.stringify(a.time) : String(a.time || '')}</p>
+                  <p className="text-xl lg:text-2xl font-display font-bold mb-1">{typeof a.doctorName === 'object' ? JSON.stringify(a.doctorName) : String(a.doctorName || '')}</p>
+                  <p className={`text-sm ${i === 0 ? 'text-indigo-600/70 dark:text-indigo-200/70' : 'text-gray-500'} mb-8 font-medium`}>{typeof a.type === 'object' ? JSON.stringify(a.type) : String(a.type || '')}</p>
                   {i === 0 && (
                     <button className="w-full py-4 bg-gray-900 dark:bg-white text-white dark:text-indigo-900 rounded-2xl font-bold text-sm shadow-xl hover:bg-indigo-600 dark:hover:bg-indigo-50 transition-all">
                       {t('reschedule')}
@@ -515,10 +488,10 @@ export default function PatientDashboard({ user }: any) {
             </div>
           )}
         </motion.div>
-        <button className="mt-8 w-full py-4 border-2 border-dashed border-gray-200 dark:border-white/5 rounded-2xl text-sm font-bold text-gray-500 dark:text-gray-600 hover:border-indigo-500/20 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all flex items-center justify-center gap-2">
+        <Link to="/appointments" className="mt-8 w-full py-4 border-2 border-dashed border-gray-200 dark:border-white/5 rounded-2xl text-sm font-bold text-gray-500 dark:text-gray-600 hover:border-indigo-500/20 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all flex items-center justify-center gap-2">
           <Plus className="w-4 h-4" />
           {t('book_new_appointment')}
-        </button>
+        </Link>
       </motion.div>
     </div>
 

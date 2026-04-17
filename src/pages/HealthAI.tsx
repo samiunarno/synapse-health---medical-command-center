@@ -214,13 +214,15 @@ export default function HealthAI() {
                         </div>
                         <div>
                           <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-[0.2em]">{t('emotional_tone')}</p>
-                          <h3 className="text-2xl font-display font-bold text-white">{moodAnalysis.tone}</h3>
+                          <h3 className="text-2xl font-display font-bold text-white">
+                            {typeof moodAnalysis.tone === 'object' ? JSON.stringify(moodAnalysis.tone) : String(moodAnalysis.tone)}
+                          </h3>
                         </div>
                       </div>
                       
                       <div className="space-y-4">
                         <p className="text-sm text-indigo-100/70 leading-relaxed font-medium">
-                          {moodAnalysis.recommendation}
+                          {typeof moodAnalysis.recommendation === 'object' ? JSON.stringify(moodAnalysis.recommendation) : moodAnalysis.recommendation}
                         </p>
                         {moodAnalysis.specialistNeeded && (
                           <div className="flex items-center gap-3 p-4 bg-rose-500/20 border border-rose-500/20 rounded-2xl">
@@ -234,12 +236,14 @@ export default function HealthAI() {
                     <div className="bg-white/2 border border-white/5 rounded-[2.5rem] p-8">
                       <h4 className="text-xs font-bold text-gray-500 uppercase tracking-[0.3em] mb-6">{t('key_insights')}</h4>
                       <div className="space-y-3">
-                        {(Array.isArray(moodAnalysis?.insights) ? moodAnalysis.insights : []).map((insight: string, i: number) => (
+                        {(Array.isArray(moodAnalysis?.insights) ? moodAnalysis.insights : []).map((insight: any, i: number) => (
                           <div key={i} className="flex items-start gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
                             <div className="w-6 h-6 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-500 shrink-0">
                               <CheckCircle2 className="w-4 h-4" />
                             </div>
-                            <p className="text-xs text-gray-300 font-medium leading-relaxed">{insight}</p>
+                            <p className="text-xs text-gray-300 font-medium leading-relaxed">
+                              {typeof insight === 'object' ? JSON.stringify(insight) : String(insight)}
+                            </p>
                           </div>
                         ))}
                       </div>
@@ -248,10 +252,12 @@ export default function HealthAI() {
                     <div className="bg-white/2 border border-white/5 rounded-[2.5rem] p-8">
                       <h4 className="text-xs font-bold text-gray-500 uppercase tracking-[0.3em] mb-6">{t('ai_wellness_advice')}</h4>
                       <div className="grid grid-cols-1 gap-3">
-                        {(Array.isArray(moodAnalysis?.advice) ? moodAnalysis.advice : []).map((item: string, i: number) => (
+                        {(Array.isArray(moodAnalysis?.advice) ? moodAnalysis.advice : []).map((item: any, i: number) => (
                           <div key={i} className="flex items-center gap-4 p-4 bg-emerald-500/5 border border-emerald-500/10 rounded-2xl">
                             <Zap className="w-4 h-4 text-emerald-500" />
-                            <p className="text-xs text-emerald-200/70 font-medium">{item}</p>
+                            <p className="text-xs text-emerald-200/70 font-medium">
+                              {typeof item === 'object' ? JSON.stringify(item) : String(item)}
+                            </p>
                           </div>
                         ))}
                       </div>
@@ -372,7 +378,9 @@ export default function HealthAI() {
                         </div>
                         <div>
                           <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-[0.2em]">{t('daily_focus')}</p>
-                          <h3 className="text-xl font-display font-bold text-white">{nutritionPlan.dailyFocus}</h3>
+                          <h3 className="text-xl font-display font-bold text-white">
+                            {typeof nutritionPlan.dailyFocus === 'object' ? JSON.stringify(nutritionPlan.dailyFocus) : String(nutritionPlan.dailyFocus)}
+                          </h3>
                         </div>
                       </div>
                     </div>
@@ -383,21 +391,24 @@ export default function HealthAI() {
                           <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-3">
                               <span className="text-[10px] font-bold text-blue-500 uppercase tracking-widest bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">
-                                {meal.type}
+                                {typeof meal.type === 'object' ? JSON.stringify(meal.type) : meal.type}
                               </span>
-                              <h4 className="text-lg font-bold text-white">{meal.name}</h4>
+                              <h4 className="text-lg font-bold text-white">
+                                {typeof meal.name === 'object' ? JSON.stringify(meal.name) : meal.name}
+                              </h4>
                             </div>
                             <ChevronRight className="w-5 h-5 text-gray-700 group-hover:text-white transition-colors" />
                           </div>
                           <div className="flex flex-wrap gap-2 mb-4">
-                            {(Array.isArray(meal?.ingredients) ? meal.ingredients : []).map((ing: string, j: number) => (
+                            {(Array.isArray(meal?.ingredients) ? meal.ingredients : []).map((ing: any, j: number) => (
                               <span key={j} className="text-[9px] font-bold text-gray-500 uppercase tracking-widest bg-white/5 px-2 py-1 rounded-lg">
-                                {ing}
+                                {typeof ing === 'object' ? JSON.stringify(ing) : String(ing)}
                               </span>
                             ))}
                           </div>
                           <p className="text-[10px] text-emerald-400/70 font-bold uppercase tracking-widest flex items-center gap-2">
-                            <Zap className="w-3 h-3" /> {meal.nutritionalValue}
+                            <Zap className="w-3 h-3" /> 
+                            {typeof meal.nutritionalValue === 'object' ? JSON.stringify(meal.nutritionalValue) : String(meal.nutritionalValue)}
                           </p>
                         </div>
                       ))}
@@ -406,12 +417,14 @@ export default function HealthAI() {
                     <div className="bg-white/2 border border-white/5 rounded-[2.5rem] p-8">
                       <h4 className="text-xs font-bold text-gray-500 uppercase tracking-[0.3em] mb-6">{t('nutritionist_tips')}</h4>
                       <div className="space-y-3">
-                        {(Array.isArray(nutritionPlan?.tips) ? nutritionPlan.tips : []).map((tip: string, i: number) => (
+                        {(Array.isArray(nutritionPlan?.tips) ? nutritionPlan.tips : []).map((tip: any, i: number) => (
                           <div key={i} className="flex items-start gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
                             <div className="w-6 h-6 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-500 shrink-0">
                               <CheckCircle2 className="w-4 h-4" />
                             </div>
-                            <p className="text-xs text-gray-300 font-medium leading-relaxed">{tip}</p>
+                            <p className="text-xs text-gray-300 font-medium leading-relaxed">
+                              {typeof tip === 'object' ? JSON.stringify(tip) : String(tip)}
+                            </p>
                           </div>
                         ))}
                       </div>
