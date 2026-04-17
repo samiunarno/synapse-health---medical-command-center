@@ -234,7 +234,7 @@ export default function HealthAI() {
                     <div className="bg-white/2 border border-white/5 rounded-[2.5rem] p-8">
                       <h4 className="text-xs font-bold text-gray-500 uppercase tracking-[0.3em] mb-6">{t('key_insights')}</h4>
                       <div className="space-y-3">
-                        {moodAnalysis.insights.map((insight: string, i: number) => (
+                        {(Array.isArray(moodAnalysis?.insights) ? moodAnalysis.insights : []).map((insight: string, i: number) => (
                           <div key={i} className="flex items-start gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
                             <div className="w-6 h-6 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-500 shrink-0">
                               <CheckCircle2 className="w-4 h-4" />
@@ -248,7 +248,7 @@ export default function HealthAI() {
                     <div className="bg-white/2 border border-white/5 rounded-[2.5rem] p-8">
                       <h4 className="text-xs font-bold text-gray-500 uppercase tracking-[0.3em] mb-6">{t('ai_wellness_advice')}</h4>
                       <div className="grid grid-cols-1 gap-3">
-                        {moodAnalysis.advice.map((item: string, i: number) => (
+                        {(Array.isArray(moodAnalysis?.advice) ? moodAnalysis.advice : []).map((item: string, i: number) => (
                           <div key={i} className="flex items-center gap-4 p-4 bg-emerald-500/5 border border-emerald-500/10 rounded-2xl">
                             <Zap className="w-4 h-4 text-emerald-500" />
                             <p className="text-xs text-emerald-200/70 font-medium">{item}</p>
@@ -378,7 +378,7 @@ export default function HealthAI() {
                     </div>
 
                     <div className="space-y-4">
-                      {nutritionPlan.meals.map((meal: any, i: number) => (
+                      {(Array.isArray(nutritionPlan?.meals) ? nutritionPlan.meals : []).map((meal: any, i: number) => (
                         <div key={i} className="bg-white/2 border border-white/5 rounded-[2rem] p-6 group hover:bg-white/5 transition-all">
                           <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-3">
@@ -390,7 +390,7 @@ export default function HealthAI() {
                             <ChevronRight className="w-5 h-5 text-gray-700 group-hover:text-white transition-colors" />
                           </div>
                           <div className="flex flex-wrap gap-2 mb-4">
-                            {meal.ingredients.map((ing: string, j: number) => (
+                            {(Array.isArray(meal?.ingredients) ? meal.ingredients : []).map((ing: string, j: number) => (
                               <span key={j} className="text-[9px] font-bold text-gray-500 uppercase tracking-widest bg-white/5 px-2 py-1 rounded-lg">
                                 {ing}
                               </span>
@@ -406,7 +406,7 @@ export default function HealthAI() {
                     <div className="bg-white/2 border border-white/5 rounded-[2.5rem] p-8">
                       <h4 className="text-xs font-bold text-gray-500 uppercase tracking-[0.3em] mb-6">{t('nutritionist_tips')}</h4>
                       <div className="space-y-3">
-                        {nutritionPlan.tips.map((tip: string, i: number) => (
+                        {(Array.isArray(nutritionPlan?.tips) ? nutritionPlan.tips : []).map((tip: string, i: number) => (
                           <div key={i} className="flex items-start gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
                             <div className="w-6 h-6 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-500 shrink-0">
                               <CheckCircle2 className="w-4 h-4" />

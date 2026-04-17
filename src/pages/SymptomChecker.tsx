@@ -175,7 +175,7 @@ export default function SymptomChecker() {
                     {t('potential_causes')}
                   </h3>
                   <div className="space-y-3">
-                    {result.potentialCauses.map((cause: string, i: number) => (
+                      {(Array.isArray(result.potentialCauses) ? result.potentialCauses : []).map((cause: string, i: number) => (
                       <div key={i} className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
                         <div className="w-2 h-2 rounded-full bg-emerald-500" />
                         <p className="text-xs text-gray-300 font-medium">{cause}</p>

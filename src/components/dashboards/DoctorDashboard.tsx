@@ -522,7 +522,7 @@ export default function DoctorDashboard({ user }: any) {
           </div>
           <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4 relative z-10">
             {cdssInsights ? (
-              cdssInsights.suggestions.map((suggestion: any, index: number) => (
+              (Array.isArray(cdssInsights?.suggestions) ? cdssInsights.suggestions : []).map((suggestion: any, index: number) => (
                 <div key={index} className="bg-white dark:bg-black/20 p-6 rounded-2xl border border-gray-200 dark:border-white/5 shadow-sm dark:shadow-none">
                   <p className={`text-[10px] font-bold uppercase tracking-widest mb-2 ${
                     suggestion.type === 'Diagnosis Suggestion' ? 'text-blue-600 dark:text-blue-400' : 
@@ -553,14 +553,14 @@ export default function DoctorDashboard({ user }: any) {
             )}
           </div>
           
-          {cdssInsights?.alerts?.length > 0 && (
+          {Array.isArray(cdssInsights?.alerts) && cdssInsights.alerts.length > 0 && (
             <div className="mt-8 p-6 bg-red-500/10 border border-red-500/20 rounded-2xl relative z-10">
               <h4 className="text-red-600 dark:text-red-400 font-bold text-xs uppercase tracking-widest mb-4 flex items-center gap-2">
                 <ShieldAlert className="w-4 h-4" />
                 {t('clinical_alerts_detected')}
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {cdssInsights.alerts.map((alert: any, index: number) => (
+                {(Array.isArray(cdssInsights?.alerts) ? cdssInsights.alerts : []).map((alert: any, index: number) => (
                   <div key={index} className="flex items-start gap-3">
                     <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${
                       alert.severity === 'High' ? 'bg-red-500' : alert.severity === 'Medium' ? 'bg-orange-500' : 'bg-yellow-500'

@@ -87,7 +87,7 @@ export default function HealthInsights({ patientData }: HealthInsightsProps) {
         ) : insights ? (
           <div className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {insights.insights.map((insight: any, idx: number) => (
+              {(Array.isArray(insights?.insights) ? insights.insights : []).map((insight: any, idx: number) => (
                 <motion.div
                   key={idx}
                   initial={{ opacity: 0, y: 20 }}
@@ -113,7 +113,7 @@ export default function HealthInsights({ patientData }: HealthInsightsProps) {
                 {t('actionable_recommendations')}
               </h3>
               <div className="space-y-4">
-                {insights.recommendations.map((rec: any, idx: number) => (
+                {(Array.isArray(insights?.recommendations) ? insights.recommendations : []).map((rec: any, idx: number) => (
                   <div key={idx} className="flex items-start gap-4 p-4 bg-white/2 rounded-2xl border border-white/5">
                     <div className={`mt-1 px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest ${
                       rec.priority === 'High' ? 'bg-red-500/10 text-red-400 border border-red-500/20' :

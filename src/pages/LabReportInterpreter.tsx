@@ -129,7 +129,7 @@ export default function LabReportInterpreter() {
                   <div className="space-y-6">
                     <p className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.4em]">{t('abnormal_parameters')}</p>
                     <div className="grid gap-4">
-                      {result.abnormalValues.map((val: any, idx: number) => (
+                      {(Array.isArray(result.abnormalValues) ? result.abnormalValues : []).map((val: any, idx: number) => (
                         <div key={idx} className="p-6 bg-white/2 border border-white/5 rounded-2xl space-y-4">
                           <div className="flex justify-between items-start">
                             <div>
@@ -152,7 +152,7 @@ export default function LabReportInterpreter() {
                   <div className="space-y-6">
                     <p className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.4em]">{t('actionable_advice')}</p>
                     <div className="grid gap-3">
-                      {result.advice.map((item: string, idx: number) => (
+                      {(Array.isArray(result.advice) ? result.advice : []).map((item: string, idx: number) => (
                         <div key={idx} className="flex items-center gap-4 p-4 bg-white/2 border border-white/5 rounded-xl group hover:bg-white/5 transition-colors">
                           <div className="w-2 h-2 bg-blue-500 rounded-full group-hover:scale-150 transition-transform" />
                           <span className="text-xs font-bold text-gray-300 uppercase tracking-widest">{item}</span>

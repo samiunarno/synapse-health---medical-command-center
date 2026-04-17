@@ -207,7 +207,7 @@ export default function PrescriptionAI() {
                     {t('detected_medications')}
                   </h3>
                   <div className="space-y-4">
-                    {result.medicines.map((med: any, i: number) => (
+                    {(Array.isArray(result.medicines) ? result.medicines : []).map((med: any, i: number) => (
                       <div key={i} className="p-6 bg-white/5 border border-white/5 rounded-2xl group hover:bg-white/10 transition-all">
                         <div className="flex items-center justify-between mb-2">
                           <h4 className="text-lg font-bold text-white">{med.name}</h4>
@@ -233,7 +233,7 @@ export default function PrescriptionAI() {
                       {t('safety_interactions')}
                     </h3>
                     <div className="space-y-4">
-                      {result.interactions.map((inter: any, i: number) => (
+                      {(Array.isArray(result.interactions) ? result.interactions : []).map((inter: any, i: number) => (
                         <div key={i} className="flex gap-4 p-4 bg-black/20 rounded-2xl border border-white/5">
                           <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${
                             inter.severity === 'High' ? 'bg-rose-500 animate-pulse' : 
