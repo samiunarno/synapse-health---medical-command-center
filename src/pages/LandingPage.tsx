@@ -114,6 +114,39 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* Video Showcase Section */}
+        <section className="border-b border-black/10 dark:border-white/10 bg-white dark:bg-[#0a0a0a] p-6 lg:p-12 transition-colors duration-300">
+          <div className="relative w-full max-w-[1400px] mx-auto aspect-video border border-black/10 dark:border-white/10 bg-[#111111] overflow-hidden group">
+            
+            {/* Video Element */}
+            <video
+              className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-700 mix-blend-luminosity hover:mix-blend-normal"
+              autoPlay
+              muted
+              loop
+              playsInline
+              // Replace the src below with your Cloudinary URL
+              src="https://res.cloudinary.com/dtgoahusr/video/upload/v1776457391/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD%E5%8C%BB%E7%94%9F_%E9%87%8D%E5%90%AF%E4%B8%80%E4%B8%AA%E5%9B%BD%E5%AE%B6%E7%9A%84%E5%8C%BB%E7%96%97%E4%BF%9D%E5%81%A5_lfkrqn.mp4" 
+            />
+            
+            {/* Architectural Overlay & Indicators */}
+            <div className="absolute inset-0 pointer-events-none border-[1px] border-black/5 dark:border-white/5" />
+            
+            {/* Top Left: Recording Status */}
+            <div className="absolute top-6 left-6 flex items-center gap-3 z-10 bg-black/50 backdrop-blur-sm px-4 py-2 border border-white/10">
+              <div className="w-2 h-2 bg-red-500 animate-pulse" />
+              <span className="font-mono text-xs uppercase tracking-widest text-white">{t('system_overview') || 'LIVE_FEED'}</span>
+            </div>
+
+            {/* Bottom Right: Decorative Tech Element */}
+            <div className="absolute bottom-6 right-6 z-10 flex gap-2">
+              <div className="w-8 h-1 bg-white/40" />
+              <div className="w-2 h-1 bg-white/40" />
+              <div className="w-4 h-1 bg-white/40" />
+            </div>
+          </div>
+        </section>
+
         {/* Deep Dive Section */}
         <section className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-black/10 dark:divide-white/10 border-b border-black/10 dark:border-white/10">
           <div className="p-12 lg:p-24 flex flex-col justify-center">
@@ -396,4 +429,3 @@ export default function LandingPage() {
     </div>
   );
 }
-
