@@ -2,6 +2,21 @@ import { Request, Response } from 'express';
 import Appointment from '../models/Appointment';
 import User from '../models/User';
 
+export const checkAvailability = async (req: Request, res: Response) => {
+  try {
+    const { date, time } = req.query;
+    if (!date || !time) return res.status(400).json({ error: 'Date and time required' });
+    
+    // Find appointments that match this date and time
+    const bookedAppointments = await Appointment.find({ date, time, status: { $ne: 'Cancelled' } }).select('doctor_id');
+    const bookedDoctorIds = bookedAppointments.map(a => a.doctor_id.toString());
+    
+    res.json({ bookedDoctorIds });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 export const createAppointment = async (req: Request, res: Response) => {
   try {
     const { doctor_id, date, time, type, fee } = req.body;

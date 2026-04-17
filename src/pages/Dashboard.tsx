@@ -181,8 +181,16 @@ export default function Dashboard() {
     case 'Patient':
       return <PatientDashboard user={user} />;
     case 'Staff':
-    case 'Pharmacist':
       return <StaffDashboard user={user} stats={stats} activityStream={activityStream} />;
+    case 'Pharmacist':
+    case 'Pharmacy':
+      return <PharmacyDashboard />;
+    case 'Hospital':
+      return <HospitalDashboard />;
+    case 'Driver':
+      return <DriverDashboard />;
+    case 'Rider':
+      return <RiderDashboard />;
     case 'Lab':
     case 'LabTechnician':
       return <LabDashboard />;

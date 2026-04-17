@@ -1,691 +1,759 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { 
-  Brain, 
-  Shield, 
-  Zap, 
-  Activity, 
-  Globe, 
-  ChevronRight, 
-  ChevronLeft,
-  Target,
-  TrendingUp,
-  Rocket,
-  Users,
-  CheckCircle2,
-  X,
-  ArrowRight,
-  Cpu,
-  Database,
-  Lock,
-  BarChart3,
-  Network,
-  Workflow,
-  Stethoscope,
-  Truck,
-  Layers,
-  Terminal,
-  MessageSquare,
-  Smartphone,
-  Server,
-  Cloud,
-  Code,
-  Briefcase
+import { useNavigate } from 'react-router-dom';
+import {
+  Activity, Brain, Globe, ChevronRight, ChevronLeft, Target, TrendingUp,
+  Rocket, Users, X, Cpu, Database, Network, Stethoscope, Truck, Layers, 
+  Terminal, Smartphone, Server, Cloud, Code, Briefcase, QrCode, HeartPulse, 
+  FileText, MessageSquare, ShieldAlert, Pill, Wallet, Map, Calendar, Video, Clock, Key,
+  Heart, Hospital, CheckCircle2, ArrowRight
 } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer, 
-  LineChart, 
-  Line, 
-  PieChart, 
-  Pie, 
-  Cell,
-  AreaChart,
-  Area
-} from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, LineChart, Line, AreaChart, Area, PieChart, Pie, Cell } from 'recharts';
 
-// --- Marketing Video Component (Animated Storytelling) ---
-const MarketingVideo = ({ onComplete }: { onComplete: () => void }) => {
-  const [step, setStep] = useState(0);
-  const { t } = useTranslation();
-  
-  const steps = [
-    {
-      title: t("future_healthcare"),
-      subtitle: t("engineered_precision"),
-      icon: Brain,
-      color: "from-blue-600 to-indigo-600",
-      bg: "bg-black"
-    },
-    {
-      title: t("zero_latency_care"),
-      subtitle: t("realtime_telemetry_desc"),
-      icon: Zap,
-      color: "from-yellow-500 to-orange-600",
-      bg: "bg-gray-950"
-    },
-    {
-      title: t("atmospheric_security"),
-      subtitle: t("military_encryption_desc"),
-      icon: Shield,
-      color: "from-purple-600 to-pink-600",
-      bg: "bg-black"
-    },
-    {
-      title: t("synapse_health"),
-      subtitle: t("os_modern_medicine"),
-      icon: Activity,
-      color: "from-green-500 to-teal-600",
-      bg: "bg-gray-950"
-    }
-  ];
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setStep((prev) => {
-        if (prev === steps.length - 1) {
-          clearInterval(timer);
-          setTimeout(onComplete, 1000);
-          return prev;
-        }
-        return prev + 1;
-      });
-    }, 4000);
-    return () => clearInterval(timer);
-  }, [onComplete]);
-
+// --- Simple ThreeBackground Component (replacement for missing import) ---
+const ThreeBackground = () => {
   return (
-    <div className={`fixed inset-0 z-[200] ${steps[step].bg} flex items-center justify-center overflow-hidden transition-colors duration-1000`}>
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={step}
-          initial={{ opacity: 0, scale: 0.8, filter: 'blur(20px)' }}
-          animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-          exit={{ opacity: 0, scale: 1.2, filter: 'blur(20px)' }}
-          transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
-          className="relative z-10 text-center px-6"
-        >
-          <div className={`w-24 h-24 lg:w-32 lg:h-32 rounded-3xl bg-gradient-to-br ${steps[step].color} flex items-center justify-center mx-auto mb-12 shadow-[0_0_50px_rgba(0,0,0,0.5)] relative group`}>
-            {React.createElement(steps[step].icon, { className: "w-12 h-12 lg:w-16 lg:h-16 text-white animate-pulse" })}
-            <div className="absolute inset-0 bg-white/20 rounded-3xl blur-xl group-hover:blur-2xl transition-all" />
-          </div>
-          
-          <h1 className="text-4xl lg:text-7xl font-display font-black text-white uppercase tracking-tighter mb-6 leading-none">
-            {steps[step].title}
-          </h1>
-          <p className="text-lg lg:text-2xl text-gray-400 font-medium max-w-2xl mx-auto leading-relaxed">
-            {steps[step].subtitle}
-          </p>
-        </motion.div>
-      </AnimatePresence>
-
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-[120px] animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-[120px] animate-pulse delay-700" />
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
-      </div>
-
-      <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex gap-4">
-        {steps.map((_, i) => (
-          <div key={i} className="w-12 h-1 bg-white/10 rounded-full overflow-hidden">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={step === i ? { width: '100%' } : step > i ? { width: '100%' } : { width: 0 }}
-              transition={{ duration: step === i ? 4 : 0.5, ease: "linear" }}
-              className="h-full bg-white"
-            />
-          </div>
-        ))}
-      </div>
-
-      <button 
-        onClick={onComplete}
-        className="absolute top-12 right-12 text-white/50 hover:text-white transition-colors flex items-center gap-2 text-xs font-bold uppercase tracking-widest"
-      >
-        {t('skip_intro')} <ChevronRight className="w-4 h-4" />
-      </button>
+    <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none">
+      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-black via-blue-950/20 to-black" />
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-[120px] animate-pulse" />
+      <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-purple-600/10 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '2s' }} />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-500/5 rounded-full blur-[150px]" />
     </div>
   );
 };
 
-// --- Pitch Deck Component (Professional Slides) ---
-const PitchDeck = () => {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [showPresenterNotes, setShowPresenterNotes] = useState(false);
-  const navigate = useNavigate();
-  const { t } = useTranslation();
-
-  const script = [
-    "Good morning everyone. My name is Samiun Arnouk, Lead Architect of Synapse Health. Today, I am defending the architecture of our Unified Medical Operating System.",
-    "Synapse Health is not just a dashboard; it is the infrastructure for zero-latency care. We are building the foundational layer for modern medicine.",
-    "Our mission is to eliminate medical latency and democratize precision healthcare globally through a unified neural infrastructure.",
-    "We face a systemic crisis with legacy websites: fragmented data, slow response times, and a total lack of real-time integration. In healthcare, this latency costs lives.",
-    "Synapse OS is the definitive solution. We've built a unified, AI-first platform that connects every node in the healthcare value chain in real-time, eliminating silos forever.",
-    "Our ecosystem creates a unified network between patients, doctors, hospitals, and pharmacies, ensuring a continuous feedback loop of care.",
-    "The workflow is seamless: from IoT telemetry to AI-driven diagnostics and automated prescription fulfillment. End-to-end precision.",
-    "At our core is the Neural Engine—an advanced Clinical Decision Support System that augments medical expertise with deep learning insights.",
-    "We integrate real-time IoT telemetry directly into clinical charts, shifting healthcare from reactive treatment to proactive monitoring.",
-    "Our global sourcing marketplace eliminates middlemen, connecting institutions to manufacturers and reducing costs by up to 40%.",
-    "Security is our priority. We use Zero Trust Architecture and military-grade encryption to ensure total data sovereignty and compliance.",
-    "We are targeting a $10 trillion global market. Synapse is built to scale as the primary infrastructure for digital-first healthcare.",
-    "Our business model combines sustainable SaaS subscriptions with transactional marketplace commissions for diversified growth.",
-    "Our core innovation is the Neural Infrastructure. Unlike legacy EHRs, we don't just store data; we predict needs, automate logistics, and secure sovereignty.",
-    "The impact is clear: 30% faster diagnostics and 50% faster emergency response. We are setting a new standard for clinical excellence.",
-    "Our roadmap takes us from Core Beta to global launch by Q4, establishing Synapse as the global standard for medical OS.",
-    "We are implementing Blockchain for decentralized health records, giving patients absolute control over their medical data sovereignty.",
-    "Future updates include AI-driven autonomous ambulance routing and real-time emergency resource allocation to save more lives.",
-    "Synapse is built for the next billion users. We are committed to green infrastructure and healthcare equity in emerging markets.",
-    "In conclusion, Synapse Health is the future of medicine. Join us in building a world where precision care is a global right. Thank you."
-  ];
-
-  const impactData = [
-    { name: 'Diagnostic Time', current: 100, synapse: 70 },
-    { name: 'Emergency Resp', current: 100, synapse: 50 },
-    { name: 'Data Accuracy', current: 85, synapse: 99 },
-    { name: 'Supply Cost', current: 100, synapse: 65 },
-  ];
-
-  const marketData = [
-    { year: '2024', value: 4.2 },
-    { year: '2025', value: 5.8 },
-    { year: '2026', value: 7.5 },
-    { year: '2027', value: 10.2 },
-  ];
-
-  const businessModelData = [
-    { name: t('business_model_saas'), value: 45 },
-    { name: t('business_model_comm'), value: 35 },
-    { name: t('business_model_data'), value: 20 },
-  ];
-
-  const COLORS = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b'];
+// --- Reusable Slide Layout Layer ---
+const SlideLayout = ({ children, step, totalSteps, script }: { children: React.ReactNode, step: number, totalSteps: number, script: string }) => {
+  const [showNotes, setShowNotes] = useState(false);
   
-  const slides = [
-    {
-      id: "presenter",
-      title: t("slide_1_title"),
-      subtitle: t("presenter_title"),
-      content: t("presenter_bio"),
-      type: "profile",
-      icon: Briefcase,
-      color: "blue"
-    },
-    {
-      id: "title",
-      title: t("slide_2_title"),
-      subtitle: t("slide_2_subtitle"),
-      content: t("os_modern_medicine"),
-      type: "hero",
-      icon: Brain,
-      color: "blue"
-    },
-    {
-      id: "mission",
-      title: t("slide_3_title"),
-      subtitle: t("engineered_precision"),
-      content: t("slide_3_content"),
-      type: "text",
-      icon: Rocket,
-      color: "purple"
-    },
-    {
-      id: "problem",
-      title: t("slide_4_title"),
-      subtitle: t("slide_4_subtitle"),
-      content: t("slide_4_content"),
-      type: "text",
-      icon: Target,
-      color: "red"
-    },
-    {
-      id: "solution",
-      title: t("slide_5_title"),
-      subtitle: t("slide_5_subtitle"),
-      content: t("slide_5_content"),
-      type: "text",
-      icon: Zap,
-      color: "yellow"
-    },
-    {
-      id: "ecosystem",
-      title: t("slide_6_title"),
-      subtitle: t("slide_6_subtitle"),
-      content: t("slide_6_content"),
-      type: "infographic",
-      icon: Network,
-      color: "blue"
-    },
-    {
-      id: "workflow",
-      title: t("slide_7_title"),
-      subtitle: t("slide_7_subtitle"),
-      content: t("slide_7_content"),
-      type: "infographic",
-      icon: Workflow,
-      color: "green"
-    },
-    {
-      id: "ai",
-      title: t("slide_8_title"),
-      subtitle: t("slide_8_subtitle"),
-      content: t("slide_8_content"),
-      type: "text",
-      icon: Cpu,
-      color: "purple"
-    },
-    {
-      id: "iot",
-      title: t("slide_9_title"),
-      subtitle: t("slide_9_subtitle"),
-      content: t("slide_9_content"),
-      type: "text",
-      icon: Smartphone,
-      color: "blue"
-    },
-    {
-      id: "sourcing",
-      title: t("slide_10_title"),
-      subtitle: t("slide_10_subtitle"),
-      content: t("slide_10_content"),
-      type: "text",
-      icon: Truck,
-      color: "orange"
-    },
-    {
-      id: "security",
-      title: t("slide_11_title"),
-      subtitle: t("slide_11_subtitle"),
-      content: t("slide_11_content"),
-      type: "text",
-      icon: Shield,
-      color: "emerald"
-    },
-    {
-      id: "market",
-      title: t("slide_12_title"),
-      subtitle: t("slide_12_subtitle"),
-      content: t("slide_12_content"),
-      type: "chart",
-      chartType: "area",
-      data: marketData,
-      icon: Globe,
-      color: "blue"
-    },
-    {
-      id: "business",
-      title: t("slide_13_title"),
-      subtitle: t("slide_13_subtitle"),
-      content: t("slide_13_content"),
-      type: "chart",
-      chartType: "pie",
-      data: businessModelData,
-      icon: BarChart3,
-      color: "purple"
-    },
-    {
-      id: "competition",
-      title: t("slide_14_title"),
-      subtitle: t("slide_14_subtitle"),
-      content: t("slide_14_content"),
-      type: "text",
-      icon: Layers,
-      color: "blue"
-    },
-    {
-      id: "impact",
-      title: t("slide_15_title"),
-      subtitle: t("slide_15_subtitle"),
-      content: t("slide_15_content"),
-      type: "chart",
-      chartType: "bar",
-      data: impactData,
-      icon: Activity,
-      color: "green"
-    },
-    {
-      id: "roadmap",
-      title: t("slide_16_title"),
-      subtitle: t("slide_16_subtitle"),
-      content: t("slide_16_content"),
-      type: "roadmap",
-      icon: TrendingUp,
-      color: "blue"
-    },
-    {
-      id: "blockchain",
-      title: t("slide_17_title"),
-      subtitle: t("slide_17_subtitle"),
-      content: t("slide_17_content"),
-      type: "text",
-      icon: Database,
-      color: "purple"
-    },
-    {
-      id: "autonomous",
-      title: t("slide_18_title"),
-      subtitle: t("slide_18_subtitle"),
-      content: t("slide_18_content"),
-      type: "text",
-      icon: Cpu,
-      color: "red"
-    },
-    {
-      id: "sustainability",
-      title: t("slide_19_title"),
-      subtitle: t("slide_19_subtitle"),
-      content: t("slide_19_content"),
-      type: "text",
-      icon: Globe,
-      color: "emerald"
-    },
-    {
-      id: "conclusion",
-      title: t("slide_20_title"),
-      subtitle: t("slide_20_subtitle"),
-      content: t("slide_20_content"),
-      type: "hero",
-      icon: CheckCircle2,
-      color: "blue"
-    }
-  ];
-
-  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
-  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
-
-  const colors: any = {
-    blue: "text-blue-500 bg-blue-500/10 border-blue-500/20",
-    red: "text-red-500 bg-red-500/10 border-red-500/20",
-    yellow: "text-yellow-500 bg-yellow-500/10 border-yellow-500/20",
-    green: "text-green-500 bg-green-500/10 border-green-500/20",
-    purple: "text-purple-500 bg-purple-500/10 border-purple-500/20",
-    orange: "text-orange-500 bg-orange-500/10 border-orange-500/20",
-    emerald: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20"
-  };
-
-  const renderSlideContent = (slide: any) => {
-    switch (slide.type) {
-      case 'profile':
-        return (
-          <div className="flex flex-col items-center text-center">
-            <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 p-1 mb-8">
-              <div className="w-full h-full rounded-full bg-black flex items-center justify-center text-4xl font-black">
-                SA
-              </div>
-            </div>
-            <h3 className="text-4xl font-display font-black uppercase mb-2">{t('presenter_name')}</h3>
-            <p className="text-blue-500 font-bold uppercase tracking-widest mb-6">{t('presenter_title')}</p>
-            <div className="flex flex-wrap justify-center gap-4">
-              {t('presenter_skills_list').split(' • ').map((skill: string, i: number) => (
-                <span key={i} className="px-4 py-2 bg-white/5 border border-white/10 rounded-full text-[10px] font-bold uppercase tracking-widest">
-                  {skill}
-                </span>
-              ))}
-            </div>
-          </div>
-        );
-      case 'chart':
-        return (
-          <div className="w-full h-[400px] bg-white/5 rounded-3xl p-8 border border-white/10">
-            <ResponsiveContainer width="100%" height="100%">
-              {slide.chartType === 'bar' ? (
-                <BarChart data={slide.data}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
-                  <XAxis dataKey="name" stroke="#666" fontSize={10} tick={{ fill: '#666' }} />
-                  <YAxis stroke="#666" fontSize={10} tick={{ fill: '#666' }} />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: '#000', border: '1px solid #ffffff20', borderRadius: '12px' }}
-                    itemStyle={{ color: '#fff' }}
-                  />
-                  <Bar dataKey="current" fill="#ffffff20" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="synapse" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              ) : slide.chartType === 'area' ? (
-                <AreaChart data={slide.data}>
-                  <defs>
-                    <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
-                  <XAxis dataKey="year" stroke="#666" fontSize={10} />
-                  <YAxis stroke="#666" fontSize={10} />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: '#000', border: '1px solid #ffffff20', borderRadius: '12px' }}
-                  />
-                  <Area type="monotone" dataKey="value" stroke="#3b82f6" fillOpacity={1} fill="url(#colorValue)" />
-                </AreaChart>
-              ) : (
-                <PieChart>
-                  <Pie
-                    data={slide.data}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={100}
-                    paddingAngle={5}
-                    dataKey="value"
-                  >
-                    {slide.data.map((entry: any, index: number) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: '#000', border: '1px solid #ffffff20', borderRadius: '12px' }}
-                  />
-                </PieChart>
-              )}
-            </ResponsiveContainer>
-          </div>
-        );
-      case 'infographic':
-        return (
-          <div className="grid grid-cols-2 gap-4">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="p-6 bg-white/5 border border-white/10 rounded-2xl flex items-center gap-4">
-                <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-500">
-                  <Activity className="w-5 h-5" />
-                </div>
-                <div className="text-left">
-                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Node {i + 1}</p>
-                  <p className="text-xs font-bold uppercase">Active Stream</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        );
-      case 'roadmap':
-        return (
-          <div className="space-y-6">
-            {[t('roadmap_q1'), t('roadmap_q2'), t('roadmap_q3'), t('roadmap_q4')].map((milestone, i) => (
-              <div key={i} className="flex items-center gap-6 group">
-                <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center font-mono text-xs group-hover:bg-blue-600 group-hover:border-blue-600 transition-all">
-                  0{i + 1}
-                </div>
-                <div className="flex-1 h-px bg-white/10" />
-                <div className="text-right">
-                  <p className="text-sm font-bold uppercase tracking-widest">{milestone}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        );
-      default:
-        return (
-          <p className="text-lg lg:text-xl text-gray-400 leading-relaxed">
-            {slide.content}
-          </p>
-        );
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-[#050505] text-white flex flex-col">
-      <header className="p-8 lg:p-12 flex items-center justify-between border-b border-white/5 bg-black/50 backdrop-blur-md sticky top-0 z-50">
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-black">
-              <Brain className="w-6 h-6" />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-xl font-display font-bold tracking-tighter uppercase">{t('synapse_pitch')}</span>
-              <span className="text-[8px] font-mono text-blue-500 uppercase tracking-[0.3em]">Doc ID: SYN-2026-ALPHA // CLASSIFIED</span>
-            </div>
-          </div>
-          <div className="h-8 w-px bg-white/10 hidden md:block" />
-          <button 
-            onClick={() => setShowPresenterNotes(!showPresenterNotes)}
-            className={`hidden md:flex items-center gap-2 px-4 py-2 rounded-xl border text-[10px] font-bold uppercase tracking-widest transition-all ${
-              showPresenterNotes ? 'bg-blue-600 border-blue-500 text-white' : 'bg-white/5 border-white/10 text-gray-400 hover:text-white'
-            }`}
+    <div className="relative w-full h-full flex flex-col justify-center items-center p-8 lg:p-16">
+      {/* Content Area */}
+      <div className="w-full max-w-6xl h-[80%] flex flex-col justify-center items-center relative z-10">
+        {children}
+      </div>
+
+      {/* Presenter Notes Overlay */}
+      <AnimatePresence>
+        {showNotes && (
+          <motion.div 
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            className="absolute bottom-24 left-1/2 transform -translate-x-1/2 w-full max-w-4xl bg-black/80 backdrop-blur-xl border border-white/20 p-6 rounded-2xl z-50 text-center"
           >
-            <Terminal className="w-4 h-4" />
-            {showPresenterNotes ? 'Hide Script' : 'Show Script'}
-          </button>
-        </div>
-        <div className="flex items-center gap-6 text-[10px] font-bold uppercase tracking-widest text-gray-500">
-          <div className="hidden xl:flex items-center gap-3 px-4 py-2 bg-white/5 rounded-full border border-white/10">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-            <span>Secure Link Active</span>
-          </div>
-          <span>{t('slide')} {currentSlide + 1} / {slides.length}</span>
-          <div className="w-32 h-1 bg-white/5 rounded-full overflow-hidden">
-            <motion.div 
-              animate={{ width: `${((currentSlide + 1) / slides.length) * 100}%` }}
-              className="h-full bg-blue-500"
-            />
-          </div>
-        </div>
-      </header>
-
-      <main className="flex-1 flex items-center justify-center p-8 lg:p-24 relative overflow-hidden">
-        <AnimatePresence mode="wait">
-          {showPresenterNotes && (
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="fixed left-8 top-32 bottom-32 w-80 bg-black/80 backdrop-blur-2xl border border-blue-500/30 rounded-[2rem] p-8 z-40 hidden xl:flex flex-col shadow-[0_0_50px_rgba(59,130,246,0.1)]"
-            >
-              <div className="flex items-center gap-3 mb-6 text-blue-500">
-                <MessageSquare className="w-5 h-5" />
-                <span className="text-xs font-bold uppercase tracking-widest">Presenter Script</span>
-              </div>
-              <div className="flex-1 overflow-y-auto custom-scrollbar pr-4">
-                <p className="text-sm text-gray-300 leading-relaxed font-medium italic">
-                  "{script[currentSlide]}"
-                </p>
-              </div>
-              <div className="mt-8 pt-6 border-t border-white/10">
-                <div className="flex items-center justify-between text-[10px] font-bold text-gray-500 uppercase tracking-widest">
-                  <span>Tone: Professional</span>
-                  <span>Pace: Moderate</span>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentSlide}
-            initial={{ opacity: 0, x: 100, filter: 'blur(10px)' }}
-            animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
-            exit={{ opacity: 0, x: -100, filter: 'blur(10px)' }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center max-w-7xl w-full relative z-10"
-          >
-            <div>
-              <div className={`w-16 h-16 rounded-2xl ${colors[slides[currentSlide].color]} border flex items-center justify-center mb-8`}>
-                {React.createElement(slides[currentSlide].icon, { className: "w-8 h-8" })}
-              </div>
-              <h2 className="text-6xl lg:text-8xl font-display font-black uppercase tracking-tighter mb-6 leading-none">
-                {slides[currentSlide].title}
-              </h2>
-              <p className="text-2xl lg:text-3xl text-blue-500 font-bold uppercase tracking-widest mb-12">
-                {slides[currentSlide].subtitle}
-              </p>
-              
-              {slides[currentSlide].type === 'profile' && (
-                <p className="text-lg lg:text-xl text-gray-400 leading-relaxed mb-12">
-                  {slides[currentSlide].content}
-                </p>
-              )}
-
-              {/* Hero tags removed for minimalist look */}
-            </div>
-
-            <div className="relative aspect-square lg:aspect-video rounded-[3rem] bg-white/5 border border-white/10 overflow-hidden group p-8 flex items-center justify-center">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-purple-600/10 opacity-50 group-hover:opacity-100 transition-opacity duration-1000" />
-              
-              <div className="relative z-10 w-full h-full flex items-center justify-center">
-                {renderSlideContent(slides[currentSlide])}
-              </div>
-            </div>
+            <h4 className="text-sm font-bold text-gray-400 tracking-widest uppercase mb-2">Speaker Script</h4>
+            <p className="text-lg text-white font-medium italic leading-relaxed">"{script}"</p>
           </motion.div>
-        </AnimatePresence>
+        )}
+      </AnimatePresence>
 
-        <div className="absolute inset-0 bg-mesh opacity-10 pointer-events-none" />
-      </main>
-
-      <footer className="p-8 lg:p-12 flex items-center justify-between border-t border-white/5">
-        <div className="flex gap-4">
-          <button 
-            onClick={prevSlide}
-            className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-all group"
-          >
-            <ChevronLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
-          </button>
-          <button 
-            onClick={nextSlide}
-            className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-all group"
-          >
-            <ChevronRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
-          </button>
+      {/* Global Controls & Progress */}
+      <div className="absolute bottom-8 left-8 right-8 flex justify-between items-center z-20">
+        <div className="text-white/40 font-mono text-sm tracking-widest font-bold">
+          SYNAPSE.OS_{step.toString().padStart(2, '0')}
         </div>
         
         <button 
-          onClick={() => navigate('/')}
-          className="bg-white text-black px-10 py-5 rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all shadow-2xl shadow-white/10"
+          onClick={() => setShowNotes(!showNotes)}
+          className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${showNotes ? 'bg-blue-600 text-white shadow-[0_0_20px_rgba(37,99,235,0.5)]' : 'bg-white/5 border border-white/10 text-gray-400 hover:text-white'}`}
         >
-          {t('explore_platform')}
+          {showNotes ? 'Hide Script' : 'Speaker Script'}
         </button>
-      </footer>
+
+        <div className="flex gap-1">
+          {Array.from({ length: totalSteps }).map((_, i) => (
+            <div 
+              key={i} 
+              className={`h-1.5 rounded-full transition-all duration-500 ${i === step - 1 ? 'w-8 bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.8)]' : 'w-2 bg-white/10'}`} 
+            />
+          ))}
+        </div>
+      </div>
     </div>
   );
 };
 
 export default function Presentation() {
-  const [showVideo, setShowVideo] = useState(true);
-  const [showPitch, setShowPitch] = useState(false);
+  const navigate = useNavigate();
+  const [currentSlide, setCurrentSlide] = useState(1);
+  const totalSlides = 25;
+
+  const nextSlide = useCallback(() => {
+    setCurrentSlide((prev) => Math.min(prev + 1, totalSlides));
+  }, [totalSlides]);
+
+  const prevSlide = useCallback(() => {
+    setCurrentSlide((prev) => Math.max(prev - 1, 1));
+  }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowRight') nextSlide();
+      if (e.key === 'ArrowLeft') prevSlide();
+      if (e.key === 'Escape') navigate('/');
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [nextSlide, prevSlide, navigate]);
+
+  // =============== ALL 25 SLIDES ===============
+
+  const renderSlide = () => {
+    switch(currentSlide) {
+      case 1:
+        return (
+          <SlideLayout step={1} totalSteps={totalSlides} script="Good morning. Imagine a world where your healthcare is as connected and responsive as your smartphone. Today, I am thrilled to introduce you to Synapse—not just a new app, but the definitive digital nervous system for modern healthcare.">
+            <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 1 }} className="flex flex-col items-center">
+              <div className="relative mb-8">
+                <motion.div animate={{ rotate: 360, scale: [1, 1.1, 1] }} transition={{ duration: 10, repeat: Infinity, ease: "linear" }} className="absolute inset-0 bg-blue-500/20 blur-[100px] rounded-full" />
+                <Activity className="w-32 h-32 text-blue-500 relative z-10" />
+              </div>
+              <h1 className="text-7xl font-display font-bold text-white mb-6 text-center tracking-tight">SYNAPSE</h1>
+              <p className="text-2xl text-blue-400 font-medium tracking-wide uppercase">The Digital Nervous System for Modern Healthcare</p>
+            </motion.div>
+          </SlideLayout>
+        );
+
+      case 2:
+        return (
+          <SlideLayout step={2} totalSteps={totalSlides} script="Let's look at reality. Healthcare today is completely shattered. Patients use one app for telemedicine, another to order pills, and rely on physical paper files for labs. Hospitals use isolated software. The supply chain of human life is disconnected.">
+            <div className="flex flex-col items-center w-full">
+              <h2 className="text-5xl font-bold text-white mb-16 text-center">The Status Quo</h2>
+              <div className="flex flex-wrap justify-center gap-8 relative w-full max-w-4xl">
+                {[ 
+                  { icon: Hospital, label: 'Hospitals' }, 
+                  { icon: Users, label: 'Patients' }, 
+                  { icon: Pill, label: 'Pharmacies' }, 
+                  { icon: Terminal, label: 'Diagnostic Labs' }, 
+                  { icon: Truck, label: 'Ambulance' }
+                ].map((item, i) => (
+                  <motion.div key={i} initial={{ x: Math.random() * 100 - 50, y: Math.random() * 100 - 50, opacity: 0 }} animate={{ x: 0, y: 0, opacity: 1 }} transition={{ delay: i * 0.2 }} className="bg-red-950/30 border border-red-500/30 p-8 rounded-2xl flex flex-col items-center gap-4 relative z-10 backdrop-blur-sm">
+                    <item.icon className="w-12 h-12 text-red-500" />
+                    <span className="text-red-200 font-bold">{item.label}</span>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </SlideLayout>
+        );
+
+      case 3:
+        return (
+          <SlideLayout step={3} totalSteps={totalSlides} script="This fragmentation isn't just an inconvenience; it costs lives and billions of dollars. When a doctor can't see your history instantly, or when an ambulance gets lost because of a bad dispatcher call, the system has failed the patient.">
+             <div className="w-full flex flex-col items-center text-center">
+                <h2 className="text-5xl font-bold text-white mb-20">The Cost of Disconnection</h2>
+                <div className="grid grid-cols-2 gap-12 w-full max-w-4xl">
+                  {[
+                    { val: "30%", desc: "Delays in Diagnosis", color: "text-orange-500" },
+                    { val: "1 in 10", desc: "Suffer from Medication Errors", color: "text-red-500" },
+                    { val: "Millions", desc: "Wasted Hours in Queues", color: "text-yellow-500" },
+                    { val: "Countless", desc: "Lost Medical Histories", color: "text-pink-500" },
+                  ].map((stat, i) => (
+                    <motion.div key={i} initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.3 }} className="bg-white/5 border border-white/10 p-10 rounded-3xl">
+                      <h3 className={`text-6xl font-black mb-4 ${stat.color}`}>{stat.val}</h3>
+                      <p className="text-xl text-gray-300 font-medium">{stat.desc}</p>
+                    </motion.div>
+                  ))}
+                </div>
+             </div>
+          </SlideLayout>
+        );
+
+      case 4:
+        return (
+          <SlideLayout step={4} totalSteps={totalSlides} script="So we asked ourselves: What if healthcare acted like a single, living organism? What if every doctor, pharmacy, lab, and ambulance could talk to each other in real-time, centered entirely around the patient?">
+             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 2 }} className="flex justify-center items-center h-full">
+                <h2 className="text-6xl md:text-8xl font-display font-bold text-white text-center leading-tight tracking-tight">
+                  <motion.span animate={{ textShadow: ["0px 0px 0px rgba(255,255,255,0)", "0px 0px 40px rgba(255,255,255,0.5)", "0px 0px 0px rgba(255,255,255,0)"] }} transition={{ duration: 3, repeat: Infinity }}>
+                    What if healthcare acted like a single, <span className="text-blue-500">living organism?</span>
+                  </motion.span>
+                </h2>
+             </motion.div>
+          </SlideLayout>
+        );
+
+      case 5:
+        return (
+          <SlideLayout step={5} totalSteps={totalSlides} script="Enter Synapse. The ultimate, AI-powered healthcare ecosystem. We bring every single aspect of the medical journey under one unified, interconnected platform. We connect the digital to the physical.">
+            <div className="flex flex-col items-center">
+              <motion.div initial={{ scale: 0, rotate: -180 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: "spring", duration: 1.5 }} className="relative mb-12">
+                <div className="absolute inset-0 bg-blue-600/30 blur-[120px] rounded-full" />
+                <div className="w-64 h-64 border border-blue-500/50 rounded-full flex items-center justify-center relative">
+                   <Activity className="w-24 h-24 text-blue-400 relative z-20" />
+                   {[Hospital, Pill, Truck, Server].map((Icon, i) => (
+                     <motion.div key={i} animate={{ rotate: 360 }} transition={{ duration: 10, ease: "linear", repeat: Infinity }} className="absolute inset-0" style={{ transformOrigin: "center" }}>
+                        <div className="absolute top-0 left-1/2 -ml-6 -mt-6 bg-[#0a0a0a] border border-blue-500/50 p-3 rounded-full shadow-[0_0_20px_rgba(59,130,246,0.5)]">
+                          <Icon className="w-6 h-6 text-blue-400" />
+                        </div>
+                     </motion.div>
+                   ))}
+                </div>
+              </motion.div>
+              <h2 className="text-6xl font-bold text-white mb-4">Synapse Ecosystem</h2>
+              <p className="text-2xl text-blue-400 font-medium">The Ultimate Unification</p>
+            </div>
+          </SlideLayout>
+        );
+
+      case 6:
+        return (
+          <SlideLayout step={6} totalSteps={totalSlides} script="It begins with the Digital Health ID. Every user gets a unique, secure QR profile. Gone are the days of carrying thick folders of prescriptions. One scan, and authorized medical staff instantly access your entire medical timeline.">
+             <div className="flex flex-col md:flex-row items-center gap-16 w-full max-w-5xl">
+                <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="flex-1 text-left">
+                  <h2 className="text-5xl font-bold text-white mb-6">Digital Health ID</h2>
+                  <p className="text-xl text-gray-400 leading-relaxed mb-8">A universal, secure identifier for every patient. Instant access to your clinical history, medications, and labs with a single scan.</p>
+                  <ul className="space-y-4">
+                    {['Universal Medical History', 'Instant QR Scanning', 'Cross-Hospital Unification'].map((item, i) => (
+                      <li key={i} className="flex items-center gap-4 text-blue-400 font-bold text-lg">
+                        <CheckCircle2 className="w-6 h-6" /> {item}
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
+                <div className="flex-1 flex justify-center">
+                   <motion.div animate={{ rotateY: [0, 360] }} transition={{ duration: 10, repeat: Infinity, ease: 'linear' }} className="w-80 h-auto aspect-[3/4] bg-gradient-to-br from-blue-900 to-[#0a0a0a] border border-blue-500/50 rounded-3xl p-8 flex flex-col items-center justify-between shadow-[0_0_50px_rgba(59,130,246,0.2)]">
+                      <div className="w-24 h-24 rounded-full bg-white/10 mb-4" />
+                      <div className="text-center w-full">
+                        <h3 className="text-2xl font-bold text-white uppercase tracking-widest">Samiun A.</h3>
+                        <p className="text-blue-400 text-sm mb-4">ID: SYN-8829-10</p>
+                        <div className="bg-white p-4 rounded-xl inline-block">
+                           <QrCode className="w-32 h-32 text-black" />
+                        </div>
+                      </div>
+                   </motion.div>
+                </div>
+             </div>
+          </SlideLayout>
+        );
+
+      case 7:
+        return (
+          <SlideLayout step={7} totalSteps={totalSlides} script="When a patient feels sick, Synapse is the first line of defense. Our AI Symptom Checker analyzes inputs, asks clinical follow-up questions, and immediately routes the patient to the right specialist or emergency service. It's triage, evolved.">
+             <div className="w-full flex flex-col text-center items-center">
+               <h2 className="text-5xl font-bold text-white mb-12">AI Triage & Symptom Checker</h2>
+               <div className="w-full max-w-2xl bg-black border border-white/10 rounded-3xl p-6 shadow-2xl relative overflow-hidden">
+                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 to-purple-600" />
+                 <div className="space-y-6 text-left">
+                   <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }} className="flex justify-end">
+                     <div className="bg-blue-600 text-white p-4 rounded-2xl rounded-tr-sm max-w-[80%]">I've been having sharp chest pains since morning.</div>
+                   </motion.div>
+                   <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 1.5 }} className="flex justify-start">
+                     <div className="bg-white/10 border border-white/10 text-gray-200 p-4 rounded-2xl rounded-tl-sm max-w-[80%] flex items-start gap-3">
+                       <Brain className="w-6 h-6 text-purple-400 shrink-0" />
+                       <p>Based on your symptoms, this could be urgent. Does the pain radiate to your arm or jaw? <span className="block mt-2 font-bold text-purple-400">I strongly recommend routing to a Cardiologist immediately.</span></p>
+                     </div>
+                   </motion.div>
+                 </div>
+               </div>
+             </div>
+          </SlideLayout>
+        );
+
+      case 8:
+        return (
+          <SlideLayout step={8} totalSteps={totalSlides} script="We integrate seamlessly with IoT and wearables. Synapse constantly tracks vital signs. If your heart rate spikes dangerously, your connected doctor is alerted instantly. Healthcare shifts from reactive to beautifully proactive.">
+            <div className="flex flex-col items-center">
+              <h2 className="text-5xl font-bold text-white mb-16">Real-Time IoT & Wearables</h2>
+              <div className="relative w-full max-w-4xl flex justify-center items-center">
+                 <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 1, repeat: Infinity }} className="absolute z-0 w-64 h-64 bg-red-500/20 blur-[80px] rounded-full" />
+                 
+                 <div className="bg-[#0a0a0a] border border-white/10 p-8 rounded-[3rem] z-10 flex items-center gap-12 shadow-2xl">
+                    <HeartPulse className="w-32 h-32 text-red-500" />
+                    <div>
+                      <h3 className="text-6xl font-black text-white mb-2">115 <span className="text-2xl text-gray-500">BPM</span></h3>
+                      <p className="text-red-400 font-bold tracking-widest uppercase text-sm">Heart Rate Spike Detected</p>
+                      <motion.div initial={{ width: 0 }} animate={{ width: "100%" }} transition={{ duration: 2, repeat: Infinity }} className="h-1 bg-red-500 mt-6" />
+                    </div>
+                 </div>
+              </div>
+            </div>
+          </SlideLayout>
+        );
+
+      case 9:
+        return (
+          <SlideLayout step={9} totalSteps={totalSlides} script="Medical data is intimidating. Synapse uses pure AI to fix this. Upload a dense lab report, and our AI translates it into simple language you can understand. Scan a doctor's handwritten note, and the AI automatically carts the exact medicines.">
+            <div className="flex flex-col md:flex-row gap-12 items-center w-full max-w-6xl">
+              <div className="flex-1 flex flex-col gap-6 w-full">
+                <h2 className="text-5xl font-bold text-white mb-4">AI Clinical Interpreters</h2>
+                <div className="bg-white text-black p-6 rounded-xl font-mono text-xs opacity-50 relative overflow-hidden">
+                  <p>HAEMATOLOGY REPORT - PATIENT SR029</p>
+                  <p>WBC: 12.5 x10^9/L (REF 4.0-10.0) [HIGH]</p>
+                  <p>HGB: 11.2 g/dL (REF 12.0-16.0) [LOW]</p>
+                  <p>PLT: 150 x10^9/L (REF 150-400) [NORMAL]</p>
+                  
+                  <motion.div animate={{ top: ['0%', '100%', '0%'] }} transition={{ duration: 3, repeat: Infinity, ease: 'linear' }} className="absolute left-0 right-0 h-1 bg-blue-500 shadow-[0_0_20px_blue] z-20" />
+                </div>
+              </div>
+              <div className="flex justify-center shrink-0">
+                <ArrowRight className="w-12 h-12 text-blue-500" />
+              </div>
+              <div className="flex-1 w-full bg-blue-900/20 border border-blue-500/30 p-8 rounded-3xl backdrop-blur-xl">
+                 <div className="mb-6">
+                    <span className="bg-red-500/20 text-red-400 px-3 py-1 rounded-full text-sm font-bold border border-red-500/30">Elevated White Blood Cells</span>
+                    <p className="text-white mt-3 leading-relaxed">Your body is likely fighting an infection. The slightly low hemoglobin means mild anemia. <span className="text-blue-300 font-bold">Recommendation: Dr. Smith has been notified for a follow-up.</span></p>
+                 </div>
+              </div>
+            </div>
+          </SlideLayout>
+        );
+
+      case 10:
+        return (
+          <SlideLayout step={10} totalSteps={totalSlides} script="Patients can seamlessly book in-person or virtual consultations. Our built-in video telehealth requires no external links or downloads, and doctors can view the patient's real-time IoT vitals *during* the video call.">
+             <div className="flex flex-col items-center w-full max-w-5xl text-center">
+                <h2 className="text-5xl font-bold text-white mb-12">Seamless Tele-Health</h2>
+                <div className="grid grid-cols-2 gap-8 w-full">
+                   <div className="bg-[#0a0a0a] border border-white/10 rounded-3xl p-8 flex flex-col items-center shadow-2xl">
+                      <Calendar className="w-16 h-16 text-blue-500 mb-6" />
+                      <h3 className="text-2xl font-bold text-white mb-2">Smart Scheduling</h3>
+                      <p className="text-gray-400">AI-optimized calendars that prevent double bookings and minimize waiting times.</p>
+                   </div>
+                   <div className="bg-[#0a0a0a] border border-white/10 rounded-3xl p-8 flex flex-col items-center shadow-2xl relative overflow-hidden">
+                      <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-purple-600/20 to-transparent" />
+                      <Video className="w-16 h-16 text-purple-500 mb-6 relative z-10" />
+                      <h3 className="text-2xl font-bold text-white mb-2 relative z-10">Native WebRTC Video</h3>
+                      <p className="text-gray-400 relative z-10">Secure, high-definition video calls natively embedded. No zoom links needed.</p>
+                   </div>
+                </div>
+             </div>
+          </SlideLayout>
+        );
+
+      case 11:
+        return (
+          <SlideLayout step={11} totalSteps={totalSlides} script="For doctors, Synapse is a superpower. Alongside full EHR access, we provide an AI Clinical Decision Support System (CDSS). As a doctor prescribes a drug, the AI instantly cross-references the patient's history to warn of dangerous drug interactions before they happen.">
+            <div className="w-full flex flex-col md:flex-row items-center gap-12 max-w-6xl">
+              <div className="flex-1 text-left">
+                 <h2 className="text-5xl font-bold text-white mb-6">Doctor's CDSS Command Center</h2>
+                 <p className="text-xl text-gray-400 leading-relaxed mb-8">Clinical Decision Support System. An AI co-pilot that watches over every prescription and diagnosis in real time.</p>
+              </div>
+              <div className="flex-1 w-full bg-[#0a0a0a] border border-white/10 rounded-[2rem] p-8 shadow-2xl relative">
+                  <h4 className="text-white font-bold mb-4">Prescribing: <span className="text-blue-400">Warfarin 5mg</span></h4>
+                  
+                  <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ repeat: Infinity, duration: 2, repeatType: "reverse" }} className="bg-red-500/10 border border-red-500 p-6 rounded-xl relative overflow-hidden mt-6">
+                    <div className="absolute inset-0 bg-red-500/10 animate-pulse" />
+                    <div className="flex items-start gap-4 relative z-10">
+                       <ShieldAlert className="w-8 h-8 text-red-500 shrink-0" />
+                       <div>
+                         <h5 className="text-red-500 font-bold uppercase tracking-widest text-sm mb-1">AI CRITICAL WARNING</h5>
+                         <p className="text-red-200">Patient is currently taking Aspirin (prescribed 10 days ago). Severe risk of internal bleeding. Suggesting alternative anticoagulant.</p>
+                       </div>
+                    </div>
+                  </motion.div>
+              </div>
+            </div>
+          </SlideLayout>
+        );
+
+      case 12:
+        return (
+          <SlideLayout step={12} totalSteps={totalSlides} script="Hospitals get a complete enterprise upgrade. Live queue management, instant token generation, and real-time visualization of ward and bed availability. Staff can assign patients to an ICU bed with a single drag-and-drop.">
+            <div className="flex flex-col items-center w-full">
+              <h2 className="text-5xl font-bold text-white mb-12">Hospital ERP & Live Wards</h2>
+              <div className="flex gap-4 w-full max-w-4xl">
+                 <div className="flex-1 border border-white/10 rounded-2xl p-6 bg-white/5">
+                    <h4 className="text-gray-400 font-bold uppercase text-xs mb-4">General Ward A</h4>
+                    <div className="grid grid-cols-4 gap-2">
+                       {Array.from({ length: 8 }).map((_, i) => (
+                         <div key={i} className={`h-16 rounded-lg border ${i < 6 ? 'bg-red-500/20 border-red-500/30 text-red-400' : 'bg-green-500/20 border-green-500/30 text-green-400'} flex items-center justify-center font-bold text-xs`}>
+                           {i < 6 ? 'OCCUPIED' : 'FREE'}
+                         </div>
+                       ))}
+                    </div>
+                 </div>
+                 <div className="flex-1 border border-white/10 rounded-2xl p-6 bg-white/5">
+                    <h4 className="text-gray-400 font-bold uppercase text-xs mb-4">Urgent ICU</h4>
+                    <div className="grid grid-cols-2 gap-4">
+                       {Array.from({ length: 4 }).map((_, i) => (
+                         <div key={i} className={`h-24 rounded-lg border ${i === 3 ? 'bg-green-500/20 border-green-500/30 text-green-400' : 'bg-red-500/20 border-red-500/30 text-red-400'} flex flex-col items-center justify-center font-bold text-xs`}>
+                           <HeartPulse className="w-6 h-6 mb-2 opacity-50" />
+                           {i === 3 ? 'AVAILABLE' : 'CRITICAL'}
+                         </div>
+                       ))}
+                    </div>
+                 </div>
+              </div>
+            </div>
+          </SlideLayout>
+        );
+
+      case 13:
+        return (
+          <SlideLayout step={13} totalSteps={totalSlides} script="To eliminate billing friction, we built a closed-loop smart wallet. Patients recharge their balance securely. Every consultation fee, lab test, and pharmacy order is deducted automatically in milliseconds. No more waiting at the billing counter.">
+            <div className="flex flex-col items-center">
+              <h2 className="text-5xl font-bold text-white mb-16">The Closed-Loop Smart Wallet</h2>
+              <div className="bg-gradient-to-br from-indigo-900 to-black border border-indigo-500/30 w-full max-w-sm rounded-[3rem] p-8 shadow-2xl relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/20 blur-[60px]" />
+                <div className="flex justify-between items-center mb-8 relative z-10">
+                  <Wallet className="w-8 h-8 text-indigo-400" />
+                  <span className="bg-indigo-500/20 text-indigo-300 text-xs font-bold px-3 py-1 rounded-full uppercase">Synapse Pay</span>
+                </div>
+                <div className="mb-10 relative z-10">
+                   <p className="text-indigo-200/60 font-medium mb-2">Available Balance</p>
+                   <h3 className="text-5xl font-black text-white">$1,240.00</h3>
+                </div>
+                <div className="space-y-4 relative z-10">
+                   <div className="flex justify-between items-center text-sm border-t border-indigo-500/20 pt-4">
+                     <span className="text-white/60">Dr. Smith Consultation</span>
+                     <span className="text-red-400 font-bold">-$150.00</span>
+                   </div>
+                   <div className="flex justify-between items-center text-sm border-t border-indigo-500/20 pt-4">
+                     <span className="text-white/60">Pharmacy Order #84</span>
+                     <span className="text-red-400 font-bold">-$45.50</span>
+                   </div>
+                </div>
+              </div>
+            </div>
+          </SlideLayout>
+        );
+
+      case 14:
+        return (
+          <SlideLayout step={14} totalSteps={totalSlides} script="We handle the logistics of life and death. If a patient triggers the SOS, nearby ambulance drivers get pinged instantly. Patients and hospitals track the ambulance live via GPS, ensuring the ER is prepped exactly when the patient arrives.">
+            <div className="w-full flex flex-col md:flex-row items-center gap-12 max-w-5xl">
+               <div className="flex-1">
+                 <h2 className="text-5xl font-bold text-white mb-6">Emergency Dispatch</h2>
+                 <p className="text-xl text-gray-400 mb-8">The "Uber" model for critical care. Instant SOS broadcasting and live GPS tracking saves vital minutes.</p>
+                 <button className="bg-red-600 border border-red-500 hover:bg-red-500 text-white font-black text-2xl py-6 px-12 rounded-full shadow-[0_0_40px_rgba(220,38,38,0.6)] flex items-center gap-4 transition-all hover:scale-105">
+                   <ShieldAlert className="w-8 h-8" /> 
+                   EMERGENCY SOS
+                 </button>
+               </div>
+               <div className="flex-1 w-full bg-[#0a0a0a] border border-white/10 rounded-3xl p-4 overflow-hidden relative h-96">
+                  <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '24px 24px' }} />
+                  
+                  <motion.div initial={{ y: 200, x: -100 }} animate={{ y: 0, x: 50 }} transition={{ duration: 10, repeat: Infinity, ease: "linear" }} className="absolute z-20 flex flex-col items-center">
+                    <div className="bg-red-500 rounded-full p-3 shadow-[0_0_20px_red]">
+                       <Truck className="w-8 h-8 text-white" />
+                    </div>
+                    <span className="mt-2 bg-black text-white text-xs font-bold px-2 py-1 rounded">2 mins away</span>
+                  </motion.div>
+
+                  <div className="absolute top-[40%] left-[60%] z-10 w-4 h-4 bg-blue-500 rounded-full shadow-[0_0_20px_blue] animate-pulse" />
+               </div>
+            </div>
+          </SlideLayout>
+        );
+
+      case 15:
+        return (
+          <SlideLayout step={15} totalSteps={totalSlides} script="And finally, prescriptions. E-commerce is natively built-in. Pharmacies receive digital orders instantly. A dedicated Synapse delivery rider picks up the medication and drops it at the patient's door, tracked end-to-end on a live map.">
+            <div className="flex flex-col items-center text-center">
+               <h2 className="text-5xl font-bold text-white mb-16">E-Pharmacy & Last-Mile Delivery</h2>
+               <div className="flex items-center gap-8 w-full max-w-4xl justify-center">
+                  <div className="flex flex-col items-center gap-4">
+                    <div className="w-24 h-24 bg-white/5 border border-white/10 rounded-full flex items-center justify-center">
+                       <Pill className="w-10 h-10 text-green-400" />
+                    </div>
+                    <span className="font-bold text-gray-400 uppercase text-xs tracking-widest">Pharmacy</span>
+                  </div>
+                  <motion.div animate={{ x: [-10, 10, -10] }} transition={{ duration: 2, repeat: Infinity }} className="flex-1 h-[2px] bg-gradient-to-r from-green-500/50 to-blue-500/50 relative">
+                     <Truck className="w-6 h-6 text-white absolute -top-3 left-1/2 -ml-3" />
+                  </motion.div>
+                  <div className="flex flex-col items-center gap-4">
+                    <div className="w-24 h-24 bg-white/5 border border-white/10 rounded-full flex items-center justify-center">
+                       <Users className="w-10 h-10 text-blue-400" />
+                    </div>
+                    <span className="font-bold text-gray-400 uppercase text-xs tracking-widest">Patient Doorstep</span>
+                  </div>
+               </div>
+            </div>
+          </SlideLayout>
+        );
+
+      case 16:
+        return (
+          <SlideLayout step={16} totalSteps={totalSlides} script="Synapse isn't just for patients or doctors. It is a multi-tenant platform featuring 11 distinct, secure user roles. Every stakeholder logs into an interface custom-built specifically for their operational needs.">
+             <div className="flex flex-col items-center w-full">
+               <h2 className="text-5xl font-bold text-white mb-12">An Ecosystem of 11 User Roles</h2>
+               <div className="flex flex-wrap justify-center gap-4 max-w-4xl">
+                 {['Admin', 'Hospital', 'Doctor', 'Patient', 'Staff', 'Pharmacy', 'Pharmacist', 'Lab', 'Lab Tech', 'Driver', 'Rider'].map((role, i) => (
+                   <motion.div key={i} initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: i * 0.1 }} className="bg-white/5 border border-white/10 px-6 py-4 rounded-full font-bold text-lg text-white hover:bg-blue-600 hover:border-blue-500 transition-all cursor-default">
+                     {role}
+                   </motion.div>
+                 ))}
+               </div>
+             </div>
+          </SlideLayout>
+        );
+
+      case 17:
+        return (
+          <SlideLayout step={17} totalSteps={totalSlides} script="Our business model is highly lucrative and diversified. We charge a micro-commission on every appointment, lab test, and medicine delivery. We charge ongoing B2B SaaS fees to hospitals and pharmacies, and patients can subscribe to Synapse Premium for prioritized care.">
+            <div className="flex flex-col items-center text-center">
+               <h2 className="text-5xl font-bold text-white mb-16">The Revenue Engine</h2>
+               <div className="grid grid-cols-3 gap-8 w-full max-w-5xl">
+                 {[
+                   { title: "Marketplace Commissions", desc: "10-15% cut on appointments, labs, and medicine deliveries.", icon: TrendingUp, color: "text-green-400", border: 'border-green-500/30' },
+                   { title: "B2B SaaS Subscriptions", desc: "Monthly enterprise fees for Hospital and Lab ERP systems.", icon: Briefcase, color: "text-blue-400", border: 'border-blue-500/30' },
+                   { title: "Premium Patient Memberships", desc: "Tiered consumer subscriptions for 0 wait times & free delivery.", icon: Target, color: "text-purple-400", border: 'border-purple-500/30' }
+                 ].map((box, i) => (
+                    <motion.div key={i} whileHover={{ y: -10 }} className={`bg-white/5 border ${box.border} p-8 rounded-3xl`}>
+                      <box.icon className={`w-12 h-12 mb-6 ${box.color} mx-auto`} />
+                      <h3 className="text-2xl font-bold text-white mb-4">{box.title}</h3>
+                      <p className="text-gray-400">{box.desc}</p>
+                    </motion.div>
+                 ))}
+               </div>
+            </div>
+          </SlideLayout>
+        );
+
+      case 18:
+        return (
+          <SlideLayout step={18} totalSteps={totalSlides} script="Under the hood, Synapse is built on cutting-edge technology. Powered by React and Node.js with MongoDB. We utilize Socket.io for instantaneous real-time updates and ZHIPU AI for unparalleled, logical reasoning. It is built to scale globally.">
+             <div className="flex flex-col items-center">
+               <h2 className="text-5xl font-bold text-white mb-16">Engineered for Global Scale</h2>
+               <div className="flex flex-wrap justify-center gap-12 max-w-4xl">
+                 {[
+                   { label: "React 18", icon: Code },
+                   { label: "Node.js", icon: Terminal },
+                   { label: "MongoDB", icon: Database },
+                   { label: "Socket.io", icon: Network },
+                   { label: "ZHIPU AI", icon: Brain },
+                   { label: "WebRTC", icon: Video }
+                 ].map((tech, i) => (
+                   <div key={i} className="flex flex-col items-center gap-4">
+                     <div className="w-20 h-20 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center">
+                        <tech.icon className="w-10 h-10 text-blue-400" />
+                     </div>
+                     <span className="text-white font-bold">{tech.label}</span>
+                   </div>
+                 ))}
+               </div>
+             </div>
+          </SlideLayout>
+        );
+
+      case 19:
+        return (
+          <SlideLayout step={19} totalSteps={totalSlides} script="Our Go-To-Market strategy is aggressive but calculated. We start with local pilots by offering the software free to select clinics to test logistics. We then acquire patients heavily relying on our unique AI tools, and finally pivot to locking in major hospital enterprises.">
+            <div className="flex flex-col items-center w-full">
+               <h2 className="text-5xl font-bold text-white mb-16">Go-To-Market Strategy</h2>
+               <div className="flex flex-col w-full max-w-4xl gap-4 relative">
+                  <div className="absolute left-8 top-0 bottom-0 w-1 bg-blue-500/20" />
+                  {[
+                    { phase: "PHASE 1 (M 1-3)", title: "Local Pilot", desc: "Partner with 3 minor clinics & 5 pharmacies. Test logistics free of charge." },
+                    { phase: "PHASE 2 (M 4-6)", title: "Aggressive Patient Acquisition", desc: "Marketing highlighting AI interpreters and fast medicine delivery. Build the base." },
+                    { phase: "PHASE 3 (M 7-12)", title: "B2B Enterprise Push", desc: "Target mid-large tier hospitals. Pitch as total infrastructure upgrade." }
+                  ].map((step, i) => (
+                    <motion.div key={i} initial={{ x: -50, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: i * 0.3 }} className="ml-16 bg-[#0a0a0a] border border-white/10 p-6 rounded-2xl relative">
+                       <div className="absolute -left-[43px] top-1/2 -mt-3 w-6 h-6 bg-blue-600 rounded-full border-4 border-[#0a0a0a]" />
+                       <span className="text-blue-500 font-black text-xs uppercase tracking-widest">{step.phase}</span>
+                       <h3 className="text-2xl font-bold text-white mt-2 mb-2">{step.title}</h3>
+                       <p className="text-gray-400">{step.desc}</p>
+                    </motion.div>
+                  ))}
+               </div>
+            </div>
+          </SlideLayout>
+        );
+
+      case 20:
+        return (
+          <SlideLayout step={20} totalSteps={totalSlides} script="Security and Compliance are non-negotiable. Synapse is designed from the ground up to be fully compliant with China's MLPS and Personal Information Protection Law (PIPL). End-to-end encryption, multi-factor authentication, and blockchain-inspired audit trails ensure the absolute privacy of patient data across all regions.">
+             <div className="flex flex-col items-center w-full">
+                <h2 className="text-5xl font-bold text-white mb-16">Military-Grade Compliance</h2>
+                <div className="flex gap-12 max-w-5xl w-full justify-center">
+                   <div className="flex-1 bg-[#0a0a0a] border border-blue-500/30 rounded-3xl p-8 relative overflow-hidden flex flex-col items-center text-center">
+                      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-transparent" />
+                      <Key className="w-16 h-16 text-blue-400 mb-6" />
+                      <h3 className="text-2xl font-bold text-white mb-4">Zero-Trust Architecture</h3>
+                      <p className="text-gray-400">Strict internal access boundaries. Data is decoupled and encrypted at rest and in transit.</p>
+                   </div>
+                   <div className="flex-1 bg-[#0a0a0a] border border-green-500/30 rounded-3xl p-8 relative overflow-hidden flex flex-col items-center text-center">
+                      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-500 to-transparent" />
+                      <ShieldAlert className="w-16 h-16 text-green-400 mb-6" />
+                      <h3 className="text-2xl font-bold text-white mb-4">MLPS & PIPL Ready</h3>
+                      <p className="text-gray-400">Automated regulatory adherence, rigorous data localization protocols, and decentralized audit nodes.</p>
+                   </div>
+                </div>
+             </div>
+          </SlideLayout>
+        );
+
+      case 21:
+        return (
+          <SlideLayout step={21} totalSteps={totalSlides} script="Let's visualize the explosive growth path specifically localized for the Chinese market. Year over year, we project massive adoption stemming from our unique B2B2C model. As Tier-3A hospitals onboard our ERP, they instantly bring millions of users into the ecosystem via integrated WeChat interfaces.">
+            <div className="w-full flex justify-center items-center h-full flex-col">
+              <h2 className="text-5xl font-bold text-white mb-12">Projected User Adoption (APAC)</h2>
+              <div className="w-full max-w-4xl h-96 bg-[#0a0a0a] p-6 rounded-3xl border border-white/10">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={[
+                    { year: '2026', users: 50 },
+                    { year: '2027', users: 350 },
+                    { year: '2028', users: 1200 },
+                    { year: '2029', users: 4500 },
+                    { year: '2030', users: 15000 }
+                  ]}>
+                    <defs>
+                      <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <XAxis dataKey="year" stroke="#ffffff55" />
+                    <YAxis stroke="#ffffff55" />
+                    <RechartsTooltip contentStyle={{ backgroundColor: '#0a0a0a', borderColor: '#ffffff22' }} />
+                    <Area type="monotone" dataKey="users" stroke="#3b82f6" fillOpacity={1} fill="url(#colorUsers)" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </SlideLayout>
+        );
+
+      case 22:
+        return (
+          <SlideLayout step={22} totalSteps={totalSlides} script="Revenue scales dynamically across three distinct pillars tailored for China: Enterprise Tier-3A hospital software subscriptions, consumer premium health memberships integrated with Alipay/WeChat Pay, and high-frequency transaction fees from local marketplace volume.">
+            <div className="w-full flex justify-center items-center h-full flex-col">
+              <h2 className="text-5xl font-bold text-white mb-12">Dynamic Revenue Streams</h2>
+              <div className="w-full max-w-4xl h-96 bg-[#0a0a0a] p-6 rounded-3xl border border-white/10 flex gap-8 py-8 items-center justify-center">
+                <ResponsiveContainer width="50%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={[
+                        { name: 'Enterprise Public Hospital SaaS', value: 45 },
+                        { name: 'Marketplace Fees (Alipay/WeChat)', value: 35 },
+                        { name: 'B2C VIP Premium', value: 20 }
+                      ]}
+                      innerRadius={80}
+                      outerRadius={120}
+                      paddingAngle={5}
+                      dataKey="value"
+                      stroke="none"
+                    >
+                      <Cell fill="#3b82f6" />
+                      <Cell fill="#a855f7" />
+                      <Cell fill="#22c55e" />
+                    </Pie>
+                    <RechartsTooltip contentStyle={{ backgroundColor: '#0a0a0a', borderColor: '#ffffff22' }} />
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="flex flex-col gap-6 w-1/2">
+                   <div className="flex items-center gap-4"><div className="w-6 h-6 rounded-full bg-blue-500" /><span className="text-xl text-white font-bold">45% Enterprise Public Hospital SaaS</span></div>
+                   <div className="flex items-center gap-4"><div className="w-6 h-6 rounded-full bg-purple-500" /><span className="text-xl text-white font-bold">35% Marketplace (Alipay/WeChat)</span></div>
+                   <div className="flex items-center gap-4"><div className="w-6 h-6 rounded-full bg-green-500" /><span className="text-xl text-white font-bold">20% B2C VIP Premium</span></div>
+                </div>
+              </div>
+            </div>
+          </SlideLayout>
+        );
+
+      case 23:
+        return (
+          <SlideLayout step={23} totalSteps={totalSlides} script="Let us observe a competitive landscape matrix against massive Chinese competitors like Ping An Good Doctor and AliHealth. Legacy players remain siloed—they act as e-pharmacies or telehealth hubs, but not deep IT infrastructure. Because we designed the 11-role centralized architecture from day one with ZHIPU AI, we are the only entity that unifies all vectors into one seamless closed-loop.">
+             <div className="w-full flex flex-col items-center">
+                <h2 className="text-5xl font-bold text-white mb-16">The Regional Disruption</h2>
+                <div className="w-full max-w-5xl rounded-3xl overflow-hidden border border-white/10 bg-[#0a0a0a]">
+                   <table className="w-full text-left">
+                      <thead>
+                         <tr className="bg-white/5 border-b border-white/10">
+                            <th className="p-4 indent-4">Feature</th>
+                            <th className="p-4 text-center">Legacy Telehealth (e.g., Ping An)</th>
+                            <th className="p-4 text-center">Legacy Pharmacy (e.g., JD Health)</th>
+                            <th className="p-4 text-center bg-blue-900/30 text-blue-400 font-black">SYNAPSE OS</th>
+                          </tr>
+                      </thead>
+                      <tbody className="text-gray-400">
+                         <tr className="border-b border-white/5"><td className="p-4 indent-4 font-bold text-white">Video Consultations</td><td className="p-4 text-center text-green-500">Yes</td><td className="p-4 text-center text-red-500">No</td><td className="p-4 text-center text-green-400 bg-blue-900/10">Yes</td></tr>
+                         <tr className="border-b border-white/5"><td className="p-4 indent-4 font-bold text-white">Last-Mile Medicine Delivery</td><td className="p-4 text-center text-red-500">No</td><td className="p-4 text-center text-green-500">Yes</td><td className="p-4 text-center text-green-400 bg-blue-900/10">Yes</td></tr>
+                         <tr className="border-b border-white/5"><td className="p-4 indent-4 font-bold text-white">Core Tier-3A Hospital ERP Integration</td><td className="p-4 text-center text-red-500">No</td><td className="p-4 text-center text-red-500">No</td><td className="p-4 text-center text-green-400 bg-blue-900/10">Yes</td></tr>
+                         <tr className="border-b border-white/5"><td className="p-4 indent-4 font-bold text-white">Live Wearable Vital Streaming</td><td className="p-4 text-center text-red-500">No</td><td className="p-4 text-center text-red-500">No</td><td className="p-4 text-center text-green-400 bg-blue-900/10">Yes</td></tr>
+                         <tr><td className="p-4 indent-4 font-bold text-white">Native ZHIPU LLM Triage & CDSS</td><td className="p-4 text-center text-red-500">No</td><td className="p-4 text-center text-red-500">No</td><td className="p-4 text-center text-green-400 bg-blue-900/20 shadow-[inset_0_0_20px_rgba(59,130,246,0.3)]">Yes</td></tr>
+                      </tbody>
+                    </table>
+                </div>
+             </div>
+          </SlideLayout>
+        );
+
+      case 24:
+        return (
+          <SlideLayout step={24} totalSteps={totalSlides} script="We have built a platform that not only solves immediate regional frictions—such as hospital over-crowding and fragmented patient data—but anticipates the future of Chinese medicine through the localized intelligence of ZHIPU AI and full ecosystem unification.">
+            <div className="flex flex-col items-center text-center h-full justify-center">
+               <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 1.5, type: "spring" }} className="relative mb-12">
+                 <div className="absolute inset-0 bg-blue-500/30 blur-[120px] rounded-full" />
+                 <Brain className="w-48 h-48 text-white relative z-10" />
+                 <motion.div animate={{ rotate: -360 }} transition={{ duration: 15, repeat: Infinity, ease: 'linear' }} className="absolute -inset-8 border-2 border-dashed border-blue-500/50 rounded-full" />
+               </motion.div>
+               <h2 className="text-6xl font-bold text-white leading-tight mb-6">
+                 Powered by <span className="text-blue-500">ZHIPU AI</span>
+                 <br/>
+                 Built for <span className="text-purple-500">China.</span>
+               </h2>
+               <p className="text-2xl text-gray-400 max-w-3xl">Synapse is the catalyst for the next generation of APAC health infrastructure.</p>
+            </div>
+          </SlideLayout>
+        );
+
+      case 25:
+        return (
+          <SlideLayout step={25} totalSteps={totalSlides} script="In conclusion, Synapse is more than an application. It is the infrastructure for a smarter, faster, and more unified era of medicine. Thank you for your time. Let's connect healthcare. I am now open for your questions.">
+             <div className="flex flex-col items-center justify-center text-center">
+                <motion.div animate={{ rotate: 360 }} transition={{ duration: 20, repeat: Infinity, ease: 'linear' }} className="w-64 h-64 border border-blue-500/30 rounded-full flex items-center justify-center mb-12 relative overflow-hidden">
+                   <Globe className="w-32 h-32 text-blue-500 opacity-50" />
+                   <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-blue-600/20 to-transparent" />
+                </motion.div>
+                <h2 className="text-6xl font-black text-white mb-6 tracking-tight">Invest in the Future of Healthcare.</h2>
+                <p className="text-2xl text-blue-400 font-medium mb-12">Thank You.</p>
+                
+                <button onClick={() => navigate('/')} className="bg-white/10 hover:bg-white/20 text-white border border-white/20 px-8 py-4 rounded-full font-bold transition-all">
+                  Exit Presentation
+                </button>
+             </div>
+          </SlideLayout>
+        );
+
+      default:
+        return null;
+    }
+  };
 
   return (
-    <div className="bg-black min-h-screen">
-      <AnimatePresence>
-        {showVideo && (
-          <MarketingVideo onComplete={() => {
-            setShowVideo(false);
-            setShowPitch(true);
-          }} />
-        )}
-      </AnimatePresence>
-
-      {showPitch && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1 }}
-        >
-          <PitchDeck />
-        </motion.div>
-      )}
+    <div className="fixed inset-0 z-[100] bg-black overflow-hidden flex flex-col font-sans select-none">
+       {/* React Three Fiber Background */}
+       <ThreeBackground />
+       
+       {/* Background Elements */}
+       <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-blue-900/10 blur-[150px] rounded-full pointer-events-none" />
+       
+       {/* Navigation Layer */}
+       <div className="absolute inset-y-0 w-full flex justify-between items-center px-4 pointer-events-none z-50">
+          <button 
+            onClick={prevSlide} 
+            disabled={currentSlide === 1}
+            className="w-16 h-16 pointer-events-auto rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 disabled:opacity-0 transition-all backdrop-blur-md"
+          >
+            <ChevronLeft className="w-8 h-8" />
+          </button>
+          <button 
+            onClick={nextSlide} 
+            disabled={currentSlide === totalSlides}
+            className="w-16 h-16 pointer-events-auto rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 disabled:opacity-0 transition-all backdrop-blur-md"
+          >
+            <ChevronRight className="w-8 h-8" />
+          </button>
+       </div>
+       
+       <button onClick={() => navigate('/')} className="absolute top-8 right-8 p-3 bg-white/5 border border-white/10 rounded-full text-white/50 hover:text-white hover:bg-red-500/20 transition-all z-50">
+         <X className="w-6 h-6" />
+       </button>
+       
+       <AnimatePresence mode="wait">
+         <motion.div 
+           key={currentSlide}
+           initial={{ opacity: 0, scale: 0.95 }}
+           animate={{ opacity: 1, scale: 1 }}
+           exit={{ opacity: 0, scale: 1.05 }}
+           transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+           className="w-full h-full"
+         >
+           {renderSlide()}
+         </motion.div>
+       </AnimatePresence>
     </div>
   );
 }

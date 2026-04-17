@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import { useTheme } from './ThemeContext';
+import { useNotifications } from './NotificationProvider';
 import { useTranslation } from 'react-i18next';
 import { 
   Brain, 
@@ -16,7 +17,8 @@ import {
   Menu,
   X,
   Sun,
-  Moon
+  Moon,
+  Bell
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import SynapseLogo from './SynapseLogo';
@@ -24,6 +26,7 @@ import SynapseLogo from './SynapseLogo';
 export default function GlobalNavbar() {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { unreadCount } = useNotifications();
   const { t, i18n } = useTranslation();
   const location = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
@@ -74,6 +77,20 @@ export default function GlobalNavbar() {
         </div>
 
         <div className="flex items-center gap-4 relative z-[110]">
+          {/* Notifications Toggle */}
+          {user && (
+            <div className="relative group/notif hidden sm:block">
+              <button 
+                className="relative w-10 h-10 flex items-center justify-center bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 rounded-full border border-gray-200 dark:border-white/10 transition-all text-gray-600 dark:text-gray-400 interactive"
+              >
+                <Bell className="w-4 h-4" />
+                {unreadCount > 0 && (
+                  <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-white dark:border-black"></span>
+                )}
+              </button>
+            </div>
+          )}
+
           {/* Theme Toggle */}
           <button 
             onClick={toggleTheme}

@@ -337,6 +337,11 @@ export default function UserManagement() {
               <option value="Patient" className="bg-[#0a0a0a]">PATIENT</option>
               <option value="Driver" className="bg-[#0a0a0a]">DRIVER</option>
               <option value="Rider" className="bg-[#0a0a0a]">RIDER</option>
+              <option value="Lab" className="bg-[#0a0a0a]">LAB</option>
+              <option value="LabTechnician" className="bg-[#0a0a0a]">LAB TECH</option>
+              <option value="Pharmacist" className="bg-[#0a0a0a]">PHARMACIST</option>
+              <option value="Pharmacy" className="bg-[#0a0a0a]">PHARMACY</option>
+              <option value="Hospital" className="bg-[#0a0a0a]">HOSPITAL</option>
             </select>
           </div>
 
@@ -683,6 +688,11 @@ export default function UserManagement() {
                         <option value="Patient" className="bg-[#0a0a0a]">PATIENT</option>
                         <option value="Driver" className="bg-[#0a0a0a]">DRIVER</option>
                         <option value="Rider" className="bg-[#0a0a0a]">RIDER</option>
+                        <option value="Lab" className="bg-[#0a0a0a]">LAB</option>
+                        <option value="LabTechnician" className="bg-[#0a0a0a]">LAB TECH</option>
+                        <option value="Pharmacist" className="bg-[#0a0a0a]">PHARMACIST</option>
+                        <option value="Pharmacy" className="bg-[#0a0a0a]">PHARMACY</option>
+                        <option value="Hospital" className="bg-[#0a0a0a]">HOSPITAL</option>
                       </select>
                     </div>
 

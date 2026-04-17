@@ -56,6 +56,7 @@ export default function Appointments() {
   const [doctors, setDoctors] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isBooking, setIsBooking] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState('');
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
@@ -66,6 +67,11 @@ export default function Appointments() {
   const [symptoms, setSymptoms] = useState('');
   const [isMatching, setIsMatching] = useState(false);
   const [matchResult, setMatchResult] = useState<{ doctorId: string, reasoning: string, specialty: string } | null>(null);
+  
+  // Search and Availability States
+  const [searchSpecialty, setSearchSpecialty] = useState('');
+  const [minRating, setMinRating] = useState(0);
+  const [unavailableDoctorIds, setUnavailableDoctorIds] = useState<string[]>([]);
   
   // Calendar States
   const [viewMode, setViewMode] = useState<ViewMode>('month');
@@ -81,13 +87,17 @@ export default function Appointments() {
     const socket = io(window.location.origin);
     
     socket.on('appointment_created', (newAppointment) => {
-      if (newAppointment.patient_id._id === user?.id || newAppointment.doctor_id._id === user?.id) {
+      const patientId = newAppointment.patient_id?._id || newAppointment.patient_id;
+      const doctorId = newAppointment.doctor_id?._id || newAppointment.doctor_id;
+      if (patientId === user?.id || doctorId === user?.id) {
         setAppointments(prev => [...prev, newAppointment].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()));
       }
     });
     
     socket.on('appointment_updated', (updatedAppointment) => {
-      if (updatedAppointment.patient_id._id === user?.id || updatedAppointment.doctor_id._id === user?.id) {
+      const patientId = updatedAppointment.patient_id?._id || updatedAppointment.patient_id;
+      const doctorId = updatedAppointment.doctor_id?._id || updatedAppointment.doctor_id;
+      if (patientId === user?.id || doctorId === user?.id) {
         setAppointments(prev => prev.map(a => a._id === updatedAppointment._id ? updatedAppointment : a));
       }
     });
@@ -96,6 +106,37 @@ export default function Appointments() {
       socket.disconnect();
     };
   }, [user]);
+
+  useEffect(() => {
+    if (date && time && isBooking) {
+      fetchAvailability();
+    } else {
+      setUnavailableDoctorIds([]);
+    }
+  }, [date, time, isBooking]);
+
+  const fetchAvailability = async () => {
+    try {
+      const res = await fetch(`/api/appointments/availability?date=${date}&time=${time}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setUnavailableDoctorIds(data.bookedDoctorIds || []);
+      }
+    } catch (err) {
+      console.error('Failed to check availability', err);
+    }
+  };
+
+  const filteredDoctors = useMemo(() => {
+    return doctors.filter(d => {
+      const spec = d.doctorType || d.specialization || '';
+      const matchesSpec = spec.toLowerCase().includes(searchSpecialty.toLowerCase());
+      const matchesRating = (d.averageRating || 0) >= minRating;
+      return matchesSpec && matchesRating;
+    });
+  }, [doctors, searchSpecialty, minRating]);
 
   const fetchAppointments = async () => {
     try {
@@ -127,9 +168,14 @@ export default function Appointments() {
     }
   };
 
-  const handleBook = async (e: React.FormEvent) => {
+  const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setShowConfirmModal(true);
+  };
+
+  const handleBook = async () => {
     try {
+      setShowConfirmModal(false);
       const res = await fetch('/api/appointments', {
         method: 'POST',
         headers: {
@@ -767,21 +813,7 @@ export default function Appointments() {
                 )}
               </div>
 
-              <form onSubmit={handleBook} className="space-y-4">
-                <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase mb-2">{t('select_doctor')}</label>
-                  <select
-                    required
-                    value={selectedDoctor}
-                    onChange={(e) => setSelectedDoctor(e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white"
-                  >
-                    <option value="">Choose...</option>
-                    {doctors.map(d => (
-                      <option key={d.user_id._id} value={d.user_id._id}>{d.user_id.name} - {d.specialization}</option>
-                    ))}
-                  </select>
-                </div>
+              <form onSubmit={handleFormSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Date</label>
@@ -804,6 +836,64 @@ export default function Appointments() {
                     />
                   </div>
                 </div>
+
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
+                  <h3 className="text-sm font-bold text-white mb-4">Select a Doctor</h3>
+                  
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <input 
+                        type="text" 
+                        placeholder="Search specialty..." 
+                        value={searchSpecialty}
+                        onChange={(e) => setSearchSpecialty(e.target.value)}
+                        className="w-full bg-[#0a0a0a] border border-white/10 rounded-xl p-2 text-sm text-white" 
+                      />
+                    </div>
+                    <div>
+                      <select 
+                        value={minRating} 
+                        onChange={(e) => setMinRating(Number(e.target.value))}
+                        className="w-full bg-[#0a0a0a] border border-white/10 rounded-xl p-2 text-sm text-white"
+                      >
+                        <option value="0">Any Rating</option>
+                        <option value="3">3+ Stars</option>
+                        <option value="4">4+ Stars</option>
+                        <option value="4.5">4.5+ Stars</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="max-h-48 overflow-y-auto space-y-2 pr-2">
+                    {filteredDoctors.map(d => (
+                      <div 
+                        key={d._id} 
+                        onClick={() => setSelectedDoctor(d._id)}
+                        className={`p-3 rounded-xl border cursor-pointer transition-all ${selectedDoctor === d._id ? 'bg-blue-600/20 border-blue-500' : 'bg-[#0a0a0a] border-white/10 hover:border-white/30'}`}
+                      >
+                         <div className="flex justify-between items-center">
+                            <div className="font-bold text-white">{d.fullName || d.username}</div>
+                            <div className="flex items-center gap-1 text-yellow-400 text-xs">
+                               <Sparkles className="w-3 h-3 fill-current" />
+                               {d.averageRating || 'New'}
+                            </div>
+                         </div>
+                         <div className="flex justify-between items-center mt-1">
+                           <div className="text-xs text-gray-400">{d.doctorType || d.specialization || 'General'}</div>
+                           {unavailableDoctorIds.includes(d._id) ? (
+                             <span className="text-[10px] text-red-400 font-bold px-2 py-1 bg-red-400/10 rounded-full">Booked</span>
+                           ) : (
+                             <span className="text-[10px] text-green-400 font-bold px-2 py-1 bg-green-400/10 rounded-full">Available</span>
+                           )}
+                         </div>
+                      </div>
+                    ))}
+                    {filteredDoctors.length === 0 && (
+                      <p className="text-sm text-gray-400 text-center py-4">No available doctors match your criteria.</p>
+                    )}
+                  </div>
+                </div>
+
                 <div>
                   <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Type</label>
                   <select
@@ -817,9 +907,51 @@ export default function Appointments() {
                 </div>
                 <div className="flex gap-4 pt-4">
                   <button type="button" onClick={() => setIsBooking(false)} className="flex-1 py-3 bg-white/5 text-white rounded-xl">Cancel</button>
-                  <button type="submit" className="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold">Proceed to Pay</button>
+                  <button type="submit" disabled={!selectedDoctor || unavailableDoctorIds.includes(selectedDoctor)} className="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold disabled:opacity-50 disabled:cursor-not-allowed">Proceed to Pay</button>
                 </div>
               </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showConfirmModal && (
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="bg-[#0a0a0a] border border-white/10 rounded-3xl p-8 w-full max-w-sm text-center"
+            >
+              <h2 className="text-2xl font-bold text-white mb-2">Confirm Booking</h2>
+              <p className="text-gray-400 text-sm mb-6">Please review your appointment details.</p>
+              
+              <div className="bg-white/5 rounded-2xl p-4 text-left border border-white/10 space-y-3 mb-6">
+                 <div>
+                    <span className="text-xs font-bold text-gray-500 uppercase">Doctor</span>
+                    <p className="text-white font-medium">{doctors.find(d => d._id === selectedDoctor)?.fullName || doctors.find(d => d._id === selectedDoctor)?.username || 'Specialist'}</p>
+                 </div>
+                 <div className="grid grid-cols-2 gap-4 border-t border-white/10 pt-3">
+                    <div>
+                      <span className="text-xs font-bold text-gray-500 uppercase">Date</span>
+                      <p className="text-white font-medium">{date}</p>
+                    </div>
+                    <div>
+                      <span className="text-xs font-bold text-gray-500 uppercase">Time</span>
+                      <p className="text-white font-medium">{time}</p>
+                    </div>
+                 </div>
+                 <div className="border-t border-white/10 pt-3">
+                    <span className="text-xs font-bold text-gray-500 uppercase">Type</span>
+                    <p className="text-white font-medium">{type}</p>
+                 </div>
+              </div>
+
+              <div className="flex gap-4">
+                <button type="button" onClick={() => setShowConfirmModal(false)} className="flex-1 py-3 bg-white/5 text-white rounded-xl hover:bg-white/10 transition-all">Cancel</button>
+                <button type="button" onClick={handleBook} className="flex-1 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(37,99,235,0.4)]">Confirm</button>
+              </div>
             </motion.div>
           </div>
         )}
@@ -831,7 +963,7 @@ export default function Appointments() {
         onClose={() => setPaymentModal({ isOpen: false, appointmentId: null })}
         onSuccess={handlePay}
         amount={150}
-        description={`Consultation with ${doctors.find(d => d.user_id._id === selectedDoctor)?.user_id.name || 'Specialist'}`}
+        description={`Consultation with ${doctors.find(d => d._id === selectedDoctor)?.fullName || doctors.find(d => d._id === selectedDoctor)?.username || 'Specialist'}`}
         appointmentId={paymentModal.appointmentId || ''}
       />
 

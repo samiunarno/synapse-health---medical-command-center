@@ -6,6 +6,7 @@ import MedicalRecord from '../models/MedicalRecord';
 import Task from '../models/Task';
 import Appointment from '../models/Appointment';
 import Prescription from '../models/Prescription';
+import IoTDevice from '../models/IoTDevice';
 
 export const getDoctors = async (req: Request, res: Response) => {
   try {
@@ -160,19 +161,44 @@ export const getDoctorDashboardData = async (req: Request, res: Response) => {
       ? Math.round((dischargedPatients / totalAssignedPatients) * 100) 
       : 85; // Default to 85 if no patients yet
 
-    // Fetch real alerts (e.g., critical lab reports for assigned patients)
+    // Fetch real alerts (e.g., critical lab reports for assigned patients + IoT device warnings)
     const assignedPatientIds = await Patient.find({ assigned_doctor: doctor._id }).distinct('_id');
     const criticalReports = await MedicalRecord.find({
       patient_id: { $in: assignedPatientIds },
       type: 'Lab Report',
       details: /critical|high|low|abnormal/i
-    }).limit(5);
+    }).populate('patient_id', 'username').limit(5);
 
-    const alerts = criticalReports.map(report => ({
-      id: report._id,
-      type: 'critical',
-      message: `Critical Lab: ${(report as any).title || report.type}`
-    }));
+    const iotIssues = await IoTDevice.find({
+      patient_id: { $in: assignedPatientIds },
+      status: { $in: ['Warning', 'Error'] }
+    }).populate('patient_id', 'username').limit(5);
+
+    const alerts: any[] = [];
+
+    criticalReports.forEach(report => {
+      const pName = (report.patient_id as any)?.username || 'Unknown Patient';
+      alerts.push({
+        id: report._id,
+        type: 'critical',
+        message: `Critical Lab: ${(report as any).title || report.type} for ${pName}`,
+        description: report.details?.substring(0, 50) + '...',
+        recommendedAction: 'Review lab results and consider adjusting medication or scheduling an immediate follow-up.'
+      });
+    });
+
+    iotIssues.forEach(device => {
+      const pName = (device.patient_id as any)?.username || 'Unknown Patient';
+      // Simulate an AI-generated alert message for IoT
+      const issueCondition = device.status === 'Error' ? 'Critical Vitals Drop' : 'Abnormal Fluctuations';
+      alerts.push({
+        id: device._id,
+        type: 'critical',
+        message: `IoT Alert [${device.name}]: ${issueCondition} for ${pName}`,
+        description: `Device detected sustained out-of-range metrics (${device.status}).`,
+        recommendedAction: 'Trigger an immediate tele-health check-in and verify patient consciousness.'
+      });
+    });
 
     res.json({
       appointments: appointments,

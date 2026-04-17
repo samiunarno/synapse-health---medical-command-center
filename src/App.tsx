@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { AuthProvider, useAuth } from './components/AuthContext';
 import { ThemeProvider } from './components/ThemeContext';
 import { SocketProvider } from './components/SocketContext';
+import { NotificationProvider } from './components/NotificationProvider';
 import Layout from './components/Layout';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -85,9 +86,10 @@ export default function App() {
       <ThemeProvider>
         <AuthProvider>
           <SocketProvider>
-            <div className="lg:cursor-none min-h-screen">
-              <Router>
-                <CustomCursor />
+            <NotificationProvider>
+              <div className="lg:cursor-none min-h-screen">
+                <Router>
+                  <CustomCursor />
                 <FloatingWidgets />
                 <Routes>
                   <Route path="/" element={<Landing />} />
@@ -143,7 +145,8 @@ export default function App() {
                 </Routes>
               </Router>
             </div>
-          </SocketProvider>
+          </NotificationProvider>
+        </SocketProvider>
       </AuthProvider>
     </ThemeProvider>
   </ErrorBoundary>

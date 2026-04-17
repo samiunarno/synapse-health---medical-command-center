@@ -34,7 +34,7 @@ import { io } from 'socket.io-client';
 import HealthInsights from '../HealthInsights';
 import HealthTips from '../HealthTips';
 
-export default function PatientDashboard({ user }: any) {
+export default function PatientDashboard({ user }: { user: any }) {
   const { t } = useTranslation();
   const { token } = useAuth();
   const [doctors, setDoctors] = React.useState<any[]>([]);
@@ -48,6 +48,31 @@ export default function PatientDashboard({ user }: any) {
   const [ratingValue, setRatingValue] = React.useState(5);
   const [ratingComment, setRatingComment] = React.useState('');
   const [isSubmittingRating, setIsSubmittingRating] = React.useState(false);
+  const [isSosLoading, setIsSosLoading] = React.useState(false);
+
+  const handleSOSTrigger = async () => {
+    setIsSosLoading(true);
+    try {
+      await fetch('/api/notifications', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          title: 'EMERGENCY SOS',
+          message: `Patient ${user?.username} requires immediate emergency assistance!`,
+          type: 'sos',
+          link: `/dashboard/patient/${user?.id}`
+        })
+      });
+      alert('SOS Signal sent to all available medical staff!');
+    } catch (error) {
+      console.error('Failed to send SOS:', error);
+    } finally {
+      setIsSosLoading(false);
+    }
+  };
 
   React.useEffect(() => {
     fetchDoctors();
@@ -254,6 +279,14 @@ export default function PatientDashboard({ user }: any) {
                 <Pill className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                 {t('my_prescriptions')}
               </Link>
+              <button 
+                onClick={handleSOSTrigger}
+                disabled={isSosLoading}
+                className="bg-red-600/10 text-red-600 dark:text-red-400 border border-red-500/20 px-6 lg:px-8 py-4 rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-red-600 hover:text-white transition-all text-sm lg:text-base"
+              >
+                {isSosLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <AlertTriangle className="w-5 h-5" />}
+                TRIGGER SOS
+              </button>
             </div>
           </motion.div>
         </div>

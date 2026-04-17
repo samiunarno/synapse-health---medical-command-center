@@ -29,7 +29,7 @@ import { useTranslation } from 'react-i18next';
 
 import { getCDSSInsights } from '../../services/aiService';
 
-export default function DoctorDashboard({ user }: any) {
+export default function DoctorDashboard({ user }: { user: any }) {
   const { t, i18n } = useTranslation();
   const [profile, setProfile] = useState<any>(null);
   const [departments, setDepartments] = useState<any[]>([]);
@@ -598,11 +598,26 @@ export default function DoctorDashboard({ user }: any) {
               <p className="text-[10px] text-red-600/60 dark:text-red-400/60 font-bold uppercase tracking-[0.3em]">{t('immediate_action_required')} • {dashboardData?.alerts?.length || 0} {t('pending')}</p>
             </div>
           </div>
-          <div className="flex flex-wrap gap-4 relative z-10">
+          <div className="flex flex-col gap-4 relative z-10 w-full sm:w-auto flex-1">
             {dashboardData?.alerts?.map((alert: any) => (
-              <div key={alert.id} className="px-6 py-3 bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl flex items-center gap-3">
-                <div className={`w-2 h-2 rounded-full animate-ping ${alert.type === 'critical' ? 'bg-red-500' : 'bg-orange-500'}`} />
-                <span className="text-[10px] font-bold text-gray-700 dark:text-gray-300 uppercase tracking-widest">{alert.message}</span>
+              <div key={alert.id} className="p-4 bg-white dark:bg-black/40 border border-red-500/30 rounded-xl flex flex-col gap-2 shadow-lg shadow-red-500/5">
+                <div className="flex items-center gap-3">
+                  <div className={`w-3 h-3 rounded-full animate-ping shrink-0 ${alert.type === 'critical' ? 'bg-red-500' : 'bg-orange-500'}`} />
+                  <span className="text-sm font-bold text-red-600 dark:text-red-400">{alert.message}</span>
+                </div>
+                {alert.description && (
+                  <p className="text-xs text-gray-700 dark:text-gray-300 ml-6 border-l-2 border-red-500/20 pl-3">
+                    {alert.description}
+                  </p>
+                )}
+                {alert.recommendedAction && (
+                  <div className="ml-6 mt-1 bg-red-500/10 px-3 py-2 rounded-lg border border-red-500/20">
+                    <span className="text-[10px] uppercase font-bold text-red-600/80 dark:text-red-400/80 block mb-1">Recommended Action</span>
+                    <p className="text-xs font-semibold text-red-700 dark:text-red-300">
+                      {alert.recommendedAction}
+                    </p>
+                  </div>
+                )}
               </div>
             ))}
             {(!dashboardData?.alerts || dashboardData.alerts.length === 0) && (

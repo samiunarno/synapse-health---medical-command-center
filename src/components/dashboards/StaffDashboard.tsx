@@ -22,7 +22,7 @@ import { Link } from 'react-router-dom';
 import WardBedStats from '../WardBedStats';
 import { useTranslation } from 'react-i18next';
 
-export default function StaffDashboard({ user, stats, activityStream }: any) {
+export default function StaffDashboard({ user, stats, activityStream }: { user: any, stats?: any, activityStream?: any }) {
   const { t } = useTranslation();
   const iconMap: any = {
     Plus,

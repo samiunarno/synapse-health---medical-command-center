@@ -47,6 +47,7 @@ import verificationRoutes from './server/routes/verificationRoutes';
 import commissionRoutes from './server/routes/commissionRoutes';
 import financeRoutes from './server/routes/financeRoutes';
 import membershipRoutes from './server/routes/membershipRoutes';
+import notificationRoutes from './server/routes/notificationRoutes';
 import { seedDatabase } from './server/seed';
 import { initVerificationCron } from './server/services/verificationService';
 import { MongoMemoryServer } from 'mongodb-memory-server';
@@ -68,6 +69,11 @@ async function startServer() {
   io.on('connection', (socket) => {
     console.log('A user connected:', socket.id);
     
+    socket.on('join_user_room', (userId: string) => {
+      socket.join(userId);
+      console.log(`User ${socket.id} joined room ${userId}`);
+    });
+
     socket.on('trigger_emergency', (data) => {
       io.emit('emergency_alert', data);
     });
@@ -185,6 +191,7 @@ async function startServer() {
   app.use('/api/commissions', commissionRoutes);
   app.use('/api/finance', financeRoutes);
   app.use('/api/membership', membershipRoutes);
+  app.use('/api/notifications', notificationRoutes);
 
   // Health Check
   app.get('/api/health', (req, res) => {

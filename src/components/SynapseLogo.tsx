@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface SynapseLogoProps {
   className?: string;
@@ -13,6 +14,9 @@ export default function SynapseLogo({
   textClassName = "text-xl font-display font-black tracking-tighter uppercase italic",
   showText = true 
 }: SynapseLogoProps) {
+  const { i18n } = useTranslation();
+  const isChinese = i18n.language === 'zh';
+
   return (
     <div className={`flex items-center gap-3 group ${className}`}>
       <div className="relative">
@@ -38,7 +42,11 @@ export default function SynapseLogo({
       {showText && (
         <div className="flex flex-col leading-none">
           <span className={`${textClassName} text-black dark:text-white flex items-center tracking-tighter`}>
-            智医<span className="text-[#0033A0] dark:text-[#3b82f6]">云</span>
+            {isChinese ? (
+              <>智医<span className="text-[#0033A0] dark:text-[#3b82f6]">云</span></>
+            ) : (
+              <>SYN<span className="text-[#0033A0] dark:text-[#3b82f6]">APSE</span></>
+            )}
           </span>
           <span className="text-[7px] font-mono font-bold tracking-[0.5em] text-[#0033A0] dark:text-[#3b82f6] uppercase tracking-widest mt-1 opacity-80">
             NEURAL NETWORK

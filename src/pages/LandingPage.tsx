@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { 
   Activity, Shield, Database, Globe, 
   Brain, ArrowRight, Fingerprint, Network,
-  Terminal, Cpu, Lock, CheckSquare, QrCode, HelpCircle
+  Terminal, Cpu, Lock, CheckSquare, QrCode, HelpCircle, MonitorPlay
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import CookieConsent from '../components/CookieConsent';
@@ -369,6 +369,13 @@ export default function LandingPage() {
               <p className="text-white/60 font-light text-sm max-w-md leading-relaxed">
                 {t('footer_desc')}
               </p>
+              <Link 
+                to="/presentation" 
+                className="mt-4 px-6 py-3 bg-blue-600/10 border border-blue-500/30 hover:bg-blue-600 hover:border-blue-500 text-white rounded-full flex items-center gap-2 font-mono text-xs uppercase tracking-widest transition-all hover:scale-105"
+              >
+                <MonitorPlay className="w-4 h-4" />
+                View Pitch Deck
+              </Link>
             </div>
 
             {/* Bottom Bar */}

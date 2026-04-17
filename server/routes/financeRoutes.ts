@@ -59,7 +59,7 @@ router.post('/admin/recharge-action/:id', authenticate, authorize(['Admin']), as
     await request.save();
 
     if (finalStatus === 'Approved') {
-      await User.updateOne({ _id: request.userId }, { $inc: { balance: request.amount } });
+      await User.updateOne({ _id: request.userId }, { $inc: { balance: Number(request.amount) } });
     }
 
     res.json({ message: `Recharge request ${finalStatus.toLowerCase()}`, request });

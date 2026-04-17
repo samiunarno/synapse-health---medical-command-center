@@ -113,7 +113,6 @@ export const seedDatabase = async () => {
 
     // 3. Seed Users (Admin, Doctors, Patients, Staff, etc.)
     try {
-      if (await User.countDocuments() <= 10) {
         const users = [
           { username: 'admin', email: 'admin@synapse.ai', password: 'password123', role: 'Admin', status: 'Approved', fullName: 'System Administrator' },
           // Doctors
@@ -150,8 +149,11 @@ export const seedDatabase = async () => {
           // Lab Technicians
           { username: 'lab_tech_kim', email: 'kim_lab@synapse.ai', password: 'password123', role: 'LabTechnician', status: 'Approved', fullName: 'Kim Min-su' },
           
-          // Hospitals
-          { username: 'hospital_main', email: 'main_h@synapse.ai', password: 'password123', role: 'Hospital', status: 'Approved', fullName: 'Synapse General Admin', reference_id: 'H-001' }
+          // Hospital
+          { username: 'hospital_main', email: 'main_h@synapse.ai', password: 'password123', role: 'Hospital', status: 'Approved', fullName: 'Synapse General Admin', reference_id: 'H-001' },
+          
+          // User M added per request
+          { username: 'M', email: 'm@synapse.ai', password: 'password123', role: 'Admin', status: 'Approved', fullName: 'M Admin' }
         ];
         
         for (const u of users) {
@@ -166,7 +168,6 @@ export const seedDatabase = async () => {
           }
         }
         console.log('✅ Diverse users seeded');
-      }
     } catch (err) {
       console.error('⚠️ Error seeding Users:', err);
     }

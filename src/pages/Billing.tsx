@@ -119,10 +119,10 @@ export default function Billing() {
                 </div>
                 <div className="flex items-center gap-6 w-full sm:w-auto justify-between sm:justify-end">
                   <div className="text-right">
-                    <p className="text-2xl font-display font-bold text-white">¥{bill.amount.toLocaleString()}</p>
+                    <p className="text-2xl font-display font-bold text-white">¥{(bill.amount || 0).toLocaleString()}</p>
                     <p className={`text-[10px] font-bold uppercase tracking-widest ${
                       bill.status === 'Paid' ? 'text-emerald-400' : 'text-amber-400'
-                    }`}>{bill.status === 'Paid' ? t('paid_status') : t('pending_status') }</p>
+                    }`}>{bill.status === 'Paid' ? (t('paid_status') || 'PAID') : (t('pending_status') || 'PENDING') }</p>
                   </div>
                   {bill.status === 'Pending' && (
                     <button
@@ -152,8 +152,8 @@ export default function Billing() {
                   <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-2">Invoice for</p>
                   <p className="font-bold text-white text-lg">{selectedBill.description}</p>
                   <div className="mt-6 flex justify-between items-end border-t border-white/5 pt-6">
-                    <span className="text-xs text-gray-400 font-bold uppercase tracking-widest">{t('total_amount')}</span>
-                    <span className="text-3xl font-display font-bold text-blue-500">¥{selectedBill.amount.toLocaleString()}</span>
+                    <span className="text-xs text-gray-400 font-bold uppercase tracking-widest">{t('total_amount') || 'TOTAL AMOUNT'}</span>
+                    <span className="text-3xl font-display font-bold text-blue-500">¥{(selectedBill?.amount || 0).toLocaleString()}</span>
                   </div>
                 </div>
 
@@ -212,7 +212,7 @@ export default function Billing() {
                   ) : (
                     <>
                       <ShieldCheck className="w-5 h-5" />
-                      {t('pay_amount', { amount: selectedBill.amount })}
+                      {t('pay_amount', { amount: selectedBill?.amount || 0 }) || `PAY ¥${selectedBill?.amount || 0}`}
                     </>
                   )}
                 </button>
