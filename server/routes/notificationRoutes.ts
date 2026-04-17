@@ -1,14 +1,14 @@
 import express from 'express';
-import { authenticate, authorize } from '../middleware/auth';
+import { authenticate as protect, authorize } from '../middleware/auth';
 import Notification from '../models/Notification';
 import User from '../models/User';
 
 const router = express.Router();
 
 // Get all notifications for logged-in user
-router.get('/', authenticate, async (req: any, res: any) => {
+router.get('/', protect, async (req: any, res: any) => {
   try {
-    const notifications = await Notification.find({ recipient: req.user._id })
+    const notifications = await Notification.find({ recipient: req.user.id })
       .sort({ createdAt: -1 })
       .limit(50);
     res.json(notifications);
@@ -18,10 +18,10 @@ router.get('/', authenticate, async (req: any, res: any) => {
 });
 
 // Mark notification as read
-router.put('/:id/read', authenticate, async (req: any, res: any) => {
+router.put('/:id/read', protect, async (req: any, res: any) => {
   try {
     const notification = await Notification.findOneAndUpdate(
-      { _id: req.params.id, recipient: req.user._id },
+      { _id: req.params.id, recipient: req.user.id },
       { isRead: true },
       { new: true }
     );
@@ -33,10 +33,10 @@ router.put('/:id/read', authenticate, async (req: any, res: any) => {
 });
 
 // Mark all as read
-router.put('/read-all', authenticate, async (req: any, res: any) => {
+router.put('/read-all', protect, async (req: any, res: any) => {
   try {
     await Notification.updateMany(
-      { recipient: req.user._id, isRead: false },
+      { recipient: req.user.id, isRead: false },
       { isRead: true }
     );
     res.json({ message: 'All marked as read' });
@@ -47,7 +47,7 @@ router.put('/read-all', authenticate, async (req: any, res: any) => {
 
 // Create a notification (Internal or Admin/System usage usually, but we expose for triggers)
 // Protect this or limit to specific roles if needed. Here we allow logged in users (e.g. SOS from patient)
-router.post('/', authenticate, async (req: any, res: any) => {
+router.post('/', protect, async (req: any, res: any) => {
   try {
     const { title, message, type, link, recipientId } = req.body;
     
@@ -56,7 +56,7 @@ router.post('/', authenticate, async (req: any, res: any) => {
     // If SOS, we want to notify all doctors and admins in the hospital maybe, 
     // or specifically the primary doctor. Assuming broadcast or specific:
     if (type === 'sos') {
-      const doctors = await User.find({ role: { $in: ['doctor', 'hospital_admin'] } }).select('_id');
+      const doctors = await User.find({ role: { $in: ['Doctor', 'Admin'] } }).select('_id');
       recipients = doctors.map(d => d._id.toString());
     } else {
       if (!recipientId) return res.status(400).json({ message: 'Recipient is required unless type is sos' });
@@ -81,7 +81,7 @@ router.post('/', authenticate, async (req: any, res: any) => {
       });
       // if sos, emit global emergency alert as well
       if (type === 'sos') {
-         io.emit('emergency_alert', { title, message, link, patientId: req.user._id });
+         io.emit('emergency_alert', { title, message, link, patientId: req.user.id });
       }
     }
 

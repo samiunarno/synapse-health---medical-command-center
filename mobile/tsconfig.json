@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "allowJs": true,
+    "esModuleInterop": true,
+    "jsx": "react-native",
+    "lib": [
+      "DOM",
+      "ES2022"
+    ],
+    "moduleResolution": "node",
+    "target": "ES2022",
+    "skipLibCheck": true,
+    "baseUrl": "."
+  }
+}

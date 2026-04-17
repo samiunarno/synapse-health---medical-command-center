@@ -285,7 +285,7 @@ export default function PatientDashboard({ user }: { user: any }) {
                 className="bg-red-600/10 text-red-600 dark:text-red-400 border border-red-500/20 px-6 lg:px-8 py-4 rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-red-600 hover:text-white transition-all text-sm lg:text-base"
               >
                 {isSosLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <AlertTriangle className="w-5 h-5" />}
-                TRIGGER SOS
+                {t('trigger_sos')}
               </button>
             </div>
           </motion.div>

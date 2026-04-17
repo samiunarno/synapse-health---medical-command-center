@@ -115,7 +115,7 @@ export default function PharmacyDashboard() {
                 </tr>
               </thead>
               <tbody>
-                {orders.slice(0, 5).map((order) => (
+                {orders.slice(0, 5).map((order: any) => (
                   <tr key={order._id} className="border-b border-gray-200 dark:border-white/5 hover:bg-gray-100 dark:hover:bg-white/2 transition-colors">
                     <td className="px-8 py-6 text-xs font-bold text-gray-900 dark:text-white uppercase tracking-tight">#{order._id.slice(-6)}</td>
                     <td className="px-8 py-6 text-xs text-gray-500 dark:text-gray-400">{order.medicines.length} {t('items')}</td>

@@ -5,6 +5,21 @@ import './i18n';
 import App from './App.tsx';
 import './index.css';
 
+// Prevent external libraries from crashing when attempting to overwrite window.fetch
+// The iframe environment often locks window.fetch as a getter.
+if (typeof window !== 'undefined') {
+  try {
+    const originalFetch = window.fetch;
+    Object.defineProperty(window, 'fetch', {
+      get: () => originalFetch,
+      set: () => { /* no-op to ignore bad polyfills */ },
+      configurable: true
+    });
+  } catch (e) {
+    // Ignore if already locked
+  }
+}
+
 // Global HTTP Interceptor to handle session expirations or database changes smoothly
 axios.interceptors.response.use(
   (response) => response,

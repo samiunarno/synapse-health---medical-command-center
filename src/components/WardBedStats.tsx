@@ -108,7 +108,7 @@ const WardBedStats: React.FC = () => {
                       color: '#fff'
                     }}
                     itemStyle={{ color: '#fff' }}
-                    formatter={(value: number, name: string) => [`${value} ${t('beds')}`, name]}
+                    formatter={(value: any, name: any) => [`${value} ${t('beds')}`, name]}
                   />
                   <Legend verticalAlign="bottom" height={36} wrapperStyle={{ paddingTop: '20px' }}/>
                 </PieChart>

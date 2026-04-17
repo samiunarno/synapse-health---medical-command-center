@@ -55,6 +55,8 @@ export const updateTask = async (req: any, res: Response) => {
     ).populate('assignedTo', 'fullName username')
      .populate('createdBy', 'fullName username');
      
+    if (!task) return res.status(404).json({ error: 'Task not found' });
+     
     req.app.get('io')?.emit('task_updated', task);
 
     if (status === 'Completed') {

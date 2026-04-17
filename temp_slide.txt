@@ -1,0 +1,297 @@
+    switch(currentSlide) {
+      case 1:
+        return (
+          <SlideLayout {...layoutProps} title script="Welcome to Synapse OS. We are shifting focus from business logic to technical architecture. Synapse is a comprehensive, full-stack healthcare ecosystem engineered on the MERN stack and React Native, deeply integrated with AI routing and live IoT telemetry.">
+            <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 1 }} className="flex flex-col items-center">
+              <div className="relative mb-8">
+                <motion.div animate={{ rotate: 360, scale: [1, 1.1, 1] }} transition={{ duration: 10, repeat: Infinity, ease: 'linear' }} className="absolute inset-0 bg-blue-500/20 blur-[100px] rounded-full" />
+                <Server className="w-32 h-32 text-blue-500 relative z-10" />
+              </div>
+              <h1 className="text-7xl font-display font-bold text-white mb-6 text-center tracking-tight">SYNAPSE.OS</h1>
+              <p className="text-2xl text-blue-400 font-medium tracking-wide uppercase">Full-Stack Healthcare Ecosystem</p>
+            </motion.div>
+          </SlideLayout>
+        );
+
+      case 2:
+        return (
+          <SlideLayout {...layoutProps} script="The core infrastructure relies on a decoupled, omnichannel architecture. A centralized Node.js/Express backend connects to MongoDB. This single unified API feeds three distinct frontends: the React web dashboard for hospitals, the Expo React Native app for patients, and the mobile rider app for pharmaceutical delivery.">
+            <div className="flex flex-col items-center w-full">
+              <h2 className="text-5xl font-bold text-white mb-16 text-center">Omni-Channel Architecture</h2>
+              <div className="flex items-center justify-center gap-12 w-full max-w-5xl">
+                <div className="flex flex-col gap-6 w-1/3">
+                   <div className="bg-[#0a0a0a] border border-blue-500/50 p-6 rounded-2xl flex items-center gap-4 hover:scale-105 transition-all"><Smartphone className="text-blue-400 w-8 h-8"/><div><span className="text-white font-bold block">React Native / Expo</span><span className="text-xs text-blue-400">Patient & Rider Mobile Apps</span></div></div>
+                   <div className="bg-[#0a0a0a] border border-green-500/50 p-6 rounded-2xl flex items-center gap-4 hover:scale-105 transition-all"><Globe className="text-green-400 w-8 h-8"/><div><span className="text-white font-bold block">React 18 + Vite</span><span className="text-xs text-green-400">Hospital & Admin Dashboards</span></div></div>
+                </div>
+                
+                <div className="flex justify-center shrink-0">
+                  <ArrowRight className="w-12 h-12 text-gray-500" />
+                </div>
+                
+                <div className="w-1/3 bg-blue-900/20 border border-blue-500/30 p-8 rounded-[2rem] flex flex-col items-center justify-center text-center shadow-[0_0_50px_rgba(59,130,246,0.2)]">
+                   <Server className="w-16 h-16 text-white mb-4" />
+                   <h3 className="text-2xl font-bold text-white">Node.js + Express</h3>
+                   <div className="h-0.5 w-full bg-blue-500/30 my-4" />
+                   <Database className="w-12 h-12 text-green-500 mb-2" />
+                   <span className="text-green-400 font-bold tracking-widest uppercase text-sm">MongoDB (Unified Schema)</span>
+                </div>
+              </div>
+            </div>
+          </SlideLayout>
+        );
+
+      case 3:
+        return (
+          <SlideLayout {...layoutProps} script="Security and operations are managed through advanced Role-Based Access Control, or RBAC. Synapse fundamentally supports 11 interconnected roles. A patient's mobile request flows seamlessly to a doctor, which links to a pharmacist, pushing a task to a delivery rider, all while the hospital administrator monitors the entire telemetry loop.">
+             <div className="w-full flex flex-col items-center text-center">
+                <h2 className="text-5xl font-bold text-white mb-12">Multi-Tenant Ecosystem (RBAC)</h2>
+                <div className="grid grid-cols-4 gap-6 w-full max-w-5xl">
+                  {[
+                    { role: 'Super Admin', icon: ShieldAlert, color: 'text-red-500' },
+                    { role: 'Hospital Exec', icon: Building, color: 'text-blue-500' },
+                    { role: 'Doctor', icon: Stethoscope, color: 'text-blue-400' },
+                    { role: 'Patient', icon: Users, color: 'text-green-400' },
+                    { role: 'Pharmacist', icon: Pill, color: 'text-purple-400' },
+                    { role: 'Delivery Rider', icon: Truck, color: 'text-yellow-400' },
+                    { role: 'Lab Tech', icon: Activity, color: 'text-pink-400' },
+                    { role: 'Dispatcher', icon: Map, color: 'text-orange-400' }
+                  ].map((user, i) => {
+                    const Icon = user.icon;
+                    return (
+                    <motion.div key={i} initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.1 }} className="bg-[#0a0a0a] border border-white/10 p-6 rounded-2xl flex flex-col items-center gap-3">
+                      <Icon className={`w-10 h-10 ${user.color}`} />
+                      <span className="text-gray-300 font-bold uppercase text-sm tracking-wide">{user.role}</span>
+                    </motion.div>
+                    );
+                  })}
+                </div>
+             </div>
+          </SlideLayout>
+        );
+
+      case 4:
+        return (
+          <SlideLayout {...layoutProps} script="Let's dive into the core NLP Triage routing algorithm. When a patient enters symptoms, we don't just log it. The payload hits an AI Natural Language Processor which translates unstructured text into a severity score based on ICD-10 codes. It then utilizes geolocation to automatically filter and route the patient to the nearest appropriate specific clinical department.">
+             <div className="w-full flex flex-col items-center">
+                <h2 className="text-5xl font-bold text-white mb-12">Core Algorithm 1: AI NLP Triage</h2>
+                <div className="w-full max-w-4xl bg-[#0a0a0a] border border-white/10 rounded-3xl p-8 relative overflow-hidden flex items-stretch gap-8">
+                   <div className="flex-1 space-y-4">
+                     <span className="text-gray-500 font-bold text-xs uppercase tracking-widest block">Input Payload</span>
+                     <div className="bg-white/5 border border-white/10 p-4 rounded-xl text-gray-300 font-mono text-sm leading-relaxed whitespace-pre-wrap">
+                        {'{ "symptom": "sharp pain left arm...", "hr": 110 }'}
+                     </div>
+                     <ArrowRight className="text-purple-500 w-8 h-8 rotate-90 mx-auto" />
+                     <div className="bg-purple-900/20 border border-purple-500/50 p-4 rounded-xl flex items-center gap-4">
+                        <Brain className="text-purple-400 w-8 h-8" />
+                        <div><span className="text-white font-bold text-sm block">NLP Engine Processing...</span><span className="text-purple-400 text-xs">Vector matching against clinical graphs.</span></div>
+                     </div>
+                   </div>
+                   
+                   <div className="w-1 bg-white/5 rounded-full" />
+                   
+                   <div className="flex-1 space-y-4 flex flex-col justify-center">
+                     <span className="text-gray-500 font-bold text-xs uppercase tracking-widest block">Algorithmic Output & Routing</span>
+                     <div className="bg-red-900/20 border border-red-500/50 p-4 rounded-xl">
+                        <div className="flex justify-between items-center mb-2"><span className="text-white font-bold">Severity Score:</span><span className="text-red-500 font-black">9.8 / 10</span></div>
+                        <div className="w-full bg-black rounded-full h-2 mb-4"><div className="bg-red-500 h-2 rounded-full" style={{width: '98%'}}></div></div>
+                        <span className="text-xs text-red-400 block border-t border-red-500/30 pt-2"><span className="font-bold">ACTION:</span> Bypass standard queue. Route directly to Cardiology ER.</span>
+                     </div>
+                   </div>
+                </div>
+             </div>
+          </SlideLayout>
+        );
+
+      case 5:
+        return (
+          <SlideLayout {...layoutProps} script="For enterprise providers, we just successfully built the Hospital ERP Dashboard module. This React-based interface features real-time dynamic tabs. Admins can view live influx telemetry using Recharts components, cross-reference ward attendance, and monitor the automated financial commission system natively.">
+            <div className="flex flex-col items-center text-center">
+              <h2 className="text-5xl font-bold text-white mb-16">The Hospital ERP System Component</h2>
+              <div className="flex items-center gap-8 w-full max-w-5xl justify-center">
+                 <div className="bg-[#0a0a0a] border border-blue-500/30 p-8 rounded-[2rem] shadow-2xl flex-1 hover:-translate-y-4 transition-all">
+                    <Activity className="w-12 h-12 text-blue-500 mb-4 mx-auto" />
+                    <h3 className="text-xl font-bold text-white mb-2">Live Ward Telemetry</h3>
+                    <p className="text-sm text-gray-400">Built using Recharts AreaChart mapping dynamic patient influx limits and bed occupancies in real-time.</p>
+                 </div>
+                 <div className="bg-[#0a0a0a] border border-green-500/30 p-8 rounded-[2rem] shadow-2xl flex-1 hover:-translate-y-4 transition-all">
+                    <Users className="w-12 h-12 text-green-500 mb-4 mx-auto" />
+                    <h3 className="text-xl font-bold text-white mb-2">HR Shift Roster</h3>
+                    <p className="text-sm text-gray-400">Dynamic state mapping of cross-department attendance comparing active Doctor vs Nurse ratios.</p>
+                 </div>
+                 <div className="bg-[#0a0a0a] border border-purple-500/30 p-8 rounded-[2rem] shadow-2xl flex-1 hover:-translate-y-4 transition-all">
+                    <Wallet className="w-12 h-12 text-purple-500 mb-4 mx-auto" />
+                    <h3 className="text-xl font-bold text-white mb-2">Vendor B2B Finance</h3>
+                    <p className="text-sm text-gray-400">Direct integration reflecting Total Sales & Available Commissions allowing instant withdrawals.</p>
+                 </div>
+              </div>
+            </div>
+          </SlideLayout>
+        );
+
+      case 6:
+        return (
+          <SlideLayout {...layoutProps} script="Underpinning the entire UI is a robust WebSockets layer running over Socket.io. This enables true real-time infrastructure. When a patient's IoT heart monitor drops, or an ambulance dispatch triggers, events are emitted globally, instantly updating React states across the entire hospital network without a manual API refresh.">
+             <div className="flex flex-col md:flex-row items-center gap-16 w-full max-w-5xl">
+                <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="flex-1 text-left">
+                  <h2 className="text-5xl font-bold text-white mb-6">Real-Time Infrastructure</h2>
+                  <p className="text-xl text-gray-400 leading-relaxed mb-8">Synchronized global state. The system utilizes continuous WebSocket connections to ensure critical medical data is passed through the network in milliseconds.</p>
+                  <div className="space-y-4">
+                    <div className="bg-white/5 border border-white/10 p-4 rounded-xl flex items-center gap-4"><Network className="text-green-400 w-6 h-6 shrink-0"/><span className="text-white font-mono text-sm">socket.emit('vitals', data)</span></div>
+                    <div className="bg-white/5 border border-white/10 p-4 rounded-xl flex items-center gap-4"><Database className="text-blue-400 w-6 h-6 shrink-0"/><span className="text-white font-mono text-sm">socket.broadcast.to('ER_WARD')</span></div>
+                    <div className="bg-white/5 border border-white/10 p-4 rounded-xl flex items-center gap-4"><Activity className="text-red-400 w-6 h-6 shrink-0"/><span className="text-white font-mono text-sm">react.setState(liveAlerts)</span></div>
+                  </div>
+                </motion.div>
+                <div className="flex-1 flex justify-center relative">
+                   <div className="w-80 h-80 rounded-full border border-white/10 flex items-center justify-center relative">
+                      <motion.div animate={{ rotate: 360 }} transition={{ duration: 8, repeat: Infinity, ease: 'linear' }} className="absolute w-full h-full rounded-full border-r-2 border-l-2 border-blue-500 opacity-50" />
+                      <Network className="w-32 h-32 text-blue-500 animate-pulse relative z-10" />
+                      
+                      {/* Connection Nodes */}
+                      <div className="absolute top-0 right-0 w-12 h-12 bg-black border border-white/20 rounded-full flex items-center justify-center"><Smartphone className="w-5 h-5 text-gray-400" /></div>
+                      <div className="absolute bottom-0 left-0 w-12 h-12 bg-black border border-white/20 rounded-full flex items-center justify-center"><Hospital className="w-5 h-5 text-gray-400" /></div>
+                   </div>
+                </div>
+             </div>
+          </SlideLayout>
+        );
+
+      case 7:
+        return (
+          <SlideLayout {...layoutProps} script="Our mobile application leverages Expo and React Native to deploy a single codebase to both iOS and Android. It handles complex device-level permissions natively: accessing the secure Element camera for Digital ID scanning, GPS tracking for the ambulance SOS module, and local device push-notifications via Firebase Cloud Messaging.">
+             <div className="w-full flex flex-col text-center items-center">
+                <h2 className="text-5xl font-bold text-white mb-12">The Mobile Protocol (React Native)</h2>
+                <div className="flex justify-center gap-12 w-full max-w-4xl">
+                   <div className="bg-[#0a0a0a] border border-blue-500/30 p-8 rounded-[3rem] shadow-2xl flex flex-col items-center w-80">
+                      <Smartphone className="w-16 h-16 text-blue-500 mb-6" />
+                      <h3 className="text-2xl font-bold text-white mb-2">Cross-Platform UX</h3>
+                      <p className="text-gray-400 text-sm">One React Native codebase deploying identical layouts and strict typing to both iOS & Android.</p>
+                   </div>
+                   <div className="flex flex-col gap-4 justify-center">
+                      <div className="bg-white/5 border border-white/10 p-4 rounded-full flex items-center gap-4 pr-8"><QrCode className="text-white w-6 h-6 ml-2 shrink-0" /><span className="text-gray-300 text-sm font-bold tracking-widest">NATIVE CAMERA APIs</span></div>
+                      <div className="bg-white/5 border border-white/10 p-4 rounded-full flex items-center gap-4 pr-8"><Map className="text-white w-6 h-6 ml-2 shrink-0" /><span className="text-gray-300 text-sm font-bold tracking-widest">BACKGROUND GPS</span></div>
+                      <div className="bg-white/5 border border-white/10 p-4 rounded-full flex items-center gap-4 pr-8"><Key className="text-white w-6 h-6 ml-2 shrink-0" /><span className="text-gray-300 text-sm font-bold tracking-widest">BIOMETRIC AUTH (FACE-ID)</span></div>
+                   </div>
+                </div>
+             </div>
+          </SlideLayout>
+        );
+
+      case 8:
+        return (
+          <SlideLayout {...layoutProps} script="Looking closely at the second core algorithm: the Online-To-Offline Pharmacy Dispatch. When an e-Prescription is signed, the system queries the MongoDB inventory of all nearby networked pharmacies. Using geospatial indexes, it mathematically pairs the stock list to the closest rider based on route traffic, turning a physical drug purchase into an Uber-like API call.">
+            <div className="flex flex-col items-center">
+              <h2 className="text-5xl font-bold text-white mb-16">Core Algorithm 2: O2O Logic</h2>
+              <div className="relative w-full max-w-4xl flex flex-col gap-6">
+                 <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-blue-900/50 rounded-lg flex items-center justify-center shrink-0 border border-blue-500/50"><FileText className="text-blue-400 w-6 h-6" /></div>
+                    <div className="h-0.5 bg-blue-500/30 flex-1" />
+                    <span className="text-white text-sm font-mono bg-white/5 px-4 py-1 rounded">E-Prescription Finalized</span>
+                 </div>
+                 <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-green-900/50 rounded-lg flex items-center justify-center shrink-0 border border-green-500/50"><Database className="text-green-400 w-6 h-6" /></div>
+                    <div className="h-0.5 bg-green-500/30 flex-1" />
+                    <span className="text-white text-sm font-mono bg-white/5 px-4 py-1 rounded">Geospatial $near Query (Inventory Check)</span>
+                 </div>
+                 <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-yellow-900/50 rounded-lg flex items-center justify-center shrink-0 border border-yellow-500/50"><Truck className="text-yellow-400 w-6 h-6" /></div>
+                    <div className="h-0.5 bg-yellow-500/30 flex-1" />
+                    <span className="text-white text-sm font-mono bg-white/5 px-4 py-1 rounded">Rider Assigment via Distance Matrix API</span>
+                 </div>
+              </div>
+            </div>
+          </SlideLayout>
+        );
+
+      case 9:
+        return (
+          <SlideLayout {...layoutProps} script="To handle complex fund flows, we rely on a programmatic commission splitter. When a patient pays $100 for an appointment via the Synapse smart wallet, the system automatically runs the contract logic. It securely routes 85% directly to the Vendor Hospital's account and sweeps a mathematically verified 15% system fee to the core platform in a single transactional block.">
+            <div className="flex flex-col md:flex-row gap-12 items-center w-full max-w-5xl justify-center">
+              <div className="flex-1 text-right border-r border-white/20 pr-12 pb-12">
+                 <Wallet className="w-16 h-16 text-indigo-400 ml-auto mb-6" />
+                 <h2 className="text-4xl font-bold text-white mb-2">Payment Splitter</h2>
+                 <p className="text-gray-400 text-sm font-mono mt-4">Automated Node.js Ledger</p>
+              </div>
+              <div className="flex-1 w-full space-y-6">
+                 <div className="bg-[#0a0a0a] border border-white/10 p-6 rounded-2xl flex justify-between items-center relative overflow-hidden">
+                   <div className="absolute top-0 left-0 bottom-0 w-2 bg-blue-500" />
+                   <div><span className="block text-white font-bold opacity-50 text-xs tracking-widest uppercase mb-1">Incoming Payment</span><span className="text-2xl text-white font-mono">$100.00</span></div>
+                 </div>
+                 <div className="flex gap-4">
+                     <ArrowRight className="text-gray-600 w-8 h-8 rotate-45 mt-2" />
+                     <div className="bg-[#0a0a0a] border border-white/10 p-6 rounded-2xl flex-1 flex justify-between items-center relative overflow-hidden">
+                       <div className="absolute top-0 left-0 bottom-0 w-2 bg-green-500" />
+                       <div><span className="block text-white font-bold opacity-50 text-xs tracking-widest uppercase mb-1">Vendor Hospital (85%)</span><span className="text-xl text-green-400 font-mono">+$85.00</span></div>
+                     </div>
+                 </div>
+                 <div className="flex gap-4">
+                     <ArrowRight className="text-gray-600 w-8 h-8 rotate-[135deg] mt-2" />
+                     <div className="bg-[#0a0a0a] border border-white/10 p-6 rounded-2xl flex-1 flex justify-between items-center relative overflow-hidden">
+                       <div className="absolute top-0 left-0 bottom-0 w-2 bg-purple-500" />
+                       <div><span className="block text-white font-bold opacity-50 text-xs tracking-widest uppercase mb-1">Platform Commission (15%)</span><span className="text-xl text-purple-400 font-mono">+$15.00</span></div>
+                     </div>
+                 </div>
+              </div>
+            </div>
+          </SlideLayout>
+        );
+
+      case 10:
+        return (
+          <SlideLayout {...layoutProps} script="Security within the system is rigorously maintained at the middleware level. Express routes are guarded by JWT (JSON Web Tokens) establishing session validity. We map these tokens into our RBAC system, blocking a patient from accessing hospital backend routes, and encrypting sensitive EHR data at rest in MongoDB using robust hashing algorithms.">
+             <div className="flex flex-col items-center w-full text-center">
+                <h2 className="text-5xl font-bold text-white mb-12">Middleware Security & Compliance</h2>
+                <div className="grid grid-cols-2 gap-8 w-full max-w-4xl">
+                   <div className="bg-[#0a0a0a] border border-red-500/30 rounded-3xl p-8 flex flex-col items-center">
+                      <Key className="w-12 h-12 text-red-500 mb-6" />
+                      <h3 className="text-2xl font-bold text-white mb-2">JWT & RBAC Guards</h3>
+                      <p className="text-gray-400 text-sm">Every API route validates the bearer token against strict permission matrices before executing controller logic.</p>
+                   </div>
+                   <div className="bg-[#0a0a0a] border border-indigo-500/30 rounded-3xl p-8 flex flex-col items-center">
+                      <Database className="w-12 h-12 text-indigo-500 mb-6" />
+                      <h3 className="text-2xl font-bold text-white mb-2">Zero-Knowledge Storage</h3>
+                      <p className="text-gray-400 text-sm">Protected by environment-injected secrets, ensuring patient PII data remains mathematically sealed.</p>
+                   </div>
+                </div>
+             </div>
+          </SlideLayout>
+        );
+
+      case 11:
+        return (
+          <SlideLayout {...layoutProps} script="While the system architecture is dense, the presentation is immaculate. The 3D models you see currently running behind this very presentation are rendered live in the browser using WebGL via Three.js and React-Three-Fiber. We bridge computationally heavy backend logic with perfectly synchronized, 60-frame-per-second frontend visual artistry.">
+             <div className="w-full flex flex-col items-center">
+                <h2 className="text-5xl font-bold text-white mb-16">The WebGL Presentation Layer</h2>
+                <div className="w-full max-w-5xl rounded-3xl overflow-hidden border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-3xl p-8 shadow-2xl relative">
+                   <div className="absolute top-0 right-0 p-4"><Code className="text-blue-500/50 w-24 h-24" /></div>
+                   <h3 className="text-2xl font-bold text-white mb-6 text-left">Powered by <span className="text-blue-400">@react-three/fiber</span></h3>
+                   <ul className="space-y-4 max-w-2xl text-left">
+                     <li className="flex items-center gap-4 text-gray-300 font-mono text-sm border-l-2 border-blue-500 pl-4">Hardware-accelerated rendering utilizing the user's local GPU.</li>
+                     <li className="flex items-center gap-4 text-gray-300 font-mono text-sm border-l-2 border-purple-500 pl-4">Declarative 3D scenes integrated directly inside the standard React component tree.</li>
+                     <li className="flex items-center gap-4 text-gray-300 font-mono text-sm border-l-2 border-green-500 pl-4">Imperceptible performance impact via non-blocking asynchronous requestAnimationFrame loops.</li>
+                   </ul>
+                </div>
+             </div>
+          </SlideLayout>
+        );
+
+      case 12:
+        return (
+          <SlideLayout {...layoutProps} script="This concludes the Synapse technical architecture overview. We've built an infinitely scalable MERN infrastructure, unified through React Native, orchestrated by AI, and fundamentally tied to real-time WebSockets. The system works as deeply as it looks. Thank you.">
+             <div className="flex flex-col items-center justify-center text-center">
+                <motion.div animate={{ rotate: 360 }} transition={{ duration: 20, repeat: Infinity, ease: 'linear' }} className="w-64 h-64 border border-blue-500/30 rounded-full flex items-center justify-center mb-12 relative overflow-hidden bg-[#0a0a0a]">
+                   <Cpu className="w-32 h-32 text-blue-500 opacity-80" />
+                   <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-blue-600/20 to-transparent" />
+                </motion.div>
+                <h2 className="text-6xl font-black text-white mb-6 tracking-tight">The System is Live.</h2>
+                <p className="text-2xl text-blue-400 font-medium mb-12">I am ready for technical architecture questions.</p>
+                
+                <button onClick={() => navigate('/')} className="bg-white/10 hover:bg-white/20 text-white border border-white/20 px-8 py-4 rounded-full font-bold transition-all relative z-50">
+                  Return to Dashboard
+                </button>
+             </div>
+          </SlideLayout>
+        );
+
+      default:
+        return null;
+    }
