@@ -1,20 +1,20 @@
 import { useTranslation } from 'react-i18next';
-// import { translateDynamic } from '../lib/i18n-utils'; // Assumed local utility
+// import { translateDynamic } from '../lib/i18n-utils'; // 假设的本地工具
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion'; // updated to framer-motion based on modern standard, adjust if you strictly use 'motion/react'
+import { motion, AnimatePresence } from 'framer-motion'; // 根据现代标准更新为 framer-motion，如果严格使用 'motion/react' 请调整
 import { useNavigate } from 'react-router-dom';
 import {
-  Activity, Brain, Globe, ChevronRight, ChevronLeft, Target, 
-  Users, X, Database, Network, Stethoscope, Truck, 
-  Smartphone, Server, Cloud, Code, QrCode, HeartPulse, 
-  FileText, MessageSquare, ShieldAlert, Pill, Map, Calendar, 
+  Activity, Brain, Globe, ChevronRight, ChevronLeft, Target,
+  Users, X, Database, Network, Stethoscope, Truck,
+  Smartphone, Server, Cloud, Code, QrCode, HeartPulse,
+  FileText, MessageSquare, ShieldAlert, Pill, Map, Calendar,
   Video, Clock, Key, Hospital, ArrowRight, Play, Pause, Lock, Search
 } from 'lucide-react';
 import { Canvas } from '@react-three/fiber';
 import { Sphere, MeshDistortMaterial, Stars, Float } from '@react-three/drei';
 
-// --- 3D Background Component ---
+// --- 3D 背景组件 ---
 const ThreeBackground = () => {
   return (
     <div className="absolute inset-0 z-0 opacity-40 mix-blend-screen pointer-events-none">
@@ -33,36 +33,36 @@ const ThreeBackground = () => {
   );
 };
 
-// --- Reusable Slide Layout Layer ---
+// --- 可复用的幻灯片布局层 ---
 const SlideLayout = ({ children, step, totalSteps, script, title, isAutoPlaying, toggleAutoPlay }: { children: React.ReactNode, step: number, totalSteps: number, script: string, title?: boolean, isAutoPlaying: boolean, toggleAutoPlay: () => void }) => {
   const [showNotes, setShowNotes] = useState(false);
   
   return (
     <div className="relative w-full h-[100dvh] flex flex-col justify-center items-center p-8 lg:p-16 overflow-hidden bg-[#020617]">
       <ThreeBackground />
-      {/* Grid Pattern Overlay */}
+      {/* 网格图案覆盖层 */}
       <div className="absolute inset-0 z-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-5 mix-blend-overlay pointer-events-none"></div>
       <div className="absolute inset-0 z-0 pointer-events-none" style={{ backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px)', backgroundSize: '60px 60px' }}></div>
       <div className="absolute top-0 left-0 right-0 h-64 bg-gradient-to-b from-blue-900/20 to-transparent pointer-events-none z-0" />
       
-      {/* Top Header */}
+      {/* 顶部标题栏 */}
       {title && (
          <motion.div initial={{ y: -50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="absolute top-8 left-12 right-12 z-20 flex justify-between items-center bg-white/5 border border-white/10 backdrop-blur-xl rounded-2xl p-4 shadow-2xl shadow-blue-900/20">
            <div className="flex items-center gap-3">
              <Activity className="text-blue-500 w-6 h-6 animate-pulse" />
-             <span className="text-white font-bold tracking-widest uppercase text-sm">SYNAPSE INITIATIVE</span>
+             <span className="text-white font-bold tracking-widest uppercase text-sm">SYNAPSE 计划</span>
            </div>
            <div className="flex items-center gap-6">
-             <div className="text-blue-400/50 font-mono text-xs hidden md:block">MASTER STRATEGY DECK</div>
+             <div className="text-blue-400/50 font-mono text-xs hidden md:block">总战略方案演示文稿</div>
              <button onClick={toggleAutoPlay} className={`hidden md:flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all ${isAutoPlaying ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-blue-500/20 text-blue-400 border border-blue-500/30 hover:bg-blue-500/40'}`}>
                 {isAutoPlaying ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
-                {isAutoPlaying ? 'PAUSE' : 'AUTO-PLAY'}
+                {isAutoPlaying ? '暂停' : '自动播放'}
              </button>
            </div>
          </motion.div>
       )}
 
-      {/* Content Area */}
+      {/* 内容区域 */}
       <div className="w-full max-w-7xl h-[85%] flex flex-col items-center justify-center relative z-10 p-4 pt-16">
         <AnimatePresence mode="wait">
            <motion.div 
@@ -78,7 +78,7 @@ const SlideLayout = ({ children, step, totalSteps, script, title, isAutoPlaying,
         </AnimatePresence>
       </div>
 
-      {/* Presenter Notes Overlay */}
+      {/* 演讲者备注浮层 */}
       <AnimatePresence>
         {showNotes && (
           <motion.div 
@@ -88,22 +88,22 @@ const SlideLayout = ({ children, step, totalSteps, script, title, isAutoPlaying,
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/20 blur-[40px] pointer-events-none" />
             <h4 className="flex items-center justify-center gap-2 text-sm font-bold text-blue-400 tracking-widest uppercase mb-4">
-              <MessageSquare className="w-4 h-4" /> Teleprompter Script
+              <MessageSquare className="w-4 h-4" /> 提词器脚本
             </h4>
-            <p className="text-xl md:text-2xl text-white font-medium italic leading-relaxed text-transparent bg-clip-text bg-gradient-to-br from-white to-gray-400">"{script}"</p>
+            <p className="text-xl md:text-2xl text-white font-medium italic leading-relaxed text-transparent bg-clip-text bg-gradient-to-br from-white to-gray-400">“{script}”</p>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Global Controls & Progress */}
+      {/* 全局控制与进度指示器 */}
       <div className="absolute bottom-6 left-8 right-8 flex justify-between items-center z-40">
         <div className="text-white/40 font-mono text-xs tracking-widest font-bold bg-white/5 px-4 py-2 rounded-full border border-white/10 backdrop-blur-md">
-          SLIDE_{step.toString().padStart(2, '0')} / {totalSteps.toString().padStart(2, '0')}
+          幻灯片_{step.toString().padStart(2, '0')} / {totalSteps.toString().padStart(2, '0')}
         </div>
         
         <div className="flex gap-4">
            <button onClick={() => setShowNotes(!showNotes)} className={`px-6 py-2.5 rounded-full text-xs font-bold transition-all uppercase tracking-widest backdrop-blur-md ${showNotes ? 'bg-blue-600 text-white shadow-[0_0_30px_rgba(37,99,235,0.5)] border border-blue-400' : 'bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 hover:border-white/20'}`}>
-             {showNotes ? 'Hide Teleprompter' : 'Show Teleprompter'}
+             {showNotes ? '隐藏提词器' : '显示提词器'}
            </button>
         </div>
 
@@ -118,7 +118,7 @@ const SlideLayout = ({ children, step, totalSteps, script, title, isAutoPlaying,
 };
 
 // =====================================================================================
-// PRESENTATION COMPONENT
+// 演示文稿主组件
 // =====================================================================================
 
 export default function Presentation() {
@@ -175,35 +175,35 @@ export default function Presentation() {
     switch(currentSlide) {
       case 1:
         return (
-          <SlideLayout {...layoutProps} title script="Synapse is a fully integrated AI-powered healthcare ecosystem designed to connect all aspects of the healthcare journey. It seamlessly combines clinical tools, real-time patient data, and IoT integration.">
+          <SlideLayout {...layoutProps} title script="Synapse 是一个完全集成、由 AI 驱动的医疗生态系统，旨在连接医疗旅程的各个环节。它无缝结合了临床工具、实时患者数据和物联网集成。">
             <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 1 }} className="flex flex-col items-center">
               <div className="relative mb-8">
                 <motion.div animate={{ rotate: 360, scale: [1, 1.1, 1] }} transition={{ duration: 10, repeat: Infinity, ease: 'linear' }} className="absolute inset-0 bg-blue-500/20 blur-[100px] rounded-full" />
                 <Globe className="w-32 h-32 text-blue-500 relative z-10" />
               </div>
               <h1 className="text-7xl font-display font-bold text-white mb-6 text-center tracking-tight">SYNAPSE</h1>
-              <p className="text-2xl text-blue-400 font-medium tracking-wide uppercase">The Digital Nervous System for Healthcare</p>
+              <p className="text-2xl text-blue-400 font-medium tracking-wide uppercase">医疗健康的数字神经系统</p>
             </motion.div>
           </SlideLayout>
         );
 
       case 2:
         return (
-          <SlideLayout {...layoutProps} script="The Digital Health ID is the cornerstone of Synapse's system, offering a secure, unified patient profile accessible via QR scan. Patient data is protected with military-grade encryption.">
+          <SlideLayout {...layoutProps} script="数字健康 ID 是 Synapse 系统的基石，通过二维码扫描提供安全、统一的患者档案。患者数据受到军用级加密保护。">
             <div className="flex flex-col items-center w-full">
-              <h2 className="text-5xl font-bold text-white mb-16 text-center">1. Digital Health ID</h2>
+              <h2 className="text-5xl font-bold text-white mb-16 text-center">1. 数字健康 ID</h2>
               <div className="flex items-center justify-center gap-12 w-full max-w-5xl">
                 <div className="flex flex-col gap-6 w-1/3">
-                   <div className="bg-[#0a0a0a] border border-blue-500/50 p-6 rounded-2xl flex items-center gap-4 hover:scale-105 transition-all"><QrCode className="text-blue-400 w-8 h-8"/><div><span className="text-white font-bold block">Instant Access</span><span className="text-xs text-blue-400">QR-Based Global Profile</span></div></div>
-                   <div className="bg-[#0a0a0a] border border-green-500/50 p-6 rounded-2xl flex items-center gap-4 hover:scale-105 transition-all"><ShieldAlert className="text-green-400 w-8 h-8"/><div><span className="text-white font-bold block">Cryptographic Security</span><span className="text-xs text-green-400">Military-grade encryption</span></div></div>
+                   <div className="bg-[#0a0a0a] border border-blue-500/50 p-6 rounded-2xl flex items-center gap-4 hover:scale-105 transition-all"><QrCode className="text-blue-400 w-8 h-8"/><div><span className="text-white font-bold block">即时访问</span><span className="text-xs text-blue-400">基于二维码的全球档案</span></div></div>
+                   <div className="bg-[#0a0a0a] border border-green-500/50 p-6 rounded-2xl flex items-center gap-4 hover:scale-105 transition-all"><ShieldAlert className="text-green-400 w-8 h-8"/><div><span className="text-white font-bold block">密码学安全</span><span className="text-xs text-green-400">军用级加密</span></div></div>
                 </div>
                 <div className="flex justify-center shrink-0">
                   <ArrowRight className="w-12 h-12 text-gray-500" />
                 </div>
                 <div className="w-1/3 bg-blue-900/20 border border-blue-500/30 p-8 rounded-[2rem] flex flex-col items-center justify-center text-center shadow-[0_0_50px_rgba(59,130,246,0.2)]">
                    <Database className="w-16 h-16 text-white mb-4" />
-                   <h3 className="text-2xl font-bold text-white">Unified Profile</h3>
-                   <p className="text-gray-400 text-sm mt-2">Medical history, prescriptions, and lab results in one secure vault.</p>
+                   <h3 className="text-2xl font-bold text-white">统一档案</h3>
+                   <p className="text-gray-400 text-sm mt-2">病史、处方和化验结果，安全存放于同一数据保险库。</p>
                 </div>
               </div>
             </div>
@@ -212,33 +212,33 @@ export default function Presentation() {
 
       case 3:
         return (
-          <SlideLayout {...layoutProps} script="Synapse employs AI-powered triage to streamline the patient journey. Patients describe symptoms, and the AI assesses urgency, automatically routing them to the appropriate healthcare provider.">
+          <SlideLayout {...layoutProps} script="Synapse 采用 AI 驱动的分诊系统来优化患者旅程。患者描述症状，AI 评估紧急程度，并将其自动引导至合适的医疗服务提供者。">
              <div className="w-full flex flex-col items-center">
-                <h2 className="text-5xl font-bold text-white mb-12">2. AI-Powered Triage</h2>
+                <h2 className="text-5xl font-bold text-white mb-12">2. AI 智能分诊</h2>
                 <div className="w-full max-w-4xl bg-[#0a0a0a] border border-white/10 rounded-3xl p-8 relative overflow-hidden flex items-stretch gap-8">
                    <div className="flex-1 space-y-4">
-                     <span className="text-gray-500 font-bold text-xs uppercase tracking-widest block">Symptom Checker Input</span>
+                     <span className="text-gray-500 font-bold text-xs uppercase tracking-widest block">症状检查器输入</span>
                      <div className="bg-white/5 border border-white/10 p-4 rounded-xl text-gray-300 font-mono text-sm leading-relaxed">
-                        "I have had a mild fever and persistent cough for the last 48 hours. Breathing is slightly strained."
+                        “我过去 48 小时一直有轻微发烧和持续咳嗽。呼吸有些费力。”
                      </div>
                      <ArrowRight className="text-purple-500 w-8 h-8 rotate-90 mx-auto" />
                      <div className="bg-purple-900/20 border border-purple-500/50 p-4 rounded-xl flex items-center gap-4">
                         <Brain className="text-purple-400 w-8 h-8 shrink-0" />
-                        <div><span className="text-white font-bold text-sm block">Synapse AI Engine</span><span className="text-purple-400 text-xs">Urgency Assessment & Routing</span></div>
+                        <div><span className="text-white font-bold text-sm block">Synapse AI 引擎</span><span className="text-purple-400 text-xs">紧急程度评估与导诊</span></div>
                      </div>
                    </div>
                    
                    <div className="w-1 bg-white/5 rounded-full" />
                    
                    <div className="flex-1 space-y-4 flex flex-col justify-center">
-                     <span className="text-gray-500 font-bold text-xs uppercase tracking-widest block">Automated Routing Outcome</span>
+                     <span className="text-gray-500 font-bold text-xs uppercase tracking-widest block">自动导诊结果</span>
                      <div className="bg-yellow-900/20 border border-yellow-500/50 p-4 rounded-xl mb-4">
-                        <div className="flex justify-between items-center mb-2"><span className="text-white font-bold">Severity Score</span><span className="text-yellow-400 font-black">4.5 / 10</span></div>
+                        <div className="flex justify-between items-center mb-2"><span className="text-white font-bold">严重程度评分</span><span className="text-yellow-400 font-black">4.5 / 10</span></div>
                         <div className="w-full bg-black rounded-full h-2 mb-4"><div className="bg-yellow-500 h-2 rounded-full" style={{width: '45%'}}></div></div>
                      </div>
                      <div className="bg-blue-900/20 border border-blue-500/50 p-4 rounded-xl flex items-center gap-3">
                         <Hospital className="text-blue-400 w-6 h-6" />
-                        <span className="text-blue-400 font-bold text-sm">Routed to Community Clinic</span>
+                        <span className="text-blue-400 font-bold text-sm">导诊至社区诊所</span>
                      </div>
                    </div>
                 </div>
@@ -248,24 +248,24 @@ export default function Presentation() {
 
       case 4:
         return (
-          <SlideLayout {...layoutProps} script="Integrating with wearables, Synapse monitors real-time vital signs. If metrics like heart rate or blood oxygen exceed safe thresholds, instant alerts are sent to emergency teams for proactive care.">
+          <SlideLayout {...layoutProps} script="通过与可穿戴设备集成，Synapse 实时监测生命体征。如果心率或血氧等指标超过安全阈值，将立即向急救团队发送警报，实现主动式护理。">
              <div className="flex flex-col items-center text-center">
-              <h2 className="text-5xl font-bold text-white mb-16">3. IoT Integration & Monitoring</h2>
+              <h2 className="text-5xl font-bold text-white mb-16">3. 物联网集成与监测</h2>
               <div className="flex items-center gap-8 w-full max-w-5xl justify-center">
                  <div className="bg-[#0a0a0a] border border-blue-500/30 p-8 rounded-[2rem] shadow-2xl flex-1 hover:-translate-y-4 transition-all">
                     <Smartphone className="w-12 h-12 text-blue-500 mb-4 mx-auto" />
-                    <h3 className="text-xl font-bold text-white mb-2">Wearables Sync</h3>
-                    <p className="text-sm text-gray-400">Continuous tracking of HR, BP, and SpO2 from consumer devices.</p>
+                    <h3 className="text-xl font-bold text-white mb-2">可穿戴设备同步</h3>
+                    <p className="text-sm text-gray-400">持续追踪来自消费级设备的心率、血压和血氧饱和度。</p>
                  </div>
                  <div className="bg-[#0a0a0a] border border-red-500/30 p-8 rounded-[2rem] shadow-2xl flex-1 hover:-translate-y-4 transition-all">
                     <HeartPulse className="w-12 h-12 text-red-500 mb-4 mx-auto" />
-                    <h3 className="text-xl font-bold text-white mb-2">Instant Alerts</h3>
-                    <p className="text-sm text-gray-400">Automated triggers sent to primary care doctors upon threshold breach.</p>
+                    <h3 className="text-xl font-bold text-white mb-2">即时警报</h3>
+                    <p className="text-sm text-gray-400">一旦超出阈值，自动向初级保健医生发送触发通知。</p>
                  </div>
                  <div className="bg-[#0a0a0a] border border-green-500/30 p-8 rounded-[2rem] shadow-2xl flex-1 hover:-translate-y-4 transition-all">
                     <Activity className="w-12 h-12 text-green-500 mb-4 mx-auto" />
-                    <h3 className="text-xl font-bold text-white mb-2">Proactive Healthcare</h3>
-                    <p className="text-sm text-gray-400">Intervening proactively before a health crisis occurs.</p>
+                    <h3 className="text-xl font-bold text-white mb-2">主动式医疗</h3>
+                    <p className="text-sm text-gray-400">在健康危机发生之前进行主动干预。</p>
                  </div>
               </div>
             </div>
@@ -274,15 +274,15 @@ export default function Presentation() {
 
       case 5:
         return (
-          <SlideLayout {...layoutProps} script="Our Clinical Decision Support System checks for drug interactions, including Traditional Chinese Medicine herbs, and provides evidence-based recommendations to minimize human error.">
+          <SlideLayout {...layoutProps} script="我们的临床决策支持系统可检查药物相互作用（包括中草药），并提供基于证据的建议，以最大限度地减少人为错误。">
             <div className="flex flex-col md:flex-row items-center gap-16 w-full max-w-5xl">
                 <motion.div initial={{ x: -50, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className="flex-1 text-left">
-                  <h2 className="text-5xl font-bold text-white mb-6">4. CDSS</h2>
-                  <p className="text-xl text-gray-400 leading-relaxed mb-8">Clinical Decision Support System powered by AI to assist healthcare professionals in real-time.</p>
+                  <h2 className="text-5xl font-bold text-white mb-6">4. 临床决策支持系统 (CDSS)</h2>
+                  <p className="text-xl text-gray-400 leading-relaxed mb-8">由 AI 驱动的临床决策支持系统，为医疗专业人员提供实时辅助。</p>
                   <div className="space-y-4">
-                    <div className="bg-white/5 border border-white/10 p-4 rounded-xl flex items-center gap-4"><Stethoscope className="text-blue-400 w-6 h-6 shrink-0"/><span className="text-white font-semibold">Evidence-Based Treatments</span></div>
-                    <div className="bg-white/5 border border-white/10 p-4 rounded-xl flex items-center gap-4"><Lock className="text-red-400 w-6 h-6 shrink-0"/><span className="text-white font-semibold">Interaction Detection (Meds & TCM)</span></div>
-                    <div className="bg-white/5 border border-white/10 p-4 rounded-xl flex items-center gap-4"><Brain className="text-green-400 w-6 h-6 shrink-0"/><span className="text-white font-semibold">Diagnostic Accuracy AI</span></div>
+                    <div className="bg-white/5 border border-white/10 p-4 rounded-xl flex items-center gap-4"><Stethoscope className="text-blue-400 w-6 h-6 shrink-0"/><span className="text-white font-semibold">循证治疗方案</span></div>
+                    <div className="bg-white/5 border border-white/10 p-4 rounded-xl flex items-center gap-4"><Lock className="text-red-400 w-6 h-6 shrink-0"/><span className="text-white font-semibold">相互作用检测（药物与中草药）</span></div>
+                    <div className="bg-white/5 border border-white/10 p-4 rounded-xl flex items-center gap-4"><Brain className="text-green-400 w-6 h-6 shrink-0"/><span className="text-white font-semibold">AI 诊断准确性提升</span></div>
                   </div>
                 </motion.div>
                 <div className="flex-1 flex justify-center relative">
@@ -297,19 +297,19 @@ export default function Presentation() {
 
       case 6:
         return (
-          <SlideLayout {...layoutProps} script="Synapse translates complex lab results into user-friendly health cards and digitizes prescriptions while checking for medication errors.">
+          <SlideLayout {...layoutProps} script="Synapse 将复杂的化验结果转化为用户友好的健康卡片，并将处方数字化，同时检查用药错误。">
              <div className="w-full flex flex-col text-center items-center">
-                <h2 className="text-5xl font-bold text-white mb-12">5. Real-Time Interpreters</h2>
+                <h2 className="text-5xl font-bold text-white mb-12">5. 实时解读器</h2>
                 <div className="flex justify-center gap-12 w-full max-w-4xl">
                    <div className="bg-[#0a0a0a] border border-blue-500/30 p-8 rounded-[3rem] shadow-2xl flex flex-col items-center w-80">
                       <FileText className="w-16 h-16 text-blue-500 mb-6" />
-                      <h3 className="text-2xl font-bold text-white mb-2">Lab Results</h3>
-                      <p className="text-gray-400 text-sm">Converts complex medical imaging and reports into actionable user health cards.</p>
+                      <h3 className="text-2xl font-bold text-white mb-2">化验结果解读</h3>
+                      <p className="text-gray-400 text-sm">将复杂的医学影像和报告转化为可操作的用户健康卡片。</p>
                    </div>
                    <div className="bg-[#0a0a0a] border border-green-500/30 p-8 rounded-[3rem] shadow-2xl flex flex-col items-center w-80">
                       <Search className="w-16 h-16 text-green-500 mb-6" />
-                      <h3 className="text-2xl font-bold text-white mb-2">Prescription Scan</h3>
-                      <p className="text-gray-400 text-sm">Digitizes handwritten prescriptions and verifies inventory at nearby pharmacies.</p>
+                      <h3 className="text-2xl font-bold text-white mb-2">处方扫描</h3>
+                      <p className="text-gray-400 text-sm">将手写处方数字化，并核对附近药房的库存。</p>
                    </div>
                 </div>
              </div>
@@ -318,19 +318,19 @@ export default function Presentation() {
 
       case 7:
         return (
-          <SlideLayout {...layoutProps} script="Our platform offers native telehealth. Patients book appointments instantly, and during video calls, doctors can view the patient's real-time IoT vitals and lab history natively.">
+          <SlideLayout {...layoutProps} script="我们的平台提供原生远程医疗服务。患者可以即时预约，在视频通话过程中，医生可以直接查看患者的实时物联网生命体征和化验历史记录。">
             <div className="flex flex-col items-center w-full text-center">
-                <h2 className="text-5xl font-bold text-white mb-12">6. Telehealth & Virtual Consults</h2>
+                <h2 className="text-5xl font-bold text-white mb-12">6. 远程医疗与虚拟问诊</h2>
                 <div className="grid grid-cols-2 gap-8 w-full max-w-4xl">
                    <div className="bg-[#0a0a0a] border border-indigo-500/30 rounded-3xl p-8 flex flex-col items-center hover:scale-105 transition-transform">
                       <Calendar className="w-12 h-12 text-indigo-500 mb-6" />
-                      <h3 className="text-2xl font-bold text-white mb-2">Smart Scheduling</h3>
-                      <p className="text-gray-400 text-sm">Real-time availability matrix for specialist bookings directly within the ecosystem.</p>
+                      <h3 className="text-2xl font-bold text-white mb-2">智能预约安排</h3>
+                      <p className="text-gray-400 text-sm">生态内可直接查看专科医生的实时可用时间并进行预约。</p>
                    </div>
                    <div className="bg-[#0a0a0a] border border-pink-500/30 rounded-3xl p-8 flex flex-col items-center hover:scale-105 transition-transform">
                       <Video className="w-12 h-12 text-pink-500 mb-6" />
-                      <h3 className="text-2xl font-bold text-white mb-2">Data-Enriched Video</h3>
-                      <p className="text-gray-400 text-sm">Doctors view live IoT vitals and historical lab reports on-screen during consultations.</p>
+                      <h3 className="text-2xl font-bold text-white mb-2">数据增强视频</h3>
+                      <p className="text-gray-400 text-sm">医生在问诊屏幕上可同时查看患者的实时物联网生命体征和历史化验报告。</p>
                    </div>
                 </div>
              </div>
@@ -339,28 +339,28 @@ export default function Presentation() {
 
       case 8:
         return (
-          <SlideLayout {...layoutProps} script="In critical conditions, an SOS button dispatches ambulances, shares live GPS routing to bypass traffic, and preps the ER staff for immediate care upon arrival.">
+          <SlideLayout {...layoutProps} script="在危急情况下，SOS 按钮可调度救护车，分享实时 GPS 路线以避开交通拥堵，并在患者到达前让急诊室做好即时救治准备。">
             <div className="flex flex-col md:flex-row gap-12 items-center w-full max-w-5xl justify-center">
               <div className="flex-1 text-right border-r border-white/20 pr-12 pb-12">
                  <Target className="w-16 h-16 text-red-500 ml-auto mb-6 animate-pulse" />
-                 <h2 className="text-4xl font-bold text-white mb-2">7. Emergency Response</h2>
-                 <p className="text-gray-400 text-sm mt-4">Coordinating critical care logistics with millisecond precision.</p>
+                 <h2 className="text-4xl font-bold text-white mb-2">7. 应急响应</h2>
+                 <p className="text-gray-400 text-sm mt-4">以毫秒级精度协调重症监护物流。</p>
               </div>
               <div className="flex-1 w-full space-y-6">
                  <div className="bg-[#0a0a0a] border border-white/10 p-6 rounded-2xl flex items-center gap-4 relative overflow-hidden">
                    <div className="absolute top-0 left-0 bottom-0 w-2 bg-red-500" />
                    <Smartphone className="text-red-400 w-8 h-8"/>
-                   <div><span className="block text-white font-bold">SOS Trigger</span><span className="text-xs text-gray-400">Instantly alerts nearby ambulances</span></div>
+                   <div><span className="block text-white font-bold">SOS 触发</span><span className="text-xs text-gray-400">立即通知附近救护车</span></div>
                  </div>
                  <div className="bg-[#0a0a0a] border border-white/10 p-6 rounded-2xl flex items-center gap-4 relative overflow-hidden">
                    <div className="absolute top-0 left-0 bottom-0 w-2 bg-yellow-500" />
                    <Map className="text-yellow-400 w-8 h-8"/>
-                   <div><span className="block text-white font-bold">Live GPS Routing</span><span className="text-xs text-gray-400">Dynamic traffic adjustments</span></div>
+                   <div><span className="block text-white font-bold">实时 GPS 导航</span><span className="text-xs text-gray-400">动态调整路线以避开拥堵</span></div>
                  </div>
                  <div className="bg-[#0a0a0a] border border-white/10 p-6 rounded-2xl flex items-center gap-4 relative overflow-hidden">
                    <div className="absolute top-0 left-0 bottom-0 w-2 bg-blue-500" />
                    <Hospital className="text-blue-400 w-8 h-8"/>
-                   <div><span className="block text-white font-bold">Hospital ER Prep</span><span className="text-xs text-gray-400">Staff prepped prior to arrival</span></div>
+                   <div><span className="block text-white font-bold">医院急诊室准备</span><span className="text-xs text-gray-400">患者抵达前完成医护人员准备</span></div>
                  </div>
               </div>
             </div>
@@ -369,22 +369,22 @@ export default function Presentation() {
 
       case 9:
         return (
-          <SlideLayout {...layoutProps} script="Synapse modernizes hospital ERP. Live bed management color-codes ward status, while staff are dynamically assigned based on real-time patient needs.">
+          <SlideLayout {...layoutProps} script="Synapse 实现医院 ERP 现代化。实时床位管理用颜色编码病区状态，同时根据实时患者需求动态分配工作人员。">
             <div className="flex flex-col items-center">
-              <h2 className="text-5xl font-bold text-white mb-16">8. Hospital ERP & Ward Mgmt</h2>
+              <h2 className="text-5xl font-bold text-white mb-16">8. 医院 ERP 与病区管理</h2>
               <div className="relative w-full max-w-4xl flex flex-col gap-6">
                  <div className="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/10">
                     <div className="w-12 h-12 bg-green-900/50 rounded-lg flex items-center justify-center shrink-0 border border-green-500/50"><Clock className="text-green-400 w-6 h-6" /></div>
                     <div className="flex-1 ml-4">
-                      <h4 className="text-white font-bold">Live Bed Management</h4>
-                      <p className="text-sm text-gray-400">Color-coded wards: Green (Available), Red (Occupied), Yellow (Maintenance).</p>
+                      <h4 className="text-white font-bold">实时床位管理</h4>
+                      <p className="text-sm text-gray-400">颜色编码病区：绿色（可用），红色（已占用），黄色（维护中）。</p>
                     </div>
                  </div>
                  <div className="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/10">
                     <div className="w-12 h-12 bg-blue-900/50 rounded-lg flex items-center justify-center shrink-0 border border-blue-500/50"><Users className="text-blue-400 w-6 h-6" /></div>
                     <div className="flex-1 ml-4">
-                      <h4 className="text-white font-bold">Dynamic Staff Assignments</h4>
-                      <p className="text-sm text-gray-400">Nurses and admins assigned dynamically based on patient flow and room availability.</p>
+                      <h4 className="text-white font-bold">动态人员分配</h4>
+                      <p className="text-sm text-gray-400">根据患者流量和病房可用性，动态分配护士和管理人员。</p>
                     </div>
                  </div>
               </div>
@@ -394,22 +394,22 @@ export default function Presentation() {
 
       case 10:
         return (
-          <SlideLayout {...layoutProps} script="By linking e-pharmacy networks, Synapse matches prescriptions to local inventory and coordinates direct-to-doorstep delivery with real-time tracking.">
+          <SlideLayout {...layoutProps} script="通过连接电子药房网络，Synapse 将处方与本地库存匹配，并协调直接送货上门服务，提供实时追踪。">
              <div className="w-full flex flex-col items-center">
-                <h2 className="text-5xl font-bold text-white mb-16">9. E-Pharmacy & Delivery</h2>
+                <h2 className="text-5xl font-bold text-white mb-16">9. 电子药房与配送</h2>
                 <div className="w-full max-w-5xl rounded-3xl overflow-hidden border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-3xl p-8 shadow-2xl relative flex items-center gap-12">
                    <div className="flex-1 space-y-8">
                      <div className="flex items-center gap-4">
                         <Pill className="text-purple-500 w-8 h-8" />
-                        <div><h4 className="text-white font-bold">Prescription Matching</h4><p className="text-xs text-gray-400">Routes to nearest stocked pharmacy.</p></div>
+                        <div><h4 className="text-white font-bold">处方匹配</h4><p className="text-xs text-gray-400">导诊至库存充足的最近药房。</p></div>
                      </div>
                      <div className="flex items-center gap-4">
                         <Truck className="text-yellow-500 w-8 h-8" />
-                        <div><h4 className="text-white font-bold">Direct Dispatch</h4><p className="text-xs text-gray-400">Automated driver assignment.</p></div>
+                        <div><h4 className="text-white font-bold">直接派送</h4><p className="text-xs text-gray-400">自动指派配送员。</p></div>
                      </div>
                      <div className="flex items-center gap-4">
                         <Map className="text-blue-500 w-8 h-8" />
-                        <div><h4 className="text-white font-bold">Real-time Tracking</h4><p className="text-xs text-gray-400">Patient visibility until doorstep drop-off.</p></div>
+                        <div><h4 className="text-white font-bold">实时追踪</h4><p className="text-xs text-gray-400">患者可全程查看直至送达家门口。</p></div>
                      </div>
                    </div>
                    <div className="flex-1 flex justify-center">
@@ -425,24 +425,24 @@ export default function Presentation() {
 
       case 11:
         return (
-          <SlideLayout {...layoutProps} script="Synapse uses a modular microservices architecture, leveraging React, Node.js, MongoDB, and Zhipu AI for millisecond-level telemetry scaling globally.">
+          <SlideLayout {...layoutProps} script="Synapse 采用模块化微服务架构，利用 React、Node.js、MongoDB 和 Zhipu AI，实现毫秒级医疗遥测数据的全球扩展。">
              <div className="w-full flex flex-col text-center items-center">
-                <h2 className="text-5xl font-bold text-white mb-12">10. Architecture & Scalability</h2>
+                <h2 className="text-5xl font-bold text-white mb-12">10. 架构与可扩展性</h2>
                 <div className="grid grid-cols-3 gap-6 w-full max-w-5xl">
                    <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-6 flex flex-col items-center hover:border-blue-500/50 transition-colors">
                       <Server className="w-10 h-10 text-blue-500 mb-4" />
-                      <h3 className="text-lg font-bold text-white mb-2">Microservices</h3>
-                      <p className="text-gray-400 text-xs">Modular design allowing zero-downtime updates across services.</p>
+                      <h3 className="text-lg font-bold text-white mb-2">微服务</h3>
+                      <p className="text-gray-400 text-xs">模块化设计，支持各服务零停机更新。</p>
                    </div>
                    <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-6 flex flex-col items-center hover:border-green-500/50 transition-colors">
                       <Cloud className="w-10 h-10 text-green-500 mb-4" />
-                      <h3 className="text-lg font-bold text-white mb-2">Real-Time Engine</h3>
-                      <p className="text-gray-400 text-xs">Node.js + MongoDB optimized for millisecond medical telemetry.</p>
+                      <h3 className="text-lg font-bold text-white mb-2">实时引擎</h3>
+                      <p className="text-gray-400 text-xs">Node.js + MongoDB，为毫秒级医疗遥测优化。</p>
                    </div>
                    <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-6 flex flex-col items-center hover:border-purple-500/50 transition-colors">
                       <Code className="w-10 h-10 text-purple-500 mb-4" />
-                      <h3 className="text-lg font-bold text-white mb-2">Zhipu AI Integration</h3>
-                      <p className="text-gray-400 text-xs">Advanced localized NLP for complex diagnostic reasoning.</p>
+                      <h3 className="text-lg font-bold text-white mb-2">Zhipu AI 集成</h3>
+                      <p className="text-gray-400 text-xs">先进的本地化自然语言处理，用于复杂的诊断推理。</p>
                    </div>
                 </div>
              </div>
@@ -451,20 +451,20 @@ export default function Presentation() {
 
       case 12:
         return (
-          <SlideLayout {...layoutProps} script="Built for trust. Synapse features zero-knowledge encryption and is fully compliant with China’s PIPL and Data Security Laws.">
+          <SlideLayout {...layoutProps} script="Synapse 基于信任构建。它采用零知识加密，并完全符合中国的《个人信息保护法》（PIPL）和《数据安全法》（DSL）。">
              <div className="flex flex-col items-center justify-center text-center">
                 <motion.div animate={{ rotate: 360 }} transition={{ duration: 20, repeat: Infinity, ease: 'linear' }} className="w-64 h-64 border border-blue-500/30 rounded-full flex items-center justify-center mb-12 relative overflow-hidden bg-[#0a0a0a]">
                    <ShieldAlert className="w-32 h-32 text-blue-500 opacity-80" />
                    <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-blue-600/20 to-transparent" />
                 </motion.div>
-                <h2 className="text-5xl font-black text-white mb-6 tracking-tight">11. Data Security & Compliance</h2>
+                <h2 className="text-5xl font-black text-white mb-6 tracking-tight">11. 数据安全与合规</h2>
                 <div className="flex gap-8 mb-12">
-                   <span className="text-xl text-blue-400 font-medium px-4 py-2 border border-blue-500/30 rounded-full bg-blue-900/20">Zero-Knowledge Encryption</span>
-                   <span className="text-xl text-blue-400 font-medium px-4 py-2 border border-blue-500/30 rounded-full bg-blue-900/20">PIPL & DSL Compliant</span>
+                   <span className="text-xl text-blue-400 font-medium px-4 py-2 border border-blue-500/30 rounded-full bg-blue-900/20">零知识加密</span>
+                   <span className="text-xl text-blue-400 font-medium px-4 py-2 border border-blue-500/30 rounded-full bg-blue-900/20">符合 PIPL 与 DSL 标准</span>
                 </div>
                 
                 <button onClick={() => navigate('/')} className="bg-white/10 hover:bg-white/20 text-white border border-white/20 px-8 py-4 rounded-full font-bold transition-all relative z-50 mt-4">
-                  End Presentation
+                  结束演示
                 </button>
              </div>
           </SlideLayout>
@@ -477,10 +477,10 @@ export default function Presentation() {
 
   return (
     <div className="fixed inset-0 z-[100] bg-black overflow-hidden flex flex-col font-sans select-none">
-       {/* Background Elements */}
+       {/* 背景元素 */}
        <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-blue-900/10 blur-[150px] rounded-full pointer-events-none" />
        
-       {/* Navigation Layer */}
+       {/* 导航层 */}
        <div className="absolute inset-y-0 w-full flex justify-between items-center px-4 pointer-events-none z-50">
           <button 
             onClick={prevSlide} 
